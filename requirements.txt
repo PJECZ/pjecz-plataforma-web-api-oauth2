@@ -1,0 +1,16 @@
+black
+click
+fastapi
+gunicorn
+httptools
+psycopg2-binary
+pydantic
+pylint
+pylint-sqlalchemy
+PyMySQL
+SQLAlchemy
+SQLAlchemy-Utils
+tabulate
+Unidecode
+uvicorn
+uvloop

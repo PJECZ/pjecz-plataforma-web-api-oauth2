@@ -1,0 +1,48 @@
+{
+    "FastAPI models": {
+        "scope": "python",
+        "prefix": "fmodels",
+        "body": [
+            "\"\"\"",
+            "${1:Modulos}, modelos",
+            "\"\"\"",
+            "from sqlalchemy import Column, Date, ForeignKey, Integer, String",
+            "from lib.database import Base",
+            "from lib.universal_mixin import UniversalMixin",
+            "",
+            "",
+            "class ${2:Clase}(Base, UniversalMixin):",
+            "\t\"\"\" ${2:Clase} \"\"\"",
+            "",
+            "\t# Nombre de la tabla",
+            "\t__tablename__ = '${3:tables}'",
+            "",
+            "\t# Clave primaria",
+            "\tid = Column(Integer, primary_key=True)",
+            "",
+            "\t# Columnas",
+            "\tfecha = Column(Date, index=True, nullable=False)",
+            "\tdescripcion = Column(String(256), nullable=False)",
+            "\tarchivo = Column(String(256))",
+            "\turl = Column(String(512))",
+            ""
+        ],
+        "description": "Contenido básico para models.py"
+    },
+    "Flask models foreign key": {
+        "scope": "python",
+        "prefix": "fmodelsfk",
+        "body": [
+            "# Clave foránea",
+            "${1:columna}_id = db.Column(",
+            "\t'${1:columna}',",
+            "\tdb.Integer,",
+            "\tdb.ForeignKey('${2:tablas}.id'),",
+            "\tindex=True,",
+            "\tnullable=False",
+            ")",
+            ""
+        ],
+        "description": "Clave foránea"
+    }
+}
