@@ -8,6 +8,7 @@ pydantic
 pylint
 pylint-sqlalchemy
 PyMySQL
+python-multipart
 SQLAlchemy
 SQLAlchemy-Utils
 tabulate
