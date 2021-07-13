@@ -28,3 +28,7 @@ class ListaDeAcuerdo(Base, UniversalMixin):
 
     # Hijos
     listas_de_acuerdos_acuerdos = relationship('ListaDeAcuerdoAcuerdo', back_populates='lista_de_acuerdo')
+
+    def __repr__(self):
+        """Representación"""
+        return f"<ListaDeAcuerdo {self.fecha}>"

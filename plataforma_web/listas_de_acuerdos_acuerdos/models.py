@@ -28,3 +28,7 @@ class ListaDeAcuerdoAcuerdo(Base, UniversalMixin):
     tipo_acuerdo = Column(String(256), nullable=False, default="", server_default="")
     tipo_juicio = Column(String(256), nullable=False, default="", server_default="")
     referencia = Column(Integer(), nullable=False)
+
+    def __repr__(self):
+        """Representación"""
+        return f"<ListaDeAcuerdoAcuerdo {self.id}>"

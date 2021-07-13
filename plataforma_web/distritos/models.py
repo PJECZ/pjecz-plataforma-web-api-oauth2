@@ -23,3 +23,7 @@ class Distrito(Base, UniversalMixin):
 
     # Hijos
     autoridades = relationship("Autoridad", back_populates="distrito")
+
+    def __repr__(self):
+        """Representación"""
+        return f"<Distrito {self.nombre}>"
