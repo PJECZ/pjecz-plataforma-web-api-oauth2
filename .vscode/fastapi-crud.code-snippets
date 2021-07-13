@@ -1,7 +1,7 @@
 {
     "FastAPI crud": {
         "scope": "python",
-        "prefix": "fcrudsimple",
+        "prefix": "fcrud",
         "body": [
             "\"\"\"",
             "${1:Modulos}, CRUD: the four basic operations (create, read, update, and delete) of data storage",
@@ -29,7 +29,7 @@
     },
     "FastAPI crud autoridad": {
         "scope": "python",
-        "prefix": "fcrudauto",
+        "prefix": "fcrud_autoridad",
         "body": [
             "\"\"\"",
             "${1:Modulos}, CRUD: the four basic operations (create, read, update, and delete) of data storage",

@@ -14,10 +14,7 @@ router = APIRouter()
 @router.get("", response_model=List[schemas.Materia])
 async def listar_materias(db: Session = Depends(get_db)):
     """Lista de materias"""
-    resultados = []
-    for materia in crud.get_materias(db):
-        resultados.append(schemas.Materia(id=materia.id, materia=materia.nombre))
-    return resultados
+    return [schemas.Materia(id=materia.id, materia=materia.nombre) for materia in crud.get_materias(db)]
 
 
 @router.get("/{materia_id}", response_model=schemas.Materia)

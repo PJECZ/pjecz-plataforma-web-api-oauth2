@@ -1,5 +1,7 @@
 """
 Main
+
+Para arrancar ejecute `python main.py`
 """
 import uvicorn
 

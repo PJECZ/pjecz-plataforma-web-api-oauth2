@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class ListaDeAcuerdo(BaseModel):
-    """Esquema para consultar Listas de Acuerdos"""
+    """Esquema para listas de acuerdos"""
 
     id: int
     distrito_id: int

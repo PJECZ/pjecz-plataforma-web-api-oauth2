@@ -31,7 +31,7 @@
     },
     "Flask models foreign key": {
         "scope": "python",
-        "prefix": "fmodelsfk",
+        "prefix": "fmodels_foreing_key",
         "body": [
             "# Clave foránea",
             "${1:columna}_id = db.Column(",

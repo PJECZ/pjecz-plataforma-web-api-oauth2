@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class Distrito(BaseModel):
-    """ Esquema Distrito """
+    """Esquema para distritos"""
 
     id: int
     distrito: str

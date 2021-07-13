@@ -1,7 +1,7 @@
 {
     "FastAPI views simple": {
         "scope": "python",
-        "prefix": "fviewssimple",
+        "prefix": "fviews",
         "body": [
             "\"\"\"",
             "${1:Modulos}, vistas",
@@ -38,7 +38,7 @@
     },
     "FastAPI views autoridad": {
         "scope": "python",
-        "prefix": "fviewsauto",
+        "prefix": "fviews_autoridad",
         "body": [
             "\"\"\"",
             "${1:Modulos}, vistas",

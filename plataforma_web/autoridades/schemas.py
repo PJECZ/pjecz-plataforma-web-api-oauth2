@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class Autoridad(BaseModel):
-    """ Esquema Autoridad para listado """
+    """Esquema para autoridades"""
 
     id: int
     distrito_id: int

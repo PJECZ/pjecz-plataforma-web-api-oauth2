@@ -8,10 +8,10 @@ from lib.universal_mixin import UniversalMixin
 
 
 class Usuario(Base, UniversalMixin):
-    """ Usuario """
+    """Usuario"""
 
     # Nombre de la tabla
-    __tablename__ = 'usuarios'
+    __tablename__ = "usuarios"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
@@ -24,7 +24,10 @@ class Usuario(Base, UniversalMixin):
 
     # Columnas
     email = Column(String(256), unique=True, index=True)
-    contrasena = Column(String(256), nullable=False)
     nombres = Column(String(256), nullable=False)
     apellido_paterno = Column(String(256), nullable=False)
     apellido_materno = Column(String(256))
+
+    def __repr__(self):
+        """Representación"""
+        return f"<Usuario {self.email}>"

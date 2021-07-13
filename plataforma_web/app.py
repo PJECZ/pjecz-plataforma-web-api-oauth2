@@ -15,6 +15,8 @@ from plataforma_web.distritos.views import router as distritos
 from plataforma_web.listas_de_acuerdos.views import router as listas_de_acuerdos
 from plataforma_web.listas_de_acuerdos_acuerdos.views import router as listas_de_acuerdos_acuerdos
 from plataforma_web.materias.views import router as materias
+from plataforma_web.roles.views import router as roles
+from plataforma_web.usuarios.views import router as usuarios
 
 
 # to get a string like this run:
@@ -127,6 +129,8 @@ app.include_router(distritos, prefix="/distritos")
 app.include_router(listas_de_acuerdos, prefix="/listas_de_acuerdos")
 app.include_router(listas_de_acuerdos_acuerdos, prefix="/listas_de_acuerdos_acuerdos")
 app.include_router(materias, prefix="/materias")
+app.include_router(roles, prefix="/roles")
+app.include_router(usuarios, prefix="/usuarios")
 
 
 @app.get("/")
