@@ -8,6 +8,7 @@ from typing import Optional
 class Usuario(BaseModel):
     """Esquema para usuarios"""
 
+    username: str
     id: int
     distrito_id: int
     distrito: str
@@ -19,6 +20,7 @@ class Usuario(BaseModel):
     nombres: str
     apellido_paterno: str
     apellido_materno: Optional[str] = None
+    disabled: bool
 
 
 class UsuarioEnBD(Usuario):

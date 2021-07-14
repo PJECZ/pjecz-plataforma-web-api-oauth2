@@ -15,8 +15,7 @@ from plataforma_web.roles.views import router as roles
 from plataforma_web.usuarios.views import router as usuarios
 
 from plataforma_web.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user, fake_users_db, oauth2_scheme
-from plataforma_web.usuarios.models import Usuario
-from plataforma_web.usuarios.schemas import Token
+from plataforma_web.usuarios.schemas import Token, Usuario
 
 from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 

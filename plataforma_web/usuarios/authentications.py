@@ -10,17 +10,25 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from config.settings import SECRET_KEY, ALGORITHM
-from plataforma_web.usuarios.models import Usuario
-from plataforma_web.usuarios.schemas import UsuarioEnBD, TokenData
+from plataforma_web.usuarios.schemas import TokenData, Usuario, UsuarioEnBD
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
+    "guillermo.valdes@pjecz.gob.mx": {
+        "username": "guillermo.valdes@pjecz.gob.mx",
+        "id": 128,
+        "distrito_id": 11,
+        "distrito": "Administrativo",
+        "autoridad_id": 115,
+        "autoridad": "Dirección de Informática",
+        "rol_id": 1,
+        "rol": "ADMINISTRADOR",
+        "email": "guillermo.valdes@pjecz.gob.mx",
+        "nombres": "Guillermo",
+        "apellido_paterno": "Valdés",
+        "apellido_materno": "Lozano",
         "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
         "disabled": False,
     }
