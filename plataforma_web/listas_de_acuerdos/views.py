@@ -55,3 +55,24 @@ async def consultar_una_lista_de_acuerdos(lista_de_acuerdo_id: int, token: str =
         archivo=lista_de_acuerdo.archivo,
         url=lista_de_acuerdo.url,
     )
+
+
+@router.post("", response_model=schemas.ListaDeAcuerdo)
+async def insertar_lista_de_acuerdos(autoridad_id: int, fecha: date = None, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    """Insertar una Lista de Acuerdos"""
+    # TODO: Validar que el usuario tenga el permiso CREAR_JUSTICIABLES
+    # TODO: Validar que el usuario tenga el rol ADMINISTRADOR
+    lista_de_acuerdo = crud.insert_lista_de_acuerdo(db, autoridad_id=autoridad_id, fecha=fecha)
+    if lista_de_acuerdo is None:
+        raise HTTPException(status_code=400, detail="No se pudo insertar la lista de acuerdos.")
+    return schemas.ListaDeAcuerdo(
+        id=lista_de_acuerdo.id,
+        distrito_id=lista_de_acuerdo.autoridad.distrito_id,
+        distrito=lista_de_acuerdo.autoridad.distrito.nombre,
+        autoridad_id=lista_de_acuerdo.autoridad_id,
+        autoridad=lista_de_acuerdo.autoridad.descripcion,
+        fecha=lista_de_acuerdo.fecha,
+        descripcion=lista_de_acuerdo.descripcion,
+        archivo=lista_de_acuerdo.archivo,
+        url=lista_de_acuerdo.url,
+    )

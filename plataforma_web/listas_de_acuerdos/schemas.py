@@ -2,11 +2,22 @@
 Listas de Acuerdos, esquemas de pydantic
 """
 from datetime import date
+from typing import Optional
 from pydantic import BaseModel
 
 
+class ListaDeAcuerdoNew(BaseModel):
+    """Lista de Acuerdos nueva"""
+
+    autoridad_id: int
+    fecha: date
+    descripcion: str
+    archivo: Optional[str] = ""
+    url: Optional[str] = ""
+
+
 class ListaDeAcuerdo(BaseModel):
-    """Esquema para listas de acuerdos"""
+    """Lista de Acuerdos"""
 
     id: int
     distrito_id: int
@@ -15,5 +26,5 @@ class ListaDeAcuerdo(BaseModel):
     autoridad: str
     fecha: date
     descripcion: str
-    archivo: str
-    url: str
+    archivo: Optional[str] = ""
+    url: Optional[str] = ""

@@ -21,12 +21,12 @@ class ListaDeAcuerdoAcuerdo(Base, UniversalMixin):
     lista_de_acuerdo = relationship("ListaDeAcuerdo", back_populates="listas_de_acuerdos_acuerdos")
 
     # Columnas
-    folio = Column(String(16), nullable=False, default="", server_default="")
-    expediente = Column(String(16), nullable=False, default="", server_default="")
-    actor = Column(String(256), nullable=False, default="", server_default="")
-    demandado = Column(String(256), nullable=False, default="", server_default="")
-    tipo_acuerdo = Column(String(256), nullable=False, default="", server_default="")
-    tipo_juicio = Column(String(256), nullable=False, default="", server_default="")
+    folio = Column(String(16), default="")
+    expediente = Column(String(16), default="")
+    actor = Column(String(256), nullable=False, default="")
+    demandado = Column(String(256), nullable=False, default="")
+    tipo_acuerdo = Column(String(256), nullable=False, default="")
+    tipo_juicio = Column(String(256), nullable=False, default="")
     referencia = Column(Integer(), nullable=False)
 
     def __repr__(self):

@@ -24,3 +24,31 @@ def get_listas_de_acuerdos(db: Session, autoridad_id: int = None, fecha: date = 
 def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int):
     """Consultar una lista de acuerdos"""
     return db.query(ListaDeAcuerdo).get(lista_de_acuerdo_id)
+
+
+def insert_lista_de_acuerdo(db: Session, autoridad_id: int, fecha: date = None, descripcion: str = "", archivo: str = "", url: str = ""):
+    """Insertar una lista de acuerdos"""
+    autoridad = db.query(Autoridad).get(autoridad_id)
+    if autoridad is None:
+        raise ValueError("No existe la autoridad.")
+    if autoridad.estatus != "A":
+        raise ValueError("No está habilitada la autoridad.")
+    if not autoridad.distrito.es_distrito_judicial:
+        raise ValueError("No está la autoridad en un distrito judicial.")
+    if not autoridad.es_jurisdiccional:
+        raise ValueError("No es jurisdiccional la autoridad.")
+    if fecha is None:
+        fecha = date.today()
+    # TODO: Si existe una lista de acuerdo en esa fecha se reemplaza
+    if descripcion == "":
+        descripcion = "LISTA DE ACUERDOS"
+    lista_de_acuerdo = ListaDeAcuerdo(
+        autoridad=autoridad,
+        fecha=fecha,
+        descripcion=descripcion,
+        archivo=archivo,
+        url=url,
+    )
+    db.add(lista_de_acuerdo)
+    db.commit()
+    return lista_de_acuerdo
