@@ -2,9 +2,12 @@
 FastAPI App
 """
 from datetime import timedelta
-
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+
+from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
+from lib.database import get_db
 
 from plataforma_web.autoridades.views import router as autoridades
 from plataforma_web.distritos.views import router as distritos
@@ -14,10 +17,9 @@ from plataforma_web.materias.views import router as materias
 from plataforma_web.roles.views import router as roles
 from plataforma_web.usuarios.views import router as usuarios
 
-from plataforma_web.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user, fake_users_db, oauth2_scheme
+from plataforma_web.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user, oauth2_scheme
 from plataforma_web.usuarios.schemas import Token, Usuario
 
-from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 
 app = FastAPI()
 
@@ -38,8 +40,9 @@ async def root(token: str = Depends(oauth2_scheme)):
 
 
 @app.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """Entregar el token como un JSON"""
+    user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -55,9 +58,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 @app.get("/users/me/", response_model=Usuario)
 async def read_users_me(current_user: Usuario = Depends(get_current_active_user)):
+    """Probar la autentificación viendo los datos del usuario"""
     return current_user
 
 
 @app.get("/users/me/items/")
 async def read_own_items(current_user: Usuario = Depends(get_current_active_user)):
+    """Probar la autentificación viendo datos ficticios"""
     return [{"item_id": "Foo", "owner": current_user.username}]

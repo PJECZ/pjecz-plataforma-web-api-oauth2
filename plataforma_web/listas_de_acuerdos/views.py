@@ -2,19 +2,20 @@
 Listas de Acuerdos, vistas
 """
 from datetime import date
-from fastapi import APIRouter, Depends, HTTPException
 from typing import List
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from lib.database import get_db
 
 from plataforma_web.autoridades.crud import get_autoridad
 from plataforma_web.listas_de_acuerdos import crud, schemas
-from lib.database import get_db
+from plataforma_web.usuarios.authentications import oauth2_scheme
 
 router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.ListaDeAcuerdo])
-async def listar_listas_de_acuerdos(autoridad_id: int, fecha: date = None, ano: int = None, db: Session = Depends(get_db)):
+async def listar_listas_de_acuerdos(autoridad_id: int, fecha: date = None, ano: int = None, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """ Lista de Listas de Acuerdos """
     autoridad = get_autoridad(db, autoridad_id=autoridad_id)
     if autoridad is None:
@@ -38,7 +39,7 @@ async def listar_listas_de_acuerdos(autoridad_id: int, fecha: date = None, ano: 
 
 
 @router.get("/{lista_de_acuerdo_id}", response_model=schemas.ListaDeAcuerdo)
-async def consultar_una_lista_de_acuerdos(lista_de_acuerdo_id: int, db: Session = Depends(get_db)):
+async def consultar_una_lista_de_acuerdos(lista_de_acuerdo_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """ Consultar una Lista de Acuerdos """
     lista_de_acuerdo = crud.get_lista_de_acuerdo(db, lista_de_acuerdo_id=lista_de_acuerdo_id)
     if lista_de_acuerdo is None:

@@ -8,31 +8,16 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from config.settings import SECRET_KEY, ALGORITHM
+from lib.database import get_db
+from plataforma_web.usuarios.models import Usuario as User
 from plataforma_web.usuarios.schemas import TokenData, Usuario, UsuarioEnBD
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+#pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "des_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-fake_users_db = {
-    "guillermo.valdes@pjecz.gob.mx": {
-        "username": "guillermo.valdes@pjecz.gob.mx",
-        "id": 128,
-        "distrito_id": 11,
-        "distrito": "Administrativo",
-        "autoridad_id": 115,
-        "autoridad": "Dirección de Informática",
-        "rol_id": 1,
-        "rol": "ADMINISTRADOR",
-        "email": "guillermo.valdes@pjecz.gob.mx",
-        "nombres": "Guillermo",
-        "apellido_paterno": "Valdés",
-        "apellido_materno": "Lozano",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
 
 
 def verify_password(plain_password, hashed_password):
@@ -43,14 +28,33 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UsuarioEnBD(**user_dict)
+def get_user(username: str, db: Session = Depends(get_db)):
+    """Obtener el usuario a partir de su e-mail"""
+    usuario = db.query(User).filter(User.email == username).first()
+    if usuario:
+        datos = {
+            "username": usuario.email,
+            "id": usuario.id,
+            "distrito_id": usuario.autoridad.distrito_id,
+            "distrito": usuario.autoridad.distrito.nombre,
+            "autoridad_id": usuario.autoridad_id,
+            "autoridad": usuario.autoridad.descripcion,
+            "rol_id": usuario.rol_id,
+            "rol": usuario.rol.nombre,
+            "email": usuario.email,
+            "nombres": usuario.nombres,
+            "apellido_paterno": usuario.apellido_paterno,
+            "apellido_materno": usuario.apellido_materno,
+            "hashed_password": usuario.contrasena,
+            "disabled": usuario.estatus != "A",
+        }
+        return UsuarioEnBD(**datos)
 
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
+    """Autentificar el usuario"""
+    user = get_user(username, db)
+    print(repr(user))
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -69,7 +73,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -83,7 +87,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = get_user(token_data.username, db)
     if user is None:
         raise credentials_exception
     return user

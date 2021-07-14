@@ -4,16 +4,17 @@ Listas de Acuerdos Acuerdos, vistas
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from lib.database import get_db
 
 from plataforma_web.listas_de_acuerdos.crud import get_lista_de_acuerdo
 from plataforma_web.listas_de_acuerdos_acuerdos import crud, schemas
-from lib.database import get_db
+from plataforma_web.usuarios.authentications import oauth2_scheme
 
 router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.ListaDeAcuerdoAcuerdo])
-async def listar_listas_de_acuerdos_acuerdos(lista_de_acuerdo_id: int, db: Session = Depends(get_db)):
+async def listar_listas_de_acuerdos_acuerdos(lista_de_acuerdo_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """Lista de listas_de_acuerdos_acuerdos"""
     lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id=lista_de_acuerdo_id)
     if lista_de_acuerdo is None:
@@ -37,7 +38,7 @@ async def listar_listas_de_acuerdos_acuerdos(lista_de_acuerdo_id: int, db: Sessi
 
 
 @router.get("/{acuerdo_id}", response_model=schemas.ListaDeAcuerdoAcuerdo)
-async def consultar_un_acuerdo(lista_de_acuerdo_acuerdo_id: int, db: Session = Depends(get_db)):
+async def consultar_un_acuerdo(lista_de_acuerdo_acuerdo_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """Consultar un acuerdo"""
     acuerdo = crud.get_lista_de_acuerdo_acuerdo(db, lista_de_acuerdo_acuerdo_id=lista_de_acuerdo_acuerdo_id)
     if acuerdo is None:

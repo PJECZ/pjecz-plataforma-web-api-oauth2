@@ -4,15 +4,16 @@ Usuarios, vistas
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from lib.database import get_db
 
 from plataforma_web.usuarios import crud, schemas
-from lib.database import get_db
+from plataforma_web.usuarios.authentications import oauth2_scheme
 
 router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.Usuario])
-async def listar_usuarios(db: Session = Depends(get_db)):
+async def listar_usuarios(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """Lista de usuarios"""
     resultados = []
     for usuario, autoridad, distrito, rol in crud.get_usuarios(db):
@@ -35,7 +36,7 @@ async def listar_usuarios(db: Session = Depends(get_db)):
 
 
 @router.get("/{usuario_id}", response_model=schemas.Usuario)
-async def consultar_un_usuario(usuario_id: int, db: Session = Depends(get_db)):
+async def consultar_un_usuario(usuario_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """Consultar un usuario"""
     usuario = crud.get_usuario(db, usuario_id=usuario_id)
     if usuario is None:

@@ -11,10 +11,10 @@ from plataforma_web.usuarios.models import Usuario
 
 def get_usuarios(db: Session, autoridad_id: int = None):
     """ Consultar usuarios """
-    usuarios = db.query(Usuario, Autoridad, Distrito, Rol).select_from(Usuario).join(Autoridad).join(Distrito).join(Rol)
+    consulta = db.query(Usuario, Autoridad, Distrito, Rol).select_from(Usuario).join(Autoridad).join(Distrito).join(Rol)
     if autoridad_id:
-        usuarios = usuarios.filter(Usuario.autoridad_id == autoridad_id)
-    return usuarios.filter(Usuario.estatus == 'A').limit(400).all()
+        consulta = consulta.filter(Usuario.autoridad_id == autoridad_id)
+    return consulta.filter(Usuario.estatus == 'A').limit(400).all()
 
 
 def get_usuario(db: Session, usuario_id: int):

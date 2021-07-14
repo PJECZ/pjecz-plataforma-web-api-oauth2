@@ -27,6 +27,7 @@ class Usuario(Base, UniversalMixin):
     nombres = Column(String(256), nullable=False)
     apellido_paterno = Column(String(256), nullable=False)
     apellido_materno = Column(String(256))
+    contrasena = Column(String(256), nullable=False)
 
     def __repr__(self):
         """Representación"""
