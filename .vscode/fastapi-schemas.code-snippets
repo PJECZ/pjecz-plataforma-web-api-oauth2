@@ -1,0 +1,29 @@
+{
+    "FastAPI schemas": {
+        "scope": "python",
+        "prefix": "fschemas",
+        "body": [
+            "\"\"\"",
+            "${1:Modulos}, esquemas de pydantic",
+            "\"\"\"",
+            "from datetime import date",
+            "from pydantic import BaseModel",
+            "",
+            "",
+            "class ${2:Esquema}(BaseModel):",
+            "\t\"\"\" Esquema para consultar ${3:plural} \"\"\"",
+            "",
+            "\tid: int",
+            "\tdistrito_id: int",
+            "\tdistrito: str",
+            "\tautoridad_id: int",
+            "\tautoridad: str",
+            "\tfecha: date",
+            "\tdescripcion: str",
+            "\tarchivo: str",
+            "\turl: str",
+            ""
+        ],
+        "description": "Contenido para schemas.py"
+    }
+}
