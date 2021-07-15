@@ -62,17 +62,19 @@ async def insertar_lista_de_acuerdos(autoridad_id: int, fecha: date = None, toke
     """Insertar una Lista de Acuerdos"""
     # TODO: Validar que el usuario tenga el permiso CREAR_JUSTICIABLES
     # TODO: Validar que el usuario tenga el rol ADMINISTRADOR
-    lista_de_acuerdo = crud.insert_lista_de_acuerdo(db, autoridad_id=autoridad_id, fecha=fecha)
-    if lista_de_acuerdo is None:
-        raise HTTPException(status_code=400, detail="No se pudo insertar la lista de acuerdos.")
-    return schemas.ListaDeAcuerdo(
-        id=lista_de_acuerdo.id,
-        distrito_id=lista_de_acuerdo.autoridad.distrito_id,
-        distrito=lista_de_acuerdo.autoridad.distrito.nombre,
-        autoridad_id=lista_de_acuerdo.autoridad_id,
-        autoridad=lista_de_acuerdo.autoridad.descripcion,
-        fecha=lista_de_acuerdo.fecha,
-        descripcion=lista_de_acuerdo.descripcion,
-        archivo=lista_de_acuerdo.archivo,
-        url=lista_de_acuerdo.url,
-    )
+    try:
+        lista_de_acuerdo = crud.insert_lista_de_acuerdo(db, autoridad_id=autoridad_id, fecha=fecha)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    if lista_de_acuerdo is not None:
+        return schemas.ListaDeAcuerdo(
+            id=lista_de_acuerdo.id,
+            distrito_id=lista_de_acuerdo.autoridad.distrito_id,
+            distrito=lista_de_acuerdo.autoridad.distrito.nombre,
+            autoridad_id=lista_de_acuerdo.autoridad_id,
+            autoridad=lista_de_acuerdo.autoridad.descripcion,
+            fecha=lista_de_acuerdo.fecha,
+            descripcion=lista_de_acuerdo.descripcion,
+            archivo=lista_de_acuerdo.archivo,
+            url=lista_de_acuerdo.url,
+        )
