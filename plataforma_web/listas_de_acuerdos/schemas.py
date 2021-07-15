@@ -12,19 +12,14 @@ class ListaDeAcuerdoNew(BaseModel):
     autoridad_id: int
     fecha: date
     descripcion: str
-    archivo: Optional[str] = ""
-    url: Optional[str] = ""
 
 
-class ListaDeAcuerdo(BaseModel):
+class ListaDeAcuerdo(ListaDeAcuerdoNew):
     """Lista de Acuerdos"""
 
     id: int
     distrito_id: int
     distrito: str
-    autoridad_id: int
     autoridad: str
-    fecha: date
-    descripcion: str
     archivo: Optional[str] = ""
     url: Optional[str] = ""

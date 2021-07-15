@@ -9,7 +9,6 @@ from pydantic import BaseModel
 class ListaDeAcuerdoAcuerdoNew(BaseModel):
     """Acuerdo de Listas de Acuerdos nuevo"""
 
-    id: int
     lista_de_acuerdo_id: int
     fecha: date
     folio: Optional[str] = ""
@@ -18,9 +17,14 @@ class ListaDeAcuerdoAcuerdoNew(BaseModel):
     demandado: str
     tipo_acuerdo: str
     tipo_juicio: str
+    referencia: int
 
 
 class ListaDeAcuerdoAcuerdo(ListaDeAcuerdoAcuerdoNew):
     """Acuerdo de Listas de Acuerdos"""
 
     id: int
+    distrito_id: int
+    distrito: str
+    autoridad_id: int
+    autoridad: str
