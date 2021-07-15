@@ -7,14 +7,19 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 
 from plataforma_web.autoridades import crud, schemas
-from plataforma_web.usuarios.authentications import oauth2_scheme
+from plataforma_web.roles.models import Permiso
+from plataforma_web.usuarios.authentications import get_current_active_user
+from plataforma_web.usuarios.schemas import UsuarioEnBD
+
 
 router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.Autoridad])
-async def listar_autoridades(distrito_id: int = None, materia_id: int = None, organo_jurisdiccional: str = None, con_notarias: bool = False, para_glosas: bool = False, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def listar_autoridades(distrito_id: int = None, materia_id: int = None, organo_jurisdiccional: str = None, con_notarias: bool = False, para_glosas: bool = False, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Lista de Autoridades"""
+    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
     resultados = []
     for autoridad, distrito, materia in crud.get_autoridades(db, distrito_id=distrito_id, materia_id=materia_id, organo_jurisdiccional=organo_jurisdiccional, con_notarias=con_notarias, para_glosas=para_glosas):
         resultados.append(
@@ -34,11 +39,13 @@ async def listar_autoridades(distrito_id: int = None, materia_id: int = None, or
 
 
 @router.get("/{autoridad_id}", response_model=schemas.Autoridad)
-async def consultar_una_autoridad(autoridad_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def consultar_una_autoridad(autoridad_id: int, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Consultar una Autoridad"""
+    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
     autoridad = crud.get_autoridad(db, autoridad_id=autoridad_id)
     if autoridad is None:
-        raise HTTPException(status_code=400, detail="No existe la autoridad.")
+        raise HTTPException(status_code=404, detail="Not Found (no existe la autoridad).")
     return schemas.Autoridad(
         id=autoridad.id,
         distrito_id=autoridad.distrito_id,

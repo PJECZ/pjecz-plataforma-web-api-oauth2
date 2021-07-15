@@ -9,17 +9,22 @@ from lib.database import get_db
 
 from plataforma_web.autoridades.crud import get_autoridad
 from plataforma_web.listas_de_acuerdos import crud, schemas
-from plataforma_web.usuarios.authentications import oauth2_scheme
+from plataforma_web.roles.models import Permiso
+from plataforma_web.usuarios.authentications import get_current_active_user
+from plataforma_web.usuarios.schemas import UsuarioEnBD
+
 
 router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.ListaDeAcuerdo])
-async def listar_listas_de_acuerdos(autoridad_id: int, fecha: date = None, ano: int = None, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """ Lista de Listas de Acuerdos """
+async def listar_listas_de_acuerdos(autoridad_id: int, fecha: date = None, ano: int = None, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """Lista de Listas de Acuerdos"""
+    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
     autoridad = get_autoridad(db, autoridad_id=autoridad_id)
     if autoridad is None:
-        raise HTTPException(status_code=400, detail="No existe la autoridad.")
+        raise HTTPException(status_code=404, detail="Not found (no existe la autoridad).")
     resultados = []
     for lista_de_acuerdo, autoridad, distrito in crud.get_listas_de_acuerdos(db, autoridad_id=autoridad_id, fecha=fecha, ano=ano):
         resultados.append(
@@ -39,11 +44,13 @@ async def listar_listas_de_acuerdos(autoridad_id: int, fecha: date = None, ano: 
 
 
 @router.get("/{lista_de_acuerdo_id}", response_model=schemas.ListaDeAcuerdo)
-async def consultar_una_lista_de_acuerdos(lista_de_acuerdo_id: int, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """ Consultar una Lista de Acuerdos """
+async def consultar_una_lista_de_acuerdos(lista_de_acuerdo_id: int, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """Consultar una Lista de Acuerdos"""
+    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
     lista_de_acuerdo = crud.get_lista_de_acuerdo(db, lista_de_acuerdo_id=lista_de_acuerdo_id)
     if lista_de_acuerdo is None:
-        raise HTTPException(status_code=400, detail="No existe la lista de acuerdos.")
+        raise HTTPException(status_code=404, detail="Not found (no existe la lista de acuerdos).")
     return schemas.ListaDeAcuerdo(
         id=lista_de_acuerdo.id,
         distrito_id=lista_de_acuerdo.autoridad.distrito_id,
@@ -58,14 +65,14 @@ async def consultar_una_lista_de_acuerdos(lista_de_acuerdo_id: int, token: str =
 
 
 @router.post("", response_model=schemas.ListaDeAcuerdo)
-async def insertar_lista_de_acuerdos(autoridad_id: int, fecha: date = None, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def insertar_lista_de_acuerdos(autoridad_id: int, fecha: date = None, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Insertar una Lista de Acuerdos"""
-    # TODO: Validar que el usuario tenga el permiso CREAR_JUSTICIABLES
-    # TODO: Validar que el usuario tenga el rol ADMINISTRADOR
+    if not current_user.permissions & Permiso.CREAR_JUSTICIABLES == Permiso.CREAR_JUSTICIABLES:
+        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
     try:
         lista_de_acuerdo = crud.insert_lista_de_acuerdo(db, autoridad_id=autoridad_id, fecha=fecha)
     except ValueError as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
+        raise HTTPException(status_code=406, detail=f"Not Acceptable ({str(error)})") from error
     if lista_de_acuerdo is not None:
         return schemas.ListaDeAcuerdo(
             id=lista_de_acuerdo.id,

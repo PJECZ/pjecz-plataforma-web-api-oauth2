@@ -42,27 +42,21 @@ async def root(token: str = Depends(oauth2_scheme)):
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Entregar el token como un JSON"""
-    user = authenticate_user(form_data.username, form_data.password, db)
-    if not user:
+    usuario = authenticate_user(form_data.username, form_data.password, db)
+    if not usuario:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Usuario o contraseña incorrectos",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": usuario.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", response_model=Usuario)
+@app.get("/usuarios/yo", response_model=Usuario)
 async def read_users_me(current_user: Usuario = Depends(get_current_active_user)):
-    """Probar la autentificación viendo los datos del usuario"""
+    """Mostrar el perfil del usuario"""
     return current_user
-
-
-@app.get("/users/me/items/")
-async def read_own_items(current_user: Usuario = Depends(get_current_active_user)):
-    """Probar la autentificación viendo datos ficticios"""
-    return [{"item_id": "Foo", "owner": current_user.username}]

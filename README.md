@@ -21,6 +21,9 @@ Cree un archivo para las variables de entorno `.env`
     ALGORITHM=HS256
     ACCESS_TOKEN_EXPIRE_MINUTES=30
 
+    # Jupyter notebooks
+    PYTHONPATH=/ruta/al/directorio/GitHub/guivaloz/pjecz-plataforma-web-api-oauth2
+
 Para Bash Shell cree un archivo `.bashrc` con este contenido
 
     #!/bin/bash
@@ -34,12 +37,13 @@ Para Bash Shell cree un archivo `.bashrc` con este contenido
     export $(grep -v '^#' .env | xargs)
     echo "-- Variables de entorno"
     echo "   DB_USER: ${DB_USER}"
-    echo "   DB_NAME: ${DB_NAME}"
     echo "   DB_PASS: ${DB_PASS}"
+    echo "   DB_NAME: ${DB_NAME}"
     echo "   DB_HOST: ${DB_HOST}"
     echo "   SECRET_KEY: ${SECRET_KEY}"
     echo "   ALGORITHM: ${ALGORITHM}"
     echo "   ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}"
+    echo "   PYTHONPATH: ${PYTHONPATH}"
     echo
 
     echo "-- FastAPI"

@@ -12,28 +12,28 @@ from sqlalchemy.orm import Session
 
 from config.settings import SECRET_KEY, ALGORITHM
 from lib.database import get_db
-from plataforma_web.usuarios.models import Usuario as User
-from plataforma_web.usuarios.schemas import TokenData, Usuario, UsuarioEnBD
+from plataforma_web.usuarios.models import Usuario
+from plataforma_web.usuarios.schemas import TokenData, UsuarioEnBD
 
-#pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-pwd_context = CryptContext(schemes=["pbkdf2_sha256", "des_crypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["pbkdf2_sha256", "des_crypt"], deprecated="auto")  # In tutorial use schemes=["bcrypt"]
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def verify_password(plain_password, hashed_password):
+    """Validar contraseña"""
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password):
+    """Cifrar contraseña"""
     return pwd_context.hash(password)
 
 
 def get_user(username: str, db: Session = Depends(get_db)):
     """Obtener el usuario a partir de su e-mail"""
-    usuario = db.query(User).filter(User.email == username).first()
+    usuario = db.query(Usuario).filter(Usuario.email == username).first()
     if usuario:
         datos = {
-            "username": usuario.email,
             "id": usuario.id,
             "distrito_id": usuario.autoridad.distrito_id,
             "distrito": usuario.autoridad.distrito.nombre,
@@ -45,6 +45,8 @@ def get_user(username: str, db: Session = Depends(get_db)):
             "nombres": usuario.nombres,
             "apellido_paterno": usuario.apellido_paterno,
             "apellido_materno": usuario.apellido_materno,
+            "username": usuario.email,
+            "permissions": usuario.rol.permiso,
             "hashed_password": usuario.contrasena,
             "disabled": usuario.estatus != "A",
         }
@@ -63,6 +65,7 @@ def authenticate_user(username: str, password: str, db: Session = Depends(get_db
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """Crear el token de acceso"""
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -74,6 +77,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    """Obtener el usuario a partir del token"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -87,13 +91,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(token_data.username, db)
-    if user is None:
+    usuario = get_user(token_data.username, db)
+    if usuario is None:
         raise credentials_exception
-    return user
+    return usuario
 
 
-async def get_current_active_user(current_user: Usuario = Depends(get_current_user)):
+async def get_current_active_user(current_user: UsuarioEnBD = Depends(get_current_user)):
+    """Obtener el usuario a partir del token y provocar error si está inactivo"""
     if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=401, detail="Unauthorized (usuario inactivo)")
     return current_user

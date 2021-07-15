@@ -6,9 +6,8 @@ from pydantic import BaseModel
 
 
 class Usuario(BaseModel):
-    """Esquema para usuarios"""
+    """Usuario"""
 
-    username: str
     id: int
     distrito_id: int
     distrito: str
@@ -20,13 +19,15 @@ class Usuario(BaseModel):
     nombres: str
     apellido_paterno: str
     apellido_materno: Optional[str] = None
-    disabled: bool
 
 
 class UsuarioEnBD(Usuario):
-    """Usuario en BD"""
+    """Usuario en base de datos"""
 
+    username: str
+    permissions: int
     hashed_password: str
+    disabled: bool
 
 
 class Token(BaseModel):
