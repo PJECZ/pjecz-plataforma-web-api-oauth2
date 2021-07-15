@@ -10,7 +10,6 @@ class ListaDeAcuerdoAcuerdoNew(BaseModel):
     """Acuerdo de Listas de Acuerdos nuevo"""
 
     lista_de_acuerdo_id: int
-    fecha: date
     folio: Optional[str] = ""
     expediente: Optional[str] = ""
     actor: str
@@ -28,3 +27,4 @@ class ListaDeAcuerdoAcuerdo(ListaDeAcuerdoAcuerdoNew):
     distrito: str
     autoridad_id: int
     autoridad: str
+    fecha: date

@@ -1,7 +1,6 @@
 """
 Listas de Acuerdos Acuerdos, vistas
 """
-from plataforma_web.listas_de_acuerdos.schemas import ListaDeAcuerdoNew
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -17,7 +16,9 @@ router = APIRouter()
 
 
 @router.get("", response_model=List[schemas.ListaDeAcuerdoAcuerdo])
-async def listar_acuerdos(lista_de_acuerdo_id: int, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def listar_acuerdos(
+    lista_de_acuerdo_id: int, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)
+):
     """Lista de listas_de_acuerdos_acuerdos"""
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
@@ -41,13 +42,18 @@ async def listar_acuerdos(lista_de_acuerdo_id: int, current_user: UsuarioEnBD = 
                 demandado=acuerdo.demandado,
                 tipo_acuerdo=acuerdo.tipo_acuerdo,
                 tipo_juicio=acuerdo.tipo_juicio,
+                referencia=acuerdo.referencia,
             )
         )
     return resultados
 
 
 @router.get("/{acuerdo_id}", response_model=schemas.ListaDeAcuerdoAcuerdo)
-async def consultar_un_acuerdo(lista_de_acuerdo_acuerdo_id: int, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def consultar_un_acuerdo(
+    lista_de_acuerdo_acuerdo_id: int,
+    current_user: UsuarioEnBD = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
     """Consultar un acuerdo"""
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
@@ -68,11 +74,16 @@ async def consultar_un_acuerdo(lista_de_acuerdo_acuerdo_id: int, current_user: U
         demandado=acuerdo.demandado,
         tipo_acuerdo=acuerdo.tipo_acuerdo,
         tipo_juicio=acuerdo.tipo_juicio,
+        referencia=acuerdo.referencia,
     )
 
 
 @router.post("", response_model=schemas.ListaDeAcuerdoAcuerdo)
-async def insertar_acuerdo(acuerdo: ListaDeAcuerdoNew, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
+async def insertar_acuerdo(
+    acuerdo: schemas.ListaDeAcuerdoAcuerdoNew,
+    current_user: UsuarioEnBD = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
     """Insertar un acuerdo"""
     if not current_user.permissions & Permiso.CREAR_JUSTICIABLES == Permiso.CREAR_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
@@ -95,4 +106,5 @@ async def insertar_acuerdo(acuerdo: ListaDeAcuerdoNew, current_user: UsuarioEnBD
             demandado=acuerdo.demandado,
             tipo_acuerdo=acuerdo.tipo_acuerdo,
             tipo_juicio=acuerdo.tipo_juicio,
+            referencia=acuerdo.referencia,
         )
