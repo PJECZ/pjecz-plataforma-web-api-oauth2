@@ -85,6 +85,8 @@ async def insertar_acuerdo(
     db: Session = Depends(get_db),
 ):
     """Insertar un acuerdo"""
+    # TODO: Si es ADMINISTRADOR puede insertar de cualquier autoridad
+    # TODO: Si es JUZGADO sólo puede insertar a su propio autoridad
     if not current_user.permissions & Permiso.CREAR_JUSTICIABLES == Permiso.CREAR_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
     try:

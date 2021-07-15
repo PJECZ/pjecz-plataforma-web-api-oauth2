@@ -38,6 +38,7 @@ def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoNew):
         raise ValueError("No está la autoridad en un distrito judicial.")
     if not autoridad.es_jurisdiccional:
         raise ValueError("No es jurisdiccional la autoridad.")
+    # TODO: Validar fecha, rechazar muy viejas o en el futuro
     if lista_de_acuerdo.fecha is None:
         fecha = date.today()
     else:

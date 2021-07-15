@@ -17,8 +17,13 @@ from plataforma_web.materias.views import router as materias
 from plataforma_web.roles.views import router as roles
 from plataforma_web.usuarios.views import router as usuarios
 
-from plataforma_web.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user, oauth2_scheme
-from plataforma_web.usuarios.schemas import Token, Usuario
+from plataforma_web.usuarios.authentications import (
+    authenticate_user,
+    create_access_token,
+    get_current_active_user,
+    oauth2_scheme,
+)
+from plataforma_web.usuarios.schemas import Token, UsuarioEnBD
 
 
 app = FastAPI()
@@ -50,13 +55,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": usuario.username}, expires_delta=access_token_expires
-    )
+    access_token = create_access_token(data={"sub": usuario.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/usuarios/yo", response_model=Usuario)
-async def read_users_me(current_user: Usuario = Depends(get_current_active_user)):
+@app.get("/usuarios/yo/", response_model=UsuarioEnBD)
+async def read_users_me(current_user: UsuarioEnBD = Depends(get_current_active_user)):
     """Mostrar el perfil del usuario"""
     return current_user

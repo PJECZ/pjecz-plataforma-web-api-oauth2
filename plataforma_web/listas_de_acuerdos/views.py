@@ -67,6 +67,8 @@ async def consultar_una_lista_de_acuerdos(lista_de_acuerdo_id: int, current_user
 @router.post("", response_model=schemas.ListaDeAcuerdo)
 async def insertar_lista_de_acuerdos(lista_de_acuerdo: schemas.ListaDeAcuerdoNew, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
     """Insertar una Lista de Acuerdos"""
+    # TODO: Si es ADMINISTRADOR puede insertar de cualquier autoridad
+    # TODO: Si es JUZGADO sólo puede insertar a su propio autoridad
     if not current_user.permissions & Permiso.CREAR_JUSTICIABLES == Permiso.CREAR_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
     try:
