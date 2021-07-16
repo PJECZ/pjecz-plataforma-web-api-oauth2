@@ -38,6 +38,7 @@ def insert_acuerdo(db: Session, acuerdo: ListaDeAcuerdoAcuerdoNew):
         raise ValueError("No existe la lista de acuerdos.")
     if lista_de_acuerdo.estatus != "A":
         raise ValueError("No es activa la lista de acuardos, fue eliminada.")
+    # TODO: Evitar duplicidad revisando las referencias
     resultado = ListaDeAcuerdoAcuerdo(
         lista_de_acuerdo=lista_de_acuerdo,
         folio=acuerdo.folio,
