@@ -14,5 +14,6 @@ class Autoridad(BaseModel):
     materia: str
     autoridad: str
     autoridad_corta: str
+    clave: str
     organo_jurisdiccional: str
     audiencia_categoria: str

@@ -2,7 +2,7 @@
 Autoridades, CRUD: the four basic operations (create, read, update, and delete) of data storage
 """
 from sqlalchemy.orm import Session
-from lib.safe_string import safe_string
+from lib.safe_string import safe_clave, safe_string
 
 from plataforma_web.autoridades.models import Autoridad
 from plataforma_web.distritos.models import Distrito
@@ -29,3 +29,11 @@ def get_autoridades(db: Session, distrito_id: int = None, materia_id: int = None
 def get_autoridad(db: Session, autoridad_id: int):
     """Consultar una autoridad"""
     return db.query(Autoridad).get(autoridad_id)
+
+
+def get_autoridad_from_clave(db: Session, clave: str):
+    """Consultar una autoridad con su clave"""
+    try:
+        return db.query(Autoridad).filter_by(clave=safe_clave(clave)).first()
+    except ValueError as error:
+        raise error

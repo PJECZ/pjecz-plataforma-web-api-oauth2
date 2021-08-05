@@ -31,6 +31,7 @@ async def listar_autoridades(distrito_id: int = None, materia_id: int = None, or
                 materia=materia.nombre,
                 autoridad=autoridad.descripcion,
                 autoridad_corta=autoridad.descripcion_corta,
+                clave=autoridad.clave,
                 organo_jurisdiccional=autoridad.organo_jurisdiccional,
                 audiencia_categoria=autoridad.audiencia_categoria,
             )
@@ -54,6 +55,32 @@ async def consultar_una_autoridad(autoridad_id: int, current_user: UsuarioEnBD =
         materia=autoridad.materia.nombre,
         autoridad=autoridad.descripcion,
         autoridad_corta=autoridad.descripcion_corta,
+        clave=autoridad.clave,
+        organo_jurisdiccional=autoridad.organo_jurisdiccional,
+        audiencia_categoria=autoridad.audiencia_categoria,
+    )
+
+
+@router.get("/clave/{clave}", response_model=schemas.Autoridad)
+async def consultar_una_autoridad_con_clave(clave: str, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """Consultar una Autoridad con su clave"""
+    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
+    try:
+        autoridad = crud.get_autoridad_from_clave(db, clave=clave)
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not Acceptable ({str(error)})") from error
+    if autoridad is None:
+        raise HTTPException(status_code=404, detail="Not Found (no existe la autoridad).")
+    return schemas.Autoridad(
+        id=autoridad.id,
+        distrito_id=autoridad.distrito_id,
+        distrito=autoridad.distrito.nombre,
+        materia_id=autoridad.materia_id,
+        materia=autoridad.materia.nombre,
+        autoridad=autoridad.descripcion,
+        autoridad_corta=autoridad.descripcion_corta,
+        clave=autoridad.clave,
         organo_jurisdiccional=autoridad.organo_jurisdiccional,
         audiencia_categoria=autoridad.audiencia_categoria,
     )
