@@ -6,6 +6,8 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
+from fastapi_pagination import add_pagination
+
 from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from lib.database import get_db
 
@@ -25,16 +27,19 @@ from plataforma_web.usuarios.authentications import (
 )
 from plataforma_web.usuarios.schemas import Token, UsuarioEnBD
 
+VERSION = "v1.0"
 
 app = FastAPI()
 
-app.include_router(autoridades, prefix="/autoridades")
-app.include_router(distritos, prefix="/distritos")
-app.include_router(listas_de_acuerdos, prefix="/listas_de_acuerdos")
-app.include_router(listas_de_acuerdos_acuerdos, prefix="/listas_de_acuerdos_acuerdos")
-app.include_router(materias, prefix="/materias")
-app.include_router(roles, prefix="/roles")
-app.include_router(usuarios, prefix="/usuarios")
+app.include_router(autoridades, prefix=f"/api/{VERSION}/autoridades")
+app.include_router(distritos, prefix=f"/api/{VERSION}/distritos")
+app.include_router(listas_de_acuerdos, prefix=f"/api/{VERSION}/listas_de_acuerdos")
+app.include_router(listas_de_acuerdos_acuerdos, prefix=f"/api/{VERSION}/listas_de_acuerdos_acuerdos")
+app.include_router(materias, prefix=f"/api/{VERSION}/materias")
+app.include_router(roles, prefix=f"/api/{VERSION}/roles")
+app.include_router(usuarios, prefix=f"/api/{VERSION}/usuarios")
+
+add_pagination(app)
 
 
 @app.get("/")

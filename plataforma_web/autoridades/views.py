@@ -6,6 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from lib.database import get_db
 
+from fastapi_pagination import LimitOffsetPage, Page, add_pagination
+from fastapi_pagination.ext.sqlalchemy import paginate
+
 from plataforma_web.autoridades import crud, schemas
 from plataforma_web.roles.models import Permiso
 from plataforma_web.usuarios.authentications import get_current_active_user
@@ -15,8 +18,16 @@ from plataforma_web.usuarios.schemas import UsuarioEnBD
 router = APIRouter()
 
 
-@router.get("", response_model=List[schemas.Autoridad])
-async def listar_autoridades(distrito_id: int = None, materia_id: int = None, organo_jurisdiccional: str = None, con_notarias: bool = False, para_glosas: bool = False, current_user: UsuarioEnBD = Depends(get_current_active_user), db: Session = Depends(get_db)):
+@router.get("", response_model=Page[schemas.Autoridad])
+async def listar_autoridades(
+    distrito_id: int = None,
+    materia_id: int = None,
+    organo_jurisdiccional: str = None,
+    con_notarias: bool = False,
+    para_glosas: bool = False,
+    current_user: UsuarioEnBD = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
     """Lista de Autoridades"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
@@ -36,7 +47,7 @@ async def listar_autoridades(distrito_id: int = None, materia_id: int = None, or
                 audiencia_categoria=autoridad.audiencia_categoria,
             )
         )
-    return resultados
+    return paginate(resultados)
 
 
 @router.get("/{autoridad_id}", response_model=schemas.Autoridad)
