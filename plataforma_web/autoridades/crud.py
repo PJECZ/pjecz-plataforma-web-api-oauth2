@@ -37,11 +37,6 @@ def get_autoridades(
     return consulta.filter_by(es_jurisdiccional=True).filter_by(estatus="A").order_by(Autoridad.clave)
 
 
-"""
-    consulta = db.query(Autoridad, Distrito, Materia).select_from(Autoridad).join(Distrito).join(Materia)
-"""
-
-
 def get_autoridad(db: Session, autoridad_id: int):
     """Consultar una autoridad"""
     return db.query(Autoridad).get(autoridad_id)
