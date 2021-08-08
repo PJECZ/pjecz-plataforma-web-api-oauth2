@@ -14,4 +14,7 @@ def get_roles(db: Session) -> Any:
 
 def get_rol(db: Session, rol_id: int) -> Rol:
     """Consultar un rol por su id"""
-    return db.query(Rol).get(rol_id)
+    rol = db.query(Rol).get(rol_id)
+    if rol is None:
+        raise IndexError("No existe ese rol")
+    return rol

@@ -23,20 +23,23 @@ async def list_paginate(
 ):
     """Listado paginado de usuarios"""
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_usuarios(db, autoridad_id=autoridad_id))
 
 
 @router.get("/{usuario_id}", response_model=UsuarioOut)
-async def detail_from_id(
+async def detail(
     usuario_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de un usuario a partir de su id"""
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
-    usuario = get_usuario(db, usuario_id=usuario_id)
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        usuario = get_usuario(db, usuario_id=usuario_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return UsuarioOut(
         id=usuario.id,
         rol_id=usuario.rol_id,

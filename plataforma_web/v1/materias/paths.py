@@ -24,20 +24,23 @@ async def list_paginate(
 ):
     """Listado paginado de materias"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_materias(db))
 
 
 @router.get("/{materia_id}", response_model=MateriaOut)
-async def detail_from_id(
+async def detail(
     materia_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de una materia a partir de su id"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
-    materia = get_materia(db, materia_id)
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        materia = get_materia(db, materia_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return MateriaOut(
         id=materia.id,
         nombre=materia.nombre,

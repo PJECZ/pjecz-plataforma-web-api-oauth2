@@ -39,10 +39,10 @@ add_pagination(app)
 
 
 @app.get("/")
-async def root(token: str = Depends(oauth2_scheme)):
+async def root():  # token: str = Depends(oauth2_scheme)
     """Mensaje de Bienvenida"""
-    # return {"message": "Hola. Soy 'Plataforma Web API OAuth2' del Poder Judicial del Estado de Coahuila de Zaragoza."}
-    return {"token": token}
+    # return {"token": token}
+    return {"message": "Bienvenido a Plataforma Web API OAuth2 del Poder Judicial del Estado de Coahuila de Zaragoza."}
 
 
 @app.post("/token", response_model=Token)

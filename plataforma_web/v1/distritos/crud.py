@@ -17,4 +17,7 @@ def get_distritos(db: Session, solo_distritos: bool = False) -> Any:
 
 def get_distrito(db: Session, distrito_id: int) -> Distrito:
     """Consultar un distrito por su id"""
-    return db.query(Distrito).get(distrito_id)
+    distrito = db.query(Distrito).get(distrito_id)
+    if distrito is None:
+        raise IndexError("No existe ese distrito")
+    return distrito

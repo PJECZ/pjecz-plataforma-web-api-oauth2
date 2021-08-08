@@ -14,4 +14,7 @@ def get_materias(db: Session) -> Any:
 
 def get_materia(db: Session, materia_id: int) -> Materia:
     """Consultar un materia por su id"""
-    return db.query(Materia).get(materia_id)
+    materia = db.query(Materia).get(materia_id)
+    if materia is None:
+        raise IndexError("No existe esa materia")
+    return materia

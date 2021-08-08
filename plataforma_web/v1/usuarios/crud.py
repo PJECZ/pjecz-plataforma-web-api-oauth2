@@ -17,4 +17,7 @@ def get_usuarios(db: Session, autoridad_id: int = None) -> Any:
 
 def get_usuario(db: Session, usuario_id: int) -> Usuario:
     """Consultar un usuario por su id"""
-    return db.query(Usuario).get(usuario_id)
+    usuario = db.query(Usuario).get(usuario_id)
+    if usuario is None:
+        raise IndexError("No existe ese usuario")
+    return usuario

@@ -29,7 +29,7 @@ async def list_paginate(
 ):
     """Listado paginado de autoridades"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(
         get_autoridades(
             db,
@@ -50,13 +50,21 @@ async def detail_from_clave(
 ):
     """Detalle de una autoridad a partir de su clave"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
-    autoridad = get_autoridad_from_clave(db, clave=clave)
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        autoridad = get_autoridad_from_clave(db, clave=clave)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not Acceptable: {str(error)}") from error
     return AutoridadOut(
         id=autoridad.id,
         clave=autoridad.clave,
         distrito_id=autoridad.distrito_id,
+        distrito_nombre=autoridad.distrito_nombre,
+        distrito_nombre_corto=autoridad.distrito_nombre_corto,
         materia_id=autoridad.materia_id,
+        materia_nombre=autoridad.materia_nombre,
         descripcion=autoridad.descripcion,
         descripcion_corta=autoridad.descripcion_corta,
         es_jurisdiccional=autoridad.es_jurisdiccional,
@@ -74,13 +82,19 @@ async def detail(
 ):
     """Detalle de una autoridad a partir de su id"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
-    autoridad = get_autoridad(db, autoridad_id=autoridad_id)
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        autoridad = get_autoridad(db, autoridad_id=autoridad_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return AutoridadOut(
         id=autoridad.id,
         clave=autoridad.clave,
         distrito_id=autoridad.distrito_id,
+        distrito_nombre=autoridad.distrito_nombre,
+        distrito_nombre_corto=autoridad.distrito_nombre_corto,
         materia_id=autoridad.materia_id,
+        materia_nombre=autoridad.materia_nombre,
         descripcion=autoridad.descripcion,
         descripcion_corta=autoridad.descripcion_corta,
         es_jurisdiccional=autoridad.es_jurisdiccional,

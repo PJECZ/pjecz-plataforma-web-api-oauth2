@@ -25,7 +25,7 @@ async def list_paginate(
 ):
     """Listado paginado de distritos"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
+        raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_distritos(db, solo_distritos=solo_distritos))
 
 
@@ -37,8 +37,11 @@ async def detail(
 ):
     """Detalle de un distrito a partir de su id"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
-        raise HTTPException(status_code=403, detail="Forbidden (no tiene permiso).")
-    distrito = get_distrito(db, distrito_id=distrito_id)
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        distrito = get_distrito(db, distrito_id=distrito_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return DistritoOut(
         id=distrito.id,
         nombre=distrito.nombre,

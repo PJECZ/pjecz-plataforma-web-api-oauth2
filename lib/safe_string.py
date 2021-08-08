@@ -9,11 +9,11 @@ from unidecode import unidecode
 def safe_clave(input_str):
     """Safe clave"""
     if not isinstance(input_str, str):
-        raise ValueError
+        raise ValueError("La clave esta vacia")
     new_string = input_str.strip().upper()
     regexp = re.compile("^[A-Z0-9-]{2,16}$")
     if regexp.match(new_string) is None:
-        raise ValueError("clave incorrecta")
+        raise ValueError("La clave es incorrecta")
     return new_string
 
 
