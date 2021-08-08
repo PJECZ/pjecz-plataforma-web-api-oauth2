@@ -1,8 +1,8 @@
 """
-Autoridades v1.0, modelos
+Autoridades v1, modelos
 """
 from collections import OrderedDict
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Boolean
+from sqlalchemy import Boolean, Column, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from lib.database import Base
@@ -61,7 +61,7 @@ class Autoridad(Base, UniversalMixin):
     )
 
     # Hijos
-    # listas_de_acuerdos = relationship("ListaDeAcuerdo", back_populates="autoridad", lazy="noload")
+    listas_de_acuerdos = relationship("ListaDeAcuerdo", back_populates="autoridad", lazy="noload")
     usuarios = relationship("Usuario", back_populates="autoridad")
 
     @property

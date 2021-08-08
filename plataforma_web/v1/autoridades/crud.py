@@ -1,5 +1,5 @@
 """
-Autoridades v1.0, CRUD (create, read, update, and delete)
+Autoridades v1, CRUD (create, read, update, and delete)
 """
 from typing import Any
 from sqlalchemy.orm import Session

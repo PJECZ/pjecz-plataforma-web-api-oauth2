@@ -1,5 +1,5 @@
 """
-Autoridades v1.0, esquemas
+Autoridades v1, esquemas
 """
 from pydantic import BaseModel
 

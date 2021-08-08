@@ -1,5 +1,5 @@
 """
-Autoridades v1.0, rutas (paths)
+Autoridades v1, rutas (paths)
 """
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import LimitOffsetPage
@@ -56,7 +56,7 @@ async def detail_from_clave(
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
-        raise HTTPException(status_code=406, detail=f"Not Acceptable: {str(error)}") from error
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
     return AutoridadOut(
         id=autoridad.id,
         clave=autoridad.clave,

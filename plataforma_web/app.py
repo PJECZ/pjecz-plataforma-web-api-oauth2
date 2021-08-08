@@ -1,5 +1,5 @@
 """
-FastAPI App
+Plataforma Web API OAuth2
 """
 from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -13,35 +13,30 @@ from lib.database import get_db
 
 from plataforma_web.v1.autoridades.paths import router as v1_autoridades
 from plataforma_web.v1.distritos.paths import router as v1_distritos
+from plataforma_web.v1.listas_de_acuerdos.paths import router as v1_listas_de_acuerdos
 from plataforma_web.v1.materias.paths import router as v1_materias
 from plataforma_web.v1.roles.paths import router as v1_roles
 from plataforma_web.v1.usuarios.paths import router as v1_usuarios
 
-from plataforma_web.v1.usuarios.authentications import (
-    authenticate_user,
-    create_access_token,
-    get_current_active_user,
-    oauth2_scheme,
-)
+from plataforma_web.v1.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user
 from plataforma_web.v1.usuarios.schemas import Token, UsuarioInBD
 
 app = FastAPI()
 
-app.include_router(v1_autoridades, prefix=f"/v1/autoridades")
-app.include_router(v1_distritos, prefix=f"/v1/distritos")
-# app.include_router(listas_de_acuerdos, prefix=f"/v1/listas_de_acuerdos")
-# app.include_router(listas_de_acuerdos_acuerdos, prefix=f"/v1/listas_de_acuerdos_acuerdos")
-app.include_router(v1_materias, prefix=f"/v1/materias")
-app.include_router(v1_roles, prefix=f"/v1/roles")
-app.include_router(v1_usuarios, prefix=f"/v1/usuarios")
+app.include_router(v1_autoridades, prefix="/v1/autoridades")
+app.include_router(v1_distritos, prefix="/v1/distritos")
+app.include_router(v1_listas_de_acuerdos, prefix="/v1/listas_de_acuerdos")
+# app.include_router(listas_de_acuerdos_acuerdos, prefix="/v1/listas_de_acuerdos_acuerdos")
+app.include_router(v1_materias, prefix="/v1/materias")
+app.include_router(v1_roles, prefix="/v1/roles")
+app.include_router(v1_usuarios, prefix="/v1/usuarios")
 
 add_pagination(app)
 
 
 @app.get("/")
-async def root():  # token: str = Depends(oauth2_scheme)
+async def root():
     """Mensaje de Bienvenida"""
-    # return {"token": token}
     return {"message": "Bienvenido a Plataforma Web API OAuth2 del Poder Judicial del Estado de Coahuila de Zaragoza."}
 
 
