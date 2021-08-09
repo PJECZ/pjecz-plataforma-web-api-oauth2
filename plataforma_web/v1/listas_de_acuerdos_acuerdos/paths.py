@@ -53,7 +53,7 @@ async def detail(
 
 
 @router.post("", response_model=ListaDeAcuerdoAcuerdoOut)
-async def insert(
+async def new(
     acuerdo: ListaDeAcuerdoAcuerdoIn,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
