@@ -10,7 +10,6 @@ DB_NAME = os.environ.get("DB_NAME", "pjecz_plataforma_web")
 DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
 DB_SOCKET_DIR = os.environ.get("DB_SOCKET_DIR", "/cloudsql")
 
-
 # MySQL en Google Cloud
 CLOUD_SQL_CONNECTION_NAME = os.environ.get("CLOUD_SQL_CONNECTION_NAME", "none")
 SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@/{DB_NAME}?unix_socket={DB_SOCKET_DIR}/{CLOUD_SQL_CONNECTION_NAME}"

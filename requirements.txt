@@ -1,6 +1,7 @@
 black
 click
 fastapi
+fastapi-pagination[sqlalchemy]
 gunicorn
 httptools
 passlib[bcrypt]

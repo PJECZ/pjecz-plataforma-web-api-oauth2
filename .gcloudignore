@@ -1,0 +1,15 @@
+.bashrc
+.directory
+.env
+.gcloudignore
+.git
+.gitignore
+.vscode
+.DS_Store
+*.py[cod]
+*.sqlite3
+__pycache__/
+/instance
+/notebooks
+/sql
+/venv
