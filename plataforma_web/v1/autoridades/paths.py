@@ -74,7 +74,7 @@ async def detail_from_clave(
     )
 
 
-@router.get("/{autoridad_id}", response_model=AutoridadOut)
+@router.get("/id/{autoridad_id}", response_model=AutoridadOut)
 async def detail(
     autoridad_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

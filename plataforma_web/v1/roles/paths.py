@@ -28,7 +28,7 @@ async def list_paginate(
     return paginate(get_roles(db))
 
 
-@router.get("/{rol_id}", response_model=RolOut)
+@router.get("/id/{rol_id}", response_model=RolOut)
 async def detail(
     rol_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

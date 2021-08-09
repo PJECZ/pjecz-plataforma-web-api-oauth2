@@ -35,7 +35,7 @@ async def list_paginate(
     return paginate(consulta)
 
 
-@router.get("/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
+@router.get("/id/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
 async def detail(
     lista_de_acuerdo_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

@@ -29,7 +29,7 @@ async def list_paginate(
     return paginate(get_distritos(db, solo_distritos=solo_distritos))
 
 
-@router.get("/{distrito_id}", response_model=DistritoOut)
+@router.get("/id/{distrito_id}", response_model=DistritoOut)
 async def detail(
     distrito_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

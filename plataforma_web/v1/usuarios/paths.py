@@ -27,7 +27,7 @@ async def list_paginate(
     return paginate(get_usuarios(db, autoridad_id=autoridad_id))
 
 
-@router.get("/{usuario_id}", response_model=UsuarioOut)
+@router.get("/id/{usuario_id}", response_model=UsuarioOut)
 async def detail(
     usuario_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

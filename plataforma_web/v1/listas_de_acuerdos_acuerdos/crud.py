@@ -18,7 +18,7 @@ def get_acuerdos(
     if lista_de_acuerdo_id:
         lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)  # Si no se encuentra provoca una excepción
         consulta = consulta.filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
-    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdoAcuerdo.ninguno)
+    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdoAcuerdo.folio)
 
 
 def get_acuerdo(db: Session, lista_de_acuerdo_acuerdo_id: int) -> ListaDeAcuerdoAcuerdo:

@@ -45,7 +45,7 @@ async def list_paginate(
     return paginate(consulta)
 
 
-@router.get("/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
+@router.get("/id/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
 async def detail(
     lista_de_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -61,9 +61,11 @@ async def detail(
     return ListaDeAcuerdoOut(
         id=lista_de_acuerdo.id,
         distrito_id=lista_de_acuerdo.distrito_id,
-        distrito=lista_de_acuerdo.distrito_nombre,
+        distrito_nombre=lista_de_acuerdo.distrito_nombre,
+        distrito_nombre_corto=lista_de_acuerdo.distrito_nombre_corto,
         autoridad_id=lista_de_acuerdo.autoridad_id,
-        autoridad=lista_de_acuerdo.autoridad_descripcion,
+        autoridad_descripcion=lista_de_acuerdo.autoridad_descripcion,
+        autoridad_descripcion_corta=lista_de_acuerdo.autoridad_descripcion_corta,
         fecha=lista_de_acuerdo.fecha,
         descripcion=lista_de_acuerdo.descripcion,
         archivo=lista_de_acuerdo.archivo,

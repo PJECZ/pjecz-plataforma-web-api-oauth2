@@ -28,7 +28,7 @@ async def list_paginate(
     return paginate(get_materias(db))
 
 
-@router.get("/{materia_id}", response_model=MateriaOut)
+@router.get("/id/{materia_id}", response_model=MateriaOut)
 async def detail(
     materia_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
