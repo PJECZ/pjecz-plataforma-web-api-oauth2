@@ -5,7 +5,9 @@ from datetime import date
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.safe_string import safe_string
 from .models import ListaDeAcuerdo
+from .schemas import ListaDeAcuerdoIn
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 
 
@@ -42,3 +44,35 @@ def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int) -> ListaDeAcuerd
     if lista_de_acuerdo is None:
         raise IndexError
     return lista_de_acuerdo
+
+
+def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> ListaDeAcuerdo:
+    """Insertar una lista de acuerdos"""
+    # Validar autoridad
+    autoridad = get_autoridad(db, lista_de_acuerdo.autoridad_id)  # Si no se encuentra o no es válido, provoca una excepción
+    if autoridad.estatus != "A":
+        raise ValueError("No es activa la autoridad, fue eliminada.")
+    if not autoridad.distrito.es_distrito_judicial:
+        raise ValueError("No está la autoridad en un distrito judicial.")
+    if not autoridad.es_jurisdiccional:
+        raise ValueError("No es jurisdiccional la autoridad.")
+    # TODO: Validar fecha, rechazar muy viejas o en el futuro
+    if lista_de_acuerdo.fecha is None:
+        fecha = date.today()
+    else:
+        fecha = lista_de_acuerdo.fecha
+    # TODO: Si existe con esa fecha debe hacer un reemplazo
+    # Validar descripcion
+    if lista_de_acuerdo.descripcion == "":
+        descripcion = "LISTA DE ACUERDOS"
+    else:
+        descripcion = safe_string(lista_de_acuerdo.descripcion)
+    # Insertar
+    resultado = ListaDeAcuerdo(
+        autoridad=autoridad,
+        fecha=fecha,
+        descripcion=descripcion,
+    )
+    db.add(resultado)
+    db.commit()
+    return resultado
