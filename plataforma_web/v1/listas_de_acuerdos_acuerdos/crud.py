@@ -36,7 +36,11 @@ def insert_acuerdo(db: Session, acuerdo: ListaDeAcuerdoAcuerdoIn) -> ListaDeAcue
     lista_de_acuerdo = get_lista_de_acuerdo(db, acuerdo.lista_de_acuerdo_id)  # Si no se encuentra provoca una excepción
     if lista_de_acuerdo.estatus != "A":
         raise ValueError("No es activa la lista de acuerdos, fue eliminada.")
-    # TODO: Evitar duplicidad revisando las referencias
+    # Evitar la duplicidad de referencias eliminando el acuerdo anterior
+    existe_esa_referencia = db.query(ListaDeAcuerdoAcuerdo).filter_by(referencia=acuerdo.referencia).first()
+    if existe_esa_referencia:
+        existe_esa_referencia.estatus = "B"
+        db.delete(existe_esa_referencia)
     # Insertar
     resultado = ListaDeAcuerdoAcuerdo(
         lista_de_acuerdo=lista_de_acuerdo,

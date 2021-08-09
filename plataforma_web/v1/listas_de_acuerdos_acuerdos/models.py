@@ -28,7 +28,7 @@ class ListaDeAcuerdoAcuerdo(Base, UniversalMixin):
     demandado = Column(String(256), nullable=False, default="")
     tipo_acuerdo = Column(String(256), nullable=False, default="")
     tipo_juicio = Column(String(256), nullable=False, default="")
-    referencia = Column(Integer(), nullable=False)
+    referencia = Column(Integer(), nullable=False, unique=True)
 
     @property
     def fecha(self):

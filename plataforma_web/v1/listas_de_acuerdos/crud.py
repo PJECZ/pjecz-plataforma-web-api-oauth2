@@ -1,7 +1,7 @@
 """
 Listas de Acuerdos v1, CRUD (create, read, update, and delete)
 """
-from datetime import date
+from datetime import date, datetime, timedelta
 from typing import Any
 from sqlalchemy.orm import Session
 
@@ -9,6 +9,8 @@ from lib.safe_string import safe_string
 from .models import ListaDeAcuerdo
 from .schemas import ListaDeAcuerdoIn
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
+
+LIMITE_DIAS = 7
 
 
 def get_listas_de_acuerdos(
@@ -18,7 +20,7 @@ def get_listas_de_acuerdos(
     fecha: date = None,
     anio: int = None,
 ) -> Any:
-    """ Consultar las listas de acuerdos activas """
+    """Consultar las listas de acuerdos activas"""
     consulta = db.query(ListaDeAcuerdo)
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)  # Si no se encuentra provoca una excepción
@@ -39,7 +41,7 @@ def get_listas_de_acuerdos(
 
 
 def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int) -> ListaDeAcuerdo:
-    """ Consultar una lista de acuerdo por su id """
+    """Consultar una lista de acuerdo por su id"""
     lista_de_acuerdo = db.query(ListaDeAcuerdo).get(lista_de_acuerdo_id)
     if lista_de_acuerdo is None:
         raise IndexError
@@ -56,12 +58,21 @@ def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> 
         raise ValueError("No está la autoridad en un distrito judicial.")
     if not autoridad.es_jurisdiccional:
         raise ValueError("No es jurisdiccional la autoridad.")
-    # TODO: Validar fecha, rechazar muy viejas o en el futuro
+    # Validar fecha
+    hoy = date.today()
+    hoy_dt = datetime(year=hoy.year, month=hoy.month, day=hoy.day)
+    limite_dt = hoy_dt + timedelta(days=-LIMITE_DIAS)
     if lista_de_acuerdo.fecha is None:
-        fecha = date.today()
+        fecha = hoy
     else:
         fecha = lista_de_acuerdo.fecha
-    # TODO: Si existe con esa fecha debe hacer un reemplazo
+        if not limite_dt <= datetime(year=fecha.year, month=fecha.month, day=fecha.day) <= hoy_dt:
+            raise ValueError("Fecha fuera de rango.")
+    # Si existe una lista de acuerdos con esa fecha se debe dar de baja
+    existe_esa_lista = db.query(ListaDeAcuerdo).filter_by(autoridad_id=autoridad.id).filter_by(fecha=fecha).filter_by(estatus="A").first()
+    if existe_esa_lista:
+        existe_esa_lista.estatus = "B"
+        db.add(existe_esa_lista)
     # Validar descripcion
     if lista_de_acuerdo.descripcion == "":
         descripcion = "LISTA DE ACUERDOS"
