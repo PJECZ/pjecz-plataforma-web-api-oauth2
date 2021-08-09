@@ -57,21 +57,7 @@ async def detail_from_clave(
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return AutoridadOut(
-        id=consulta.id,
-        clave=consulta.clave,
-        distrito_id=consulta.distrito_id,
-        distrito_nombre=consulta.distrito_nombre,
-        distrito_nombre_corto=consulta.distrito_nombre_corto,
-        materia_id=consulta.materia_id,
-        materia_nombre=consulta.materia_nombre,
-        descripcion=consulta.descripcion,
-        descripcion_corta=consulta.descripcion_corta,
-        es_jurisdiccional=consulta.es_jurisdiccional,
-        es_notaria=consulta.es_notaria,
-        organo_jurisdiccional=consulta.organo_jurisdiccional,
-        audiencia_categoria=consulta.audiencia_categoria,
-    )
+    return AutoridadOut.from_orm(consulta)
 
 
 @router.get("/id/{autoridad_id}", response_model=AutoridadOut)
@@ -87,18 +73,4 @@ async def detail(
         consulta = get_autoridad(db, autoridad_id=autoridad_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return AutoridadOut(
-        id=consulta.id,
-        clave=consulta.clave,
-        distrito_id=consulta.distrito_id,
-        distrito_nombre=consulta.distrito_nombre,
-        distrito_nombre_corto=consulta.distrito_nombre_corto,
-        materia_id=consulta.materia_id,
-        materia_nombre=consulta.materia_nombre,
-        descripcion=consulta.descripcion,
-        descripcion_corta=consulta.descripcion_corta,
-        es_jurisdiccional=consulta.es_jurisdiccional,
-        es_notaria=consulta.es_notaria,
-        organo_jurisdiccional=consulta.organo_jurisdiccional,
-        audiencia_categoria=consulta.audiencia_categoria,
-    )
+    return AutoridadOut.from_orm(consulta)

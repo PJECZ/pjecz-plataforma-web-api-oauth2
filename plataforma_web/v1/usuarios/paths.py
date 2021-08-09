@@ -8,9 +8,9 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from plataforma_web.v1.roles.models import Permiso
-from .authentications import get_current_active_user
-from .crud import get_usuarios, get_usuario
-from .schemas import UsuarioOut, UsuarioInBD
+from plataforma_web.v1.usuarios.authentications import get_current_active_user
+from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
+from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInBD
 
 router = APIRouter()
 
@@ -40,18 +40,4 @@ async def detail(
         consulta = get_usuario(db, usuario_id=usuario_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return UsuarioOut(
-        id=consulta.id,
-        rol_id=consulta.rol_id,
-        rol_nombre=consulta.rol_nombre,
-        distrito_id=consulta.distrito_id,
-        distrito_nombre=consulta.distrito_nombre,
-        distrito_nombre_corto=consulta.distrito_nombre_corto,
-        autoridad_id=consulta.autoridad_id,
-        autoridad_descripcion=consulta.autoridad_descripcion,
-        autoridad_descripcion_corta=consulta.autoridad_descripcion_corta,
-        email=consulta.email,
-        nombres=consulta.nombres,
-        apellido_paterno=consulta.apellido_paterno,
-        apellido_materno=consulta.apellido_materno,
-    )
+    return UsuarioOut.from_orm(consulta)

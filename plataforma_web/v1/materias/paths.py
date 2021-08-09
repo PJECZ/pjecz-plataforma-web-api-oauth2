@@ -41,7 +41,4 @@ async def detail(
         consulta = get_materia(db, materia_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return MateriaOut(
-        id=consulta.id,
-        nombre=consulta.nombre,
-    )
+    return MateriaOut.from_orm(consulta)

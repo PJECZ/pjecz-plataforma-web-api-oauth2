@@ -42,9 +42,4 @@ async def detail(
         consulta = get_distrito(db, distrito_id=distrito_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return DistritoOut(
-        id=consulta.id,
-        nombre=consulta.nombre,
-        nombre_corto=consulta.nombre_corto,
-        es_distrito_judicial=consulta.es_distrito_judicial,
-    )
+    return DistritoOut.from_orm(consulta)

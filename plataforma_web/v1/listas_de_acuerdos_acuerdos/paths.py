@@ -1,7 +1,6 @@
 """
 Listas de Acuerdos, Acuerdos v1, rutas (paths)
 """
-from plataforma_web.v1.listas_de_acuerdos_acuerdos.models import ListaDeAcuerdoAcuerdo
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -49,18 +48,7 @@ async def detail(
         consulta = get_acuerdo(db, lista_de_acuerdo_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return ListaDeAcuerdoAcuerdoOut(
-        id=consulta.id,
-        lista_de_acuerdo_id=consulta.lista_de_acuerdo_id,
-        fecha=consulta.fecha,
-        folio=consulta.folio,
-        expediente=consulta.expediente,
-        actor=consulta.actor,
-        demandado=consulta.demandado,
-        tipo_acuerdo=consulta.tipo_acuerdo,
-        tipo_juicio=consulta.tipo_juicio,
-        referencia=consulta.referencia,
-    )
+    return ListaDeAcuerdoAcuerdoOut.from_orm(consulta)
 
 
 @router.post("", response_model=ListaDeAcuerdoAcuerdoOut)
@@ -78,15 +66,4 @@ async def insert(
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return ListaDeAcuerdoAcuerdo(
-        id=resultado.id,
-        lista_de_acuerdo_id=resultado.lista_de_acuerdo_id,
-        fecha=resultado.fecha,
-        folio=resultado.folio,
-        expediente=resultado.expediente,
-        actor=resultado.actor,
-        demandado=resultado.demandado,
-        tipo_acuerdo=resultado.tipo_acuerdo,
-        tipo_juicio=resultado.tipo_juicio,
-        referencia=resultado.referencia,
-    )
+    return ListaDeAcuerdoAcuerdoOut.from_orm(resultado)

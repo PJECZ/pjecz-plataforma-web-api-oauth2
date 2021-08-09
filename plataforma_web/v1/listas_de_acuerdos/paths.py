@@ -58,19 +58,7 @@ async def detail(
         consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return ListaDeAcuerdoOut(
-        id=consulta.id,
-        distrito_id=consulta.distrito_id,
-        distrito_nombre=consulta.distrito_nombre,
-        distrito_nombre_corto=consulta.distrito_nombre_corto,
-        autoridad_id=consulta.autoridad_id,
-        autoridad_descripcion=consulta.autoridad_descripcion,
-        autoridad_descripcion_corta=consulta.autoridad_descripcion_corta,
-        fecha=consulta.fecha,
-        descripcion=consulta.descripcion,
-        archivo=consulta.archivo,
-        url=consulta.url,
-    )
+    return ListaDeAcuerdoOut.from_orm(consulta)
 
 
 @router.post("", response_model=ListaDeAcuerdoOut)
@@ -88,16 +76,4 @@ async def new(
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return ListaDeAcuerdoOut(
-        id=resultado.id,
-        distrito_id=resultado.distrito_id,
-        distrito_nombre=resultado.distrito_nombre,
-        distrito_nombre_corto=resultado.distrito_nombre_corto,
-        autoridad_id=resultado.autoridad_id,
-        autoridad_descripcion=resultado.autoridad_descripcion,
-        autoridad_descripcion_corta=resultado.autoridad_descripcion_corta,
-        fecha=resultado.fecha,
-        descripcion=resultado.descripcion,
-        archivo=resultado.archivo,
-        url=resultado.url,
-    )
+    return ListaDeAcuerdoOut.from_orm(resultado)

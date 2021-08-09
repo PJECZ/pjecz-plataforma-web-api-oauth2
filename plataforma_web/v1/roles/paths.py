@@ -41,7 +41,4 @@ async def detail(
         consulta = get_rol(db, rol_id=rol_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return RolOut(
-        id=consulta.id,
-        nombre=consulta.nombre,
-    )
+    return RolOut.from_orm(consulta)
