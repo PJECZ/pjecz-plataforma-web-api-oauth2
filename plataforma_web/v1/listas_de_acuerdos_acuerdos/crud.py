@@ -1,7 +1,6 @@
 """
 Listas de Acuerdos, Acuerdos v1, CRUD (create, read, update, and delete)
 """
-from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
 from typing import Any
 from sqlalchemy.orm import Session
 
@@ -10,6 +9,7 @@ from lib.safe_string import safe_string
 from .models import ListaDeAcuerdoAcuerdo
 from .schemas import ListaDeAcuerdoAcuerdoIn
 from ..listas_de_acuerdos.crud import get_lista_de_acuerdo
+from ..listas_de_acuerdos.models import ListaDeAcuerdo
 
 
 def get_acuerdos(
@@ -39,7 +39,7 @@ def insert_acuerdo(db: Session, acuerdo: ListaDeAcuerdoAcuerdoIn) -> ListaDeAcue
     if lista_de_acuerdo.estatus != "A":
         raise ValueError("No es activa la lista de acuerdos, fue eliminada")
     # Evitar la duplicidad, en la misma autoridad no deben repetirse las referencias
-    existe_acuerdos = db.query(ListaDeAcuerdoAcuerdo, ListaDeAcuerdo).join(ListaDeAcuerdo).filter(ListaDeAcuerdo.autoridad == lista_de_acuerdo.autoridad).filter(ListaDeAcuerdoAcuerdo.referencia == acuerdo.referencia).first()
+    existe_acuerdos = db.query(ListaDeAcuerdoAcuerdo, ListaDeAcuerdo).join(ListaDeAcuerdo).filter(ListaDeAcuerdo.autoridad_id == lista_de_acuerdo.autoridad_id).filter(ListaDeAcuerdoAcuerdo.referencia == acuerdo.referencia).first()
     if existe_acuerdos is not None:
         raise AlredyExistsError("No se permite insertar el acuerdo porque la autoridad ya tiene uno con esa referencia")
     # Insertar
