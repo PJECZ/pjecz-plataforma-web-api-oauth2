@@ -1,7 +1,6 @@
 """
-Listas de Acuerdos v1, rutas (paths)
+Listas de Acuerdos, Acuerdos v1, rutas (paths)
 """
-from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -12,32 +11,23 @@ from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
-from .crud import get_listas_de_acuerdos, get_lista_de_acuerdo
-from .schemas import ListaDeAcuerdoOut
+from .crud import get_acuerdos, get_acuerdo
+from .schemas import ListaDeAcuerdoAcuerdoOut
 
 router = APIRouter()
 
 
-@router.get("", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
+@router.get("", response_model=LimitOffsetPage[ListaDeAcuerdoAcuerdoOut])
 async def list_paginate(
-    autoridad_id: int = None,
-    autoridad_clave: str = None,
-    fecha: date = None,
-    anio: int = None,
+    lista_de_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado paginado de listas_de_acuerdos"""
+    """Listado paginado de acuerdos"""
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_listas_de_acuerdos(
-            db,
-            autoridad_id=autoridad_id,
-            autoridad_clave=autoridad_clave,
-            fecha=fecha,
-            anio=anio,
-        )
+        consulta = get_acuerdos(db, lista_de_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
@@ -45,27 +35,28 @@ async def list_paginate(
     return paginate(consulta)
 
 
-@router.get("/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
+@router.get("/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
 async def detail(
-    lista_de_acuerdo_id: int,
+    lista_de_acuerdo_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Detalle de una lista_de_acuerdo a partir de su id"""
+    """Detalle de una acuerdo a partir de su id"""
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
+        acuerdo = get_acuerdo(db, lista_de_acuerdo_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return ListaDeAcuerdoOut(
-        id=lista_de_acuerdo.id,
-        distrito_id=lista_de_acuerdo.distrito_id,
-        distrito=lista_de_acuerdo.distrito_nombre,
-        autoridad_id=lista_de_acuerdo.autoridad_id,
-        autoridad=lista_de_acuerdo.autoridad_descripcion,
-        fecha=lista_de_acuerdo.fecha,
-        descripcion=lista_de_acuerdo.descripcion,
-        archivo=lista_de_acuerdo.archivo,
-        url=lista_de_acuerdo.url,
+    return ListaDeAcuerdoAcuerdoOut(
+        id=acuerdo.id,
+        lista_de_acuerdo_id=acuerdo.lista_de_acuerdo_id,
+        folio=acuerdo.folio,
+        expediente=acuerdo.expediente,
+        actor=acuerdo.actor,
+        demandado=acuerdo.demandado,
+        tipo_acuerdo=acuerdo.tipo_acuerdo,
+        tipo_juicio=acuerdo.tipo_juicio,
+        referencia=acuerdo.referencia,
+        fecha=acuerdo.fecha,
     )

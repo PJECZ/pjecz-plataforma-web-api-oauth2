@@ -31,7 +31,7 @@
             "",
             "\tdef __repr__(self):",
             "\t\t\"\"\" Representación \"\"\"",
-            "\t\treturn f\"<${3:Clase} {self.clave}>\"",
+            "\t\treturn f\"<${3:Clase} {self.descripcion}>\"",
             ""
         ],
         "description": "Contenido para models.py"

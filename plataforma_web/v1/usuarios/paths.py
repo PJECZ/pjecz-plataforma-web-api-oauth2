@@ -43,7 +43,13 @@ async def detail(
     return UsuarioOut(
         id=usuario.id,
         rol_id=usuario.rol_id,
+        rol_nombre=usuario.rol.nombre,
+        distrito_id=usuario.autoridad.distrito_id,
+        distrito_nombre=usuario.autoridad.distrito_nombre,
+        distrito_nombre_corto=usuario.autoridad.distrito_nombre_corto,
         autoridad_id=usuario.autoridad_id,
+        autoridad_descripcion=usuario.autoridad.descripcion,
+        autoridad_descripcion_corta=usuario.autoridad.descripcion_corta,
         email=usuario.email,
         nombres=usuario.nombres,
         apellido_paterno=usuario.apellido_paterno,

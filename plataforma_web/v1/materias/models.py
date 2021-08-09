@@ -21,3 +21,7 @@ class Materia(Base, UniversalMixin):
 
     # Hijos
     autoridades = relationship("Autoridad", back_populates="materia")
+
+    def __repr__(self):
+        """Representación"""
+        return f"<Rol {self.nombre}>"

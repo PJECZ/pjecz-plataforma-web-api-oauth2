@@ -5,13 +5,15 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from .models import Usuario
+from ..autoridades.crud import get_autoridad
 
 
 def get_usuarios(db: Session, autoridad_id: int = None) -> Any:
     """Consultar los usuarios activos"""
     consulta = db.query(Usuario)
     if autoridad_id:
-        consulta = consulta.filter_by(autoridad_id=autoridad_id)
+        autoridad = get_autoridad(db, autoridad_id)  # Si no se encuentra provoca una excepción
+        consulta = consulta.filter(Usuario.autoridad == autoridad)
     return consulta.order_by(Usuario.email)
 
 

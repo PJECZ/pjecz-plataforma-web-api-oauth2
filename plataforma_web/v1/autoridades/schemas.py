@@ -23,4 +23,5 @@ class AutoridadOut(BaseModel):
 
     class Config:
         """SQLAlchemy config"""
+
         orm_mode = True

@@ -27,6 +27,9 @@ class ListaDeAcuerdo(Base, UniversalMixin):
     archivo = Column(String(256), default="")
     url = Column(String(512), default="")
 
+    # Hijos
+    listas_de_acuerdos_acuerdos = relationship('ListaDeAcuerdoAcuerdo', back_populates='lista_de_acuerdo')
+
     @property
     def distrito_id(self):
         """Distrito id"""
@@ -54,4 +57,4 @@ class ListaDeAcuerdo(Base, UniversalMixin):
 
     def __repr__(self):
         """Representación"""
-        return f"<ListaDeAcuerdo {self.clave}>"
+        return f"<ListaDeAcuerdo {self.fecha}>"

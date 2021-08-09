@@ -19,10 +19,10 @@ def get_listas_de_acuerdos(
     """ Consultar las listas de acuerdos activas """
     consulta = db.query(ListaDeAcuerdo)
     if autoridad_id:
-        autoridad = get_autoridad(db, autoridad_id)
-        consulta = consulta.filter_by(autoridad_id=autoridad.id)
+        autoridad = get_autoridad(db, autoridad_id)  # Si no se encuentra provoca una excepción
+        consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     elif autoridad_clave:
-        autoridad = get_autoridad_from_clave(db, autoridad_clave)
+        autoridad = get_autoridad_from_clave(db, autoridad_clave)  # Si no se encuentra o no es válido, provoca una excepción
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():

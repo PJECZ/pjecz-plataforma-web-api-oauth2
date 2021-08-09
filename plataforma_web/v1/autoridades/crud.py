@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from lib.safe_string import safe_clave, safe_string
 from .models import Autoridad
+from ..distritos.crud import get_distrito
+from ..materias.crud import get_materia
 
 
 def get_autoridades(
@@ -19,9 +21,11 @@ def get_autoridades(
     """Consultar las autoridades activas"""
     consulta = db.query(Autoridad)
     if distrito_id:
-        consulta = consulta.filter_by(distrito_id=distrito_id)
+        distrito = get_distrito(db, distrito_id)  # Si no se encuentra provoca una excepción
+        consulta = consulta.filter(Autoridad.distrito == distrito)
     if materia_id:
-        consulta = consulta.filter_by(materia_id=materia_id)
+        materia = get_materia(db, materia_id)  # Si no se encuentra provoca una excepción
+        consulta = consulta.filter_by(Autoridad.materia == materia)
     organo_jurisdiccional = safe_string(organo_jurisdiccional)
     if organo_jurisdiccional in Autoridad.ORGANOS_JURISDICCIONALES:
         consulta = consulta.filter_by(organo_jurisdiccional=organo_jurisdiccional)

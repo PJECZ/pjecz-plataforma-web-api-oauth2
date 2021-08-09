@@ -10,7 +10,13 @@ class UsuarioOut(BaseModel):
 
     id: int
     rol_id: int
+    rol_nombre: str
+    distrito_id: int
+    distrito_nombre: str
+    distrito_nombre_corto: str
     autoridad_id: int
+    autoridad_descripcion: str
+    autoridad_descripcion_corta: str
     email: str
     nombres: str
     apellido_paterno: str
@@ -18,6 +24,7 @@ class UsuarioOut(BaseModel):
 
     class Config:
         """SQLAlchemy config"""
+
         orm_mode = True
 
 

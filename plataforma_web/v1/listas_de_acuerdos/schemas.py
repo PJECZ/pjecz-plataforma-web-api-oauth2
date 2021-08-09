@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 
 class ListaDeAcuerdoIn(BaseModel):
-    """ Esquema para recibir lista de acuerdo """
+    """Esquema para recibir lista de acuerdo"""
 
     autoridad_id: int
     fecha: date
@@ -15,7 +15,7 @@ class ListaDeAcuerdoIn(BaseModel):
 
 
 class ListaDeAcuerdoOut(ListaDeAcuerdoIn):
-    """ Esquema para entregar lista de acuerdo """
+    """Esquema para entregar lista de acuerdo"""
 
     id: int
     distrito_id: int
@@ -27,5 +27,6 @@ class ListaDeAcuerdoOut(ListaDeAcuerdoIn):
     url: Optional[str] = ""
 
     class Config:
-        """ SQLAlchemy config """
+        """SQLAlchemy config"""
+
         orm_mode = True

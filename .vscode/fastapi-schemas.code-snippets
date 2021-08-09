@@ -11,7 +11,7 @@
             "from pydantic import BaseModel",
             "",
             "",
-            "class ${3:EsquemaOUT}(BaseModel):",
+            "class ${3:EsquemaOut}(BaseModel):",
             "\t\"\"\" Esquema para entregar ${4:singular} \"\"\"",
             "",
             "\tid: int",
@@ -28,6 +28,7 @@
             "",
             "\tclass Config:",
             "\t\t\"\"\" SQLAlchemy config \"\"\"",
+            "",
             "\t\torm_mode = True",
             ""
         ],

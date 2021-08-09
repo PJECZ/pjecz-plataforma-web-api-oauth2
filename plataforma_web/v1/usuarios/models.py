@@ -29,6 +29,36 @@ class Usuario(Base, UniversalMixin):
     apellido_materno = Column(String(256))
     contrasena = Column(String(256), nullable=False)
 
+    @property
+    def rol_nombre(self):
+        """Rol nombre"""
+        return self.rol.nombre
+
+    @property
+    def distrito_id(self):
+        """Distrito id"""
+        return self.autoridad.distrito_id
+
+    @property
+    def distrito_nombre(self):
+        """Distrito nombre"""
+        return self.autoridad.distrito.nombre
+
+    @property
+    def distrito_nombre_corto(self):
+        """Distrito nombre corto"""
+        return self.autoridad.distrito.nombre_corto
+
+    @property
+    def autoridad_descripcion(self):
+        """Autoridad descripcion"""
+        return self.autoridad.descripcion
+
+    @property
+    def autoridad_descripcion_corta(self):
+        """Autoridad descripcion corta"""
+        return self.autoridad.descripcion_corta
+
     def __repr__(self):
         """Representación"""
         return f"<Usuario {self.email}>"

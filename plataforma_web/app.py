@@ -14,6 +14,7 @@ from lib.database import get_db
 from plataforma_web.v1.autoridades.paths import router as v1_autoridades
 from plataforma_web.v1.distritos.paths import router as v1_distritos
 from plataforma_web.v1.listas_de_acuerdos.paths import router as v1_listas_de_acuerdos
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import router as v1_listas_de_acuerdos_acuerdos
 from plataforma_web.v1.materias.paths import router as v1_materias
 from plataforma_web.v1.roles.paths import router as v1_roles
 from plataforma_web.v1.usuarios.paths import router as v1_usuarios
@@ -26,7 +27,7 @@ app = FastAPI()
 app.include_router(v1_autoridades, prefix="/v1/autoridades")
 app.include_router(v1_distritos, prefix="/v1/distritos")
 app.include_router(v1_listas_de_acuerdos, prefix="/v1/listas_de_acuerdos")
-# app.include_router(listas_de_acuerdos_acuerdos, prefix="/v1/listas_de_acuerdos_acuerdos")
+app.include_router(v1_listas_de_acuerdos_acuerdos, prefix="/v1/listas_de_acuerdos_acuerdos")
 app.include_router(v1_materias, prefix="/v1/materias")
 app.include_router(v1_roles, prefix="/v1/roles")
 app.include_router(v1_usuarios, prefix="/v1/usuarios")
