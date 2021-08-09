@@ -52,25 +52,25 @@ async def detail_from_clave(
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        autoridad = get_autoridad_from_clave(db, clave=clave)
+        consulta = get_autoridad_from_clave(db, clave=clave)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
     return AutoridadOut(
-        id=autoridad.id,
-        clave=autoridad.clave,
-        distrito_id=autoridad.distrito_id,
-        distrito_nombre=autoridad.distrito_nombre,
-        distrito_nombre_corto=autoridad.distrito_nombre_corto,
-        materia_id=autoridad.materia_id,
-        materia_nombre=autoridad.materia_nombre,
-        descripcion=autoridad.descripcion,
-        descripcion_corta=autoridad.descripcion_corta,
-        es_jurisdiccional=autoridad.es_jurisdiccional,
-        es_notaria=autoridad.es_notaria,
-        organo_jurisdiccional=autoridad.organo_jurisdiccional,
-        audiencia_categoria=autoridad.audiencia_categoria,
+        id=consulta.id,
+        clave=consulta.clave,
+        distrito_id=consulta.distrito_id,
+        distrito_nombre=consulta.distrito_nombre,
+        distrito_nombre_corto=consulta.distrito_nombre_corto,
+        materia_id=consulta.materia_id,
+        materia_nombre=consulta.materia_nombre,
+        descripcion=consulta.descripcion,
+        descripcion_corta=consulta.descripcion_corta,
+        es_jurisdiccional=consulta.es_jurisdiccional,
+        es_notaria=consulta.es_notaria,
+        organo_jurisdiccional=consulta.organo_jurisdiccional,
+        audiencia_categoria=consulta.audiencia_categoria,
     )
 
 
@@ -84,21 +84,21 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        autoridad = get_autoridad(db, autoridad_id=autoridad_id)
+        consulta = get_autoridad(db, autoridad_id=autoridad_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return AutoridadOut(
-        id=autoridad.id,
-        clave=autoridad.clave,
-        distrito_id=autoridad.distrito_id,
-        distrito_nombre=autoridad.distrito_nombre,
-        distrito_nombre_corto=autoridad.distrito_nombre_corto,
-        materia_id=autoridad.materia_id,
-        materia_nombre=autoridad.materia_nombre,
-        descripcion=autoridad.descripcion,
-        descripcion_corta=autoridad.descripcion_corta,
-        es_jurisdiccional=autoridad.es_jurisdiccional,
-        es_notaria=autoridad.es_notaria,
-        organo_jurisdiccional=autoridad.organo_jurisdiccional,
-        audiencia_categoria=autoridad.audiencia_categoria,
+        id=consulta.id,
+        clave=consulta.clave,
+        distrito_id=consulta.distrito_id,
+        distrito_nombre=consulta.distrito_nombre,
+        distrito_nombre_corto=consulta.distrito_nombre_corto,
+        materia_id=consulta.materia_id,
+        materia_nombre=consulta.materia_nombre,
+        descripcion=consulta.descripcion,
+        descripcion_corta=consulta.descripcion_corta,
+        es_jurisdiccional=consulta.es_jurisdiccional,
+        es_notaria=consulta.es_notaria,
+        organo_jurisdiccional=consulta.organo_jurisdiccional,
+        audiencia_categoria=consulta.audiencia_categoria,
     )

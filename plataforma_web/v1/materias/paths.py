@@ -38,10 +38,10 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        materia = get_materia(db, materia_id)
+        consulta = get_materia(db, materia_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return MateriaOut(
-        id=materia.id,
-        nombre=materia.nombre,
+        id=consulta.id,
+        nombre=consulta.nombre,
     )

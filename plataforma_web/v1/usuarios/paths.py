@@ -37,21 +37,21 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        usuario = get_usuario(db, usuario_id=usuario_id)
+        consulta = get_usuario(db, usuario_id=usuario_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return UsuarioOut(
-        id=usuario.id,
-        rol_id=usuario.rol_id,
-        rol_nombre=usuario.rol.nombre,
-        distrito_id=usuario.autoridad.distrito_id,
-        distrito_nombre=usuario.autoridad.distrito_nombre,
-        distrito_nombre_corto=usuario.autoridad.distrito_nombre_corto,
-        autoridad_id=usuario.autoridad_id,
-        autoridad_descripcion=usuario.autoridad.descripcion,
-        autoridad_descripcion_corta=usuario.autoridad.descripcion_corta,
-        email=usuario.email,
-        nombres=usuario.nombres,
-        apellido_paterno=usuario.apellido_paterno,
-        apellido_materno=usuario.apellido_materno,
+        id=consulta.id,
+        rol_id=consulta.rol_id,
+        rol_nombre=consulta.rol_nombre,
+        distrito_id=consulta.distrito_id,
+        distrito_nombre=consulta.distrito_nombre,
+        distrito_nombre_corto=consulta.distrito_nombre_corto,
+        autoridad_id=consulta.autoridad_id,
+        autoridad_descripcion=consulta.autoridad_descripcion,
+        autoridad_descripcion_corta=consulta.autoridad_descripcion_corta,
+        email=consulta.email,
+        nombres=consulta.nombres,
+        apellido_paterno=consulta.apellido_paterno,
+        apellido_materno=consulta.apellido_materno,
     )

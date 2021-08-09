@@ -38,10 +38,10 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        rol = get_rol(db, rol_id=rol_id)
+        consulta = get_rol(db, rol_id=rol_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return RolOut(
-        id=rol.id,
-        nombre=rol.nombre,
+        id=consulta.id,
+        nombre=consulta.nombre,
     )

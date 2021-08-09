@@ -55,21 +55,21 @@ async def detail(
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
+        consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return ListaDeAcuerdoOut(
-        id=lista_de_acuerdo.id,
-        distrito_id=lista_de_acuerdo.distrito_id,
-        distrito_nombre=lista_de_acuerdo.distrito_nombre,
-        distrito_nombre_corto=lista_de_acuerdo.distrito_nombre_corto,
-        autoridad_id=lista_de_acuerdo.autoridad_id,
-        autoridad_descripcion=lista_de_acuerdo.autoridad_descripcion,
-        autoridad_descripcion_corta=lista_de_acuerdo.autoridad_descripcion_corta,
-        fecha=lista_de_acuerdo.fecha,
-        descripcion=lista_de_acuerdo.descripcion,
-        archivo=lista_de_acuerdo.archivo,
-        url=lista_de_acuerdo.url,
+        id=consulta.id,
+        distrito_id=consulta.distrito_id,
+        distrito_nombre=consulta.distrito_nombre,
+        distrito_nombre_corto=consulta.distrito_nombre_corto,
+        autoridad_id=consulta.autoridad_id,
+        autoridad_descripcion=consulta.autoridad_descripcion,
+        autoridad_descripcion_corta=consulta.autoridad_descripcion_corta,
+        fecha=consulta.fecha,
+        descripcion=consulta.descripcion,
+        archivo=consulta.archivo,
+        url=consulta.url,
     )
 
 

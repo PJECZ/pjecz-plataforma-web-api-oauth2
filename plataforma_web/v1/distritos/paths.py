@@ -39,12 +39,12 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        distrito = get_distrito(db, distrito_id=distrito_id)
+        consulta = get_distrito(db, distrito_id=distrito_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return DistritoOut(
-        id=distrito.id,
-        nombre=distrito.nombre,
-        nombre_corto=distrito.nombre_corto,
-        es_distrito_judicial=distrito.es_distrito_judicial,
+        id=consulta.id,
+        nombre=consulta.nombre,
+        nombre_corto=consulta.nombre_corto,
+        es_distrito_judicial=consulta.es_distrito_judicial,
     )
