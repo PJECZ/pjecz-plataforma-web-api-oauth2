@@ -7,6 +7,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import AlredyExistsError
 from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
@@ -66,4 +67,6 @@ async def insert(
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    except AlredyExistsError as error:
+        raise HTTPException(status_code=409, detail=f"Conflict: {str(error)}") from error
     return ListaDeAcuerdoAcuerdoOut.from_orm(resultado)

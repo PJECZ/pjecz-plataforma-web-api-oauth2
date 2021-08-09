@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import AlredyExistsError
 from lib.safe_string import safe_string
 from .models import ListaDeAcuerdo
 from .schemas import ListaDeAcuerdoIn
@@ -53,11 +54,11 @@ def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> 
     # Validar autoridad
     autoridad = get_autoridad(db, lista_de_acuerdo.autoridad_id)  # Si no se encuentra o no es válido, provoca una excepción
     if autoridad.estatus != "A":
-        raise ValueError("No es activa la autoridad, fue eliminada.")
+        raise ValueError("No es activa la autoridad, fue eliminada")
     if not autoridad.distrito.es_distrito_judicial:
-        raise ValueError("No está la autoridad en un distrito judicial.")
+        raise ValueError("No está la autoridad en un distrito judicial")
     if not autoridad.es_jurisdiccional:
-        raise ValueError("No es jurisdiccional la autoridad.")
+        raise ValueError("No es jurisdiccional la autoridad")
     # Validar fecha
     hoy = date.today()
     hoy_dt = datetime(year=hoy.year, month=hoy.month, day=hoy.day)
@@ -67,12 +68,11 @@ def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> 
     else:
         fecha = lista_de_acuerdo.fecha
         if not limite_dt <= datetime(year=fecha.year, month=fecha.month, day=fecha.day) <= hoy_dt:
-            raise ValueError("Fecha fuera de rango.")
-    # Si existe una lista de acuerdos con esa fecha se debe dar de baja
+            raise ValueError("Fecha fuera de rango")
+    # Si ya existe una lista de acuerdos con esa fecha, se aborta
     existe_esa_lista = db.query(ListaDeAcuerdo).filter_by(autoridad_id=autoridad.id).filter_by(fecha=fecha).filter_by(estatus="A").first()
     if existe_esa_lista:
-        existe_esa_lista.estatus = "B"
-        db.add(existe_esa_lista)
+        raise AlredyExistsError("No se permite otra lista de acuerdos para la autoridad y fechas dadas")
     # Validar descripcion
     if lista_de_acuerdo.descripcion == "":
         descripcion = "LISTA DE ACUERDOS"
