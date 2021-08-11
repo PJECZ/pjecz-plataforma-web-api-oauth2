@@ -24,10 +24,10 @@ def get_listas_de_acuerdos(
     """Consultar las listas de acuerdos activas"""
     consulta = db.query(ListaDeAcuerdo)
     if autoridad_id:
-        autoridad = get_autoridad(db, autoridad_id)  # Si no se encuentra provoca una excepción
+        autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     elif autoridad_clave:
-        autoridad = get_autoridad_from_clave(db, autoridad_clave)  # Si no se encuentra o no es válido, provoca una excepción
+        autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
@@ -45,16 +45,16 @@ def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int) -> ListaDeAcuerd
     """Consultar una lista de acuerdo por su id"""
     lista_de_acuerdo = db.query(ListaDeAcuerdo).get(lista_de_acuerdo_id)
     if lista_de_acuerdo is None:
-        raise IndexError
+        raise IndexError("No exite esa lista de acuerdos")
+    if lista_de_acuerdo.estatus != "A":
+        raise ValueError("No es activa la lista de acuerdos, fue eliminada")
     return lista_de_acuerdo
 
 
 def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> ListaDeAcuerdo:
     """Insertar una lista de acuerdos"""
     # Validar autoridad
-    autoridad = get_autoridad(db, lista_de_acuerdo.autoridad_id)  # Si no se encuentra o no es válido, provoca una excepción
-    if autoridad.estatus != "A":
-        raise ValueError("No es activa la autoridad, fue eliminada")
+    autoridad = get_autoridad(db, lista_de_acuerdo.autoridad_id)
     if not autoridad.distrito.es_distrito_judicial:
         raise ValueError("No está la autoridad en un distrito judicial")
     if not autoridad.es_jurisdiccional:
