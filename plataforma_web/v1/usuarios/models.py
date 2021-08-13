@@ -3,6 +3,7 @@ Usuarios v1.0, modelos
 """
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+
 from lib.database import Base
 from lib.universal_mixin import UniversalMixin
 

@@ -3,6 +3,7 @@ Distritos v1.0, modelos
 """
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
+
 from lib.database import Base
 from lib.universal_mixin import UniversalMixin
 
