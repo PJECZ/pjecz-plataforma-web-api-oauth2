@@ -9,7 +9,7 @@
 *.py[cod]
 *.sqlite3
 __pycache__/
-/instance
+/instance/settings.py
 /notebooks
 /sql
 /venv

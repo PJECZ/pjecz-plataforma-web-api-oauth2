@@ -1,5 +1,4 @@
 black
-click
 fastapi
 fastapi-pagination[sqlalchemy]
 gunicorn
@@ -14,7 +13,6 @@ python-jose[cryptography]
 python-multipart
 SQLAlchemy
 SQLAlchemy-Utils
-tabulate
 Unidecode
 uvicorn
 uvloop
