@@ -24,7 +24,13 @@ async def list_paginate(
     """Listado paginado de usuarios"""
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
-    return paginate(get_usuarios(db, autoridad_id=autoridad_id))
+    try:
+        listado = get_usuarios(db, autoridad_id=autoridad_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @router.get("/id/{usuario_id}", response_model=UsuarioOut)

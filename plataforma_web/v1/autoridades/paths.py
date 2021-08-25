@@ -30,8 +30,8 @@ async def list_paginate(
     """Listado paginado de autoridades"""
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden")
-    return paginate(
-        get_autoridades(
+    try:
+        listado = get_autoridades(
             db,
             distrito_id=distrito_id,
             materia_id=materia_id,
@@ -39,7 +39,11 @@ async def list_paginate(
             con_notarias=con_notarias,
             para_glosas=para_glosas,
         )
-    )
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @router.get("/clave/{clave}", response_model=AutoridadOut)
@@ -52,12 +56,12 @@ async def detail_from_clave(
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_autoridad_from_clave(db, clave=clave)
+        autoridad = get_autoridad_from_clave(db, clave=clave)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return AutoridadOut.from_orm(consulta)
+    return AutoridadOut.from_orm(autoridad)
 
 
 @router.get("/id/{autoridad_id}", response_model=AutoridadOut)
@@ -70,7 +74,9 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_autoridad(db, autoridad_id=autoridad_id)
+        autoridad = get_autoridad(db, autoridad_id=autoridad_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return AutoridadOut.from_orm(consulta)
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return AutoridadOut.from_orm(autoridad)
