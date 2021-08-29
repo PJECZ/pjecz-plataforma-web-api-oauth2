@@ -16,10 +16,10 @@ from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 from .crud import get_listas_de_acuerdos, get_lista_de_acuerdo, insert_lista_de_acuerdo
 from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
 
-router = APIRouter()
+v1_listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de acuerdos"])
 
 
-@router.get("", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
+@v1_listas_de_acuerdos.get("", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
 async def list_paginate(
     autoridad_id: int = None,
     autoridad_clave: str = None,
@@ -46,7 +46,7 @@ async def list_paginate(
     return paginate(consulta)
 
 
-@router.get("/id/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
+@v1_listas_de_acuerdos.get("/id/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
 async def detail(
     lista_de_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -62,7 +62,7 @@ async def detail(
     return ListaDeAcuerdoOut.from_orm(consulta)
 
 
-@router.post("", response_model=ListaDeAcuerdoOut)
+@v1_listas_de_acuerdos.post("", response_model=ListaDeAcuerdoOut)
 async def new(
     lista_de_acuerdo: ListaDeAcuerdoIn,
     current_user: UsuarioInBD = Depends(get_current_active_user),

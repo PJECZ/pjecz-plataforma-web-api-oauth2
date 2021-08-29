@@ -12,10 +12,10 @@ from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
 from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInBD
 
-router = APIRouter()
+v1_usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
 
-@router.get("", response_model=LimitOffsetPage[UsuarioOut])
+@v1_usuarios.get("", response_model=LimitOffsetPage[UsuarioOut])
 async def list_paginate(
     autoridad_id: int = None,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -33,7 +33,7 @@ async def list_paginate(
     return paginate(listado)
 
 
-@router.get("/id/{usuario_id}", response_model=UsuarioOut)
+@v1_usuarios.get("/id/{usuario_id}", response_model=UsuarioOut)
 async def detail(
     usuario_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

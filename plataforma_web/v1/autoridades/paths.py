@@ -14,10 +14,10 @@ from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 from .crud import get_autoridades, get_autoridad, get_autoridad_from_clave
 from .schemas import AutoridadOut
 
-router = APIRouter()
+v1_autoridades = APIRouter(prefix="/v1/autoridades", tags=["autoridades"])
 
 
-@router.get("", response_model=LimitOffsetPage[AutoridadOut])
+@v1_autoridades.get("", response_model=LimitOffsetPage[AutoridadOut])
 async def list_paginate(
     distrito_id: int = None,
     materia_id: int = None,
@@ -46,7 +46,7 @@ async def list_paginate(
     return paginate(listado)
 
 
-@router.get("/clave/{clave}", response_model=AutoridadOut)
+@v1_autoridades.get("/clave/{clave}", response_model=AutoridadOut)
 async def detail_from_clave(
     clave: str,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -64,7 +64,7 @@ async def detail_from_clave(
     return AutoridadOut.from_orm(autoridad)
 
 
-@router.get("/id/{autoridad_id}", response_model=AutoridadOut)
+@v1_autoridades.get("/id/{autoridad_id}", response_model=AutoridadOut)
 async def detail(
     autoridad_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

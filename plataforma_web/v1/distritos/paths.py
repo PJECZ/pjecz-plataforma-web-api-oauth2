@@ -14,10 +14,10 @@ from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 from .crud import get_distritos, get_distrito
 from .schemas import DistritoOut
 
-router = APIRouter()
+v1_distritos = APIRouter(prefix="/v1/distritos", tags=["distritos"])
 
 
-@router.get("", response_model=LimitOffsetPage[DistritoOut])
+@v1_distritos.get("", response_model=LimitOffsetPage[DistritoOut])
 async def list_paginate(
     solo_distritos: bool = False,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -29,7 +29,7 @@ async def list_paginate(
     return paginate(get_distritos(db, solo_distritos=solo_distritos))
 
 
-@router.get("/id/{distrito_id}", response_model=DistritoOut)
+@v1_distritos.get("/id/{distrito_id}", response_model=DistritoOut)
 async def detail(
     distrito_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

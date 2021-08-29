@@ -15,10 +15,10 @@ from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 from .crud import get_acuerdos, get_acuerdo, insert_acuerdo
 from .schemas import ListaDeAcuerdoAcuerdoIn, ListaDeAcuerdoAcuerdoOut
 
-router = APIRouter()
+v1_listas_de_acuerdos_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos_acuerdos", tags=["acuerdos"])
 
 
-@router.get("", response_model=LimitOffsetPage[ListaDeAcuerdoAcuerdoOut])
+@v1_listas_de_acuerdos_acuerdos.get("", response_model=LimitOffsetPage[ListaDeAcuerdoAcuerdoOut])
 async def list_paginate(
     lista_de_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -36,7 +36,7 @@ async def list_paginate(
     return paginate(consulta)
 
 
-@router.get("/id/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
+@v1_listas_de_acuerdos_acuerdos.get("/id/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
 async def detail(
     lista_de_acuerdo_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -52,7 +52,7 @@ async def detail(
     return ListaDeAcuerdoAcuerdoOut.from_orm(consulta)
 
 
-@router.post("", response_model=ListaDeAcuerdoAcuerdoOut)
+@v1_listas_de_acuerdos_acuerdos.post("", response_model=ListaDeAcuerdoAcuerdoOut)
 async def new(
     acuerdo: ListaDeAcuerdoAcuerdoIn,
     current_user: UsuarioInBD = Depends(get_current_active_user),

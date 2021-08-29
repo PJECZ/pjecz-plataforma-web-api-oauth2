@@ -14,10 +14,10 @@ from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 from .crud import get_materias, get_materia
 from .schemas import MateriaOut
 
-router = APIRouter()
+v1_materias = APIRouter(prefix="/v1/materias", tags=["materias"])
 
 
-@router.get("", response_model=LimitOffsetPage[MateriaOut])
+@v1_materias.get("", response_model=LimitOffsetPage[MateriaOut])
 async def list_paginate(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -28,7 +28,7 @@ async def list_paginate(
     return paginate(get_materias(db))
 
 
-@router.get("/id/{materia_id}", response_model=MateriaOut)
+@v1_materias.get("/id/{materia_id}", response_model=MateriaOut)
 async def detail(
     materia_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
