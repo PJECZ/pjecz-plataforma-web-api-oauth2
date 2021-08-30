@@ -1,6 +1,8 @@
 """
 Materias v1.0, rutas (paths)
 """
+from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_juicios
+from plataforma_web.v1.materias_tipos_juicios.schemas import MateriaTipoJuicioOut
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -28,7 +30,7 @@ async def listado_materias(
     return paginate(get_materias(db))
 
 
-@v1_materias.get("/id/{materia_id}", response_model=MateriaOut)
+@v1_materias.get("/{materia_id}", response_model=MateriaOut)
 async def detalle_materia(
     materia_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -42,3 +44,21 @@ async def detalle_materia(
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     return MateriaOut.from_orm(materia)
+
+
+@v1_materias.get("/{materia_id}/tipos_juicios", response_model=LimitOffsetPage[MateriaTipoJuicioOut])
+async def listado_materias_tipos_juicios(
+    materia_id: int,
+    current_user: UsuarioInBD = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Listado de tipos de juicios de una materia"""
+    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        listado = get_materias_tipos_juicios(db, materia_id=materia_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)

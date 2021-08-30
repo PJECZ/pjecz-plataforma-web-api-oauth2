@@ -33,7 +33,7 @@ async def listado_usuarios(
     return paginate(listado)
 
 
-@v1_usuarios.get("/id/{usuario_id}", response_model=UsuarioOut)
+@v1_usuarios.get("/{usuario_id}", response_model=UsuarioOut)
 async def detalle_usuario(
     usuario_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

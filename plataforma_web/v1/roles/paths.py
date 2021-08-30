@@ -28,7 +28,7 @@ async def listado_roles(
     return paginate(get_roles(db))
 
 
-@v1_roles.get("/id/{rol_id}", response_model=RolOut)
+@v1_roles.get("/{rol_id}", response_model=RolOut)
 async def detalle_rol(
     rol_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

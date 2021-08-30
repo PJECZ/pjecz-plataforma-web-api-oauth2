@@ -36,7 +36,7 @@ async def listado_acuerdos(
     return paginate(listado)
 
 
-@v1_listas_de_acuerdos_acuerdos.get("/id/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
+@v1_listas_de_acuerdos_acuerdos.get("/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
 async def detalle_acuerdo(
     lista_de_acuerdo_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
