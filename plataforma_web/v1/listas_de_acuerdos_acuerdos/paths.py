@@ -12,14 +12,14 @@ from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
-from .crud import get_acuerdos, get_acuerdo, insert_acuerdo
-from .schemas import ListaDeAcuerdoAcuerdoIn, ListaDeAcuerdoAcuerdoOut
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.crud import get_acuerdos, get_acuerdo, insert_acuerdo
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.schemas import ListaDeAcuerdoAcuerdoIn, ListaDeAcuerdoAcuerdoOut
 
 v1_listas_de_acuerdos_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos_acuerdos", tags=["acuerdos"])
 
 
 @v1_listas_de_acuerdos_acuerdos.get("", response_model=LimitOffsetPage[ListaDeAcuerdoAcuerdoOut])
-async def list_paginate(
+async def listado_acuerdos(
     lista_de_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -28,16 +28,16 @@ async def list_paginate(
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_acuerdos(db, lista_de_acuerdo_id)
+        listado = get_acuerdos(db, lista_de_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(consulta)
+    return paginate(listado)
 
 
 @v1_listas_de_acuerdos_acuerdos.get("/id/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
-async def detail(
+async def detalle_acuerdo(
     lista_de_acuerdo_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -46,14 +46,14 @@ async def detail(
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_acuerdo(db, lista_de_acuerdo_acuerdo_id)
+        acuerdo = get_acuerdo(db, lista_de_acuerdo_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return ListaDeAcuerdoAcuerdoOut.from_orm(consulta)
+    return ListaDeAcuerdoAcuerdoOut.from_orm(acuerdo)
 
 
 @v1_listas_de_acuerdos_acuerdos.post("", response_model=ListaDeAcuerdoAcuerdoOut)
-async def new(
+async def nuevo_acuerdo(
     acuerdo: ListaDeAcuerdoAcuerdoIn,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -62,11 +62,11 @@ async def new(
     if not current_user.permissions & Permiso.CREAR_JUSTICIABLES == Permiso.CREAR_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        resultado = insert_acuerdo(db, acuerdo)
+        listado = insert_acuerdo(db, acuerdo)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
     except AlredyExistsError as error:
         raise HTTPException(status_code=409, detail=f"Conflict: {str(error)}") from error
-    return ListaDeAcuerdoAcuerdoOut.from_orm(resultado)
+    return ListaDeAcuerdoAcuerdoOut.from_orm(listado)

@@ -5,9 +5,9 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.safe_string import safe_clave, safe_string
-from .models import Autoridad
-from ..distritos.crud import get_distrito
-from ..materias.crud import get_materia
+from plataforma_web.v1.autoridades.models import Autoridad
+from plataforma_web.v1.distritos.crud import get_distrito
+from plataforma_web.v1.materias.crud import get_materia
 
 
 def get_autoridades(
@@ -16,24 +16,21 @@ def get_autoridades(
     materia_id: int = None,
     organo_jurisdiccional: str = None,
     con_notarias: bool = False,
-    para_glosas: bool = False,
 ) -> Any:
-    """Consultar las autoridades activas"""
+    """Consultar las autoridades jurisdiccionales activas"""
     consulta = db.query(Autoridad)
     if distrito_id:
-        distrito = get_distrito(db, distrito_id)  # Si no se encuentra provoca una excepción
+        distrito = get_distrito(db, distrito_id)
         consulta = consulta.filter(Autoridad.distrito == distrito)
     if materia_id:
-        materia = get_materia(db, materia_id)  # Si no se encuentra provoca una excepción
+        materia = get_materia(db, materia_id)
         consulta = consulta.filter_by(Autoridad.materia == materia)
     organo_jurisdiccional = safe_string(organo_jurisdiccional)
     if organo_jurisdiccional in Autoridad.ORGANOS_JURISDICCIONALES:
         consulta = consulta.filter_by(organo_jurisdiccional=organo_jurisdiccional)
     if con_notarias is False:
         consulta = consulta.filter_by(es_notaria=False)
-    if para_glosas:
-        consulta = consulta.filter(Autoridad.organo_jurisdiccional.in_(["PLENO O SALA DEL TSJ", "TRIBUNAL DE CONCILIACION Y ARBITRAJE"]))
-    return consulta.filter_by(estatus="A").order_by(Autoridad.clave)
+    return consulta.filter_by(es_jurisdiccional=True).filter_by(estatus="A").order_by(Autoridad.clave)
 
 
 def get_autoridad(db: Session, autoridad_id: int) -> Autoridad:

@@ -1,0 +1,19 @@
+@root = http://justicia:8002
+@api = {{root}}/v1
+
+###
+GET {{root}}
+
+###
+
+POST {{root}}/token
+Content-Type: application/xml
+Authorization: token xxx
+
+<request>
+    <username>guillermo.valdes@pjecz.gob.mx</username>
+    <password>BadPassword</password>
+</request>
+
+###
+GET {{api}}/materias

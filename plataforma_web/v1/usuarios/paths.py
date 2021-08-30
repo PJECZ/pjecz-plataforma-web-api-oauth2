@@ -16,7 +16,7 @@ v1_usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
 
 @v1_usuarios.get("", response_model=LimitOffsetPage[UsuarioOut])
-async def list_paginate(
+async def listado_usuarios(
     autoridad_id: int = None,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -34,7 +34,7 @@ async def list_paginate(
 
 
 @v1_usuarios.get("/id/{usuario_id}", response_model=UsuarioOut)
-async def detail(
+async def detalle_usuario(
     usuario_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -43,7 +43,7 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_usuario(db, usuario_id=usuario_id)
+        usuario = get_usuario(db, usuario_id=usuario_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return UsuarioOut.from_orm(consulta)
+    return UsuarioOut.from_orm(usuario)

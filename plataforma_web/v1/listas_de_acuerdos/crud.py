@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import AlredyExistsError
 from lib.safe_string import safe_string
-from .models import ListaDeAcuerdo
-from .schemas import ListaDeAcuerdoIn
-from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
+from plataforma_web.v1.autoridades.crud import get_autoridad, get_autoridad_from_clave
+from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
+from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoIn
 
 LIMITE_DIAS = 7
 

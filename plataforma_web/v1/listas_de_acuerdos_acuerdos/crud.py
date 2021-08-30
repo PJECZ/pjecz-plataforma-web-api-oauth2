@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import AlredyExistsError
 from lib.safe_string import safe_string
-from .models import ListaDeAcuerdoAcuerdo
-from .schemas import ListaDeAcuerdoAcuerdoIn
-from ..listas_de_acuerdos.crud import get_lista_de_acuerdo
-from ..listas_de_acuerdos.models import ListaDeAcuerdo
+from plataforma_web.v1.listas_de_acuerdos.crud import get_lista_de_acuerdo
+from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.models import ListaDeAcuerdoAcuerdo
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.schemas import ListaDeAcuerdoAcuerdoIn
 
 
 def get_acuerdos(

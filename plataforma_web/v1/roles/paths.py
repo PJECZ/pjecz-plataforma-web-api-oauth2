@@ -11,14 +11,14 @@ from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
-from .crud import get_roles, get_rol
-from .schemas import RolOut
+from plataforma_web.v1.roles.crud import get_roles, get_rol
+from plataforma_web.v1.roles.schemas import RolOut
 
 v1_roles = APIRouter(prefix="/v1/roles", tags=["roles"])
 
 
 @v1_roles.get("", response_model=LimitOffsetPage[RolOut])
-async def list_paginate(
+async def listado_roles(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -29,7 +29,7 @@ async def list_paginate(
 
 
 @v1_roles.get("/id/{rol_id}", response_model=RolOut)
-async def detail(
+async def detalle_rol(
     rol_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -38,7 +38,7 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_rol(db, rol_id=rol_id)
+        rol = get_rol(db, rol_id=rol_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return RolOut.from_orm(consulta)
+    return RolOut.from_orm(rol)

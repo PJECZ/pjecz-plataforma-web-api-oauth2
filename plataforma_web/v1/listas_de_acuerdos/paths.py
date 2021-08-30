@@ -13,14 +13,14 @@ from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
-from .crud import get_listas_de_acuerdos, get_lista_de_acuerdo, insert_lista_de_acuerdo
-from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
+from plataforma_web.v1.listas_de_acuerdos.crud import get_listas_de_acuerdos, get_lista_de_acuerdo, insert_lista_de_acuerdo
+from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
 
 v1_listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de acuerdos"])
 
 
 @v1_listas_de_acuerdos.get("", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
-async def list_paginate(
+async def listado_listas_de_acuerdos(
     autoridad_id: int = None,
     autoridad_clave: str = None,
     fecha: date = None,
@@ -32,7 +32,7 @@ async def list_paginate(
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_listas_de_acuerdos(
+        listado = get_listas_de_acuerdos(
             db,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
@@ -43,11 +43,11 @@ async def list_paginate(
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(consulta)
+    return paginate(listado)
 
 
-@v1_listas_de_acuerdos.get("/id/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
-async def detail(
+@v1_listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
+async def detalle_lista_de_acuerdos(
     lista_de_acuerdo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -63,7 +63,7 @@ async def detail(
 
 
 @v1_listas_de_acuerdos.post("", response_model=ListaDeAcuerdoOut)
-async def new(
+async def nueva_lista_de_acuerdos(
     lista_de_acuerdo: ListaDeAcuerdoIn,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),

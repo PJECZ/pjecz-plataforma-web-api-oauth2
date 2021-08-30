@@ -4,8 +4,8 @@ Usuarios v1.0, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from .models import Usuario
-from ..autoridades.crud import get_autoridad
+from plataforma_web.v1.autoridades.crud import get_autoridad
+from plataforma_web.v1.usuarios.models import Usuario
 
 
 def get_usuarios(db: Session, autoridad_id: int = None) -> Any:
