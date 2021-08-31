@@ -62,6 +62,7 @@ class Autoridad(Base, UniversalMixin):
 
     # Hijos
     listas_de_acuerdos = relationship("ListaDeAcuerdo", back_populates="autoridad", lazy="noload")
+    sentencias = relationship("Sentencia", back_populates="autoridad", lazy="noload")
     usuarios = relationship("Usuario", back_populates="autoridad")
 
     @property

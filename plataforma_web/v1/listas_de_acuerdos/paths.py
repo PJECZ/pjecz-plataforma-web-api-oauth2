@@ -28,7 +28,7 @@ async def listado_listas_de_acuerdos(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado paginado de listas de acuerdos"""
+    """Listado de listas de acuerdos"""
     if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
@@ -79,4 +79,6 @@ async def detalle_lista_de_acuerdos(
         consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
     return ListaDeAcuerdoOut.from_orm(consulta)

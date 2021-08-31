@@ -15,8 +15,10 @@ from plataforma_web.v1.autoridades.crud import get_autoridades, get_autoridad, g
 from plataforma_web.v1.autoridades.schemas import AutoridadOut
 from plataforma_web.v1.listas_de_acuerdos.crud import get_listas_de_acuerdos
 from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoOut
-from plataforma_web.v1.usuarios.schemas import UsuarioOut
+from plataforma_web.v1.sentencias.crud import get_sentencias
+from plataforma_web.v1.sentencias.schemas import SentenciaOut
 from plataforma_web.v1.usuarios.crud import get_usuarios
+from plataforma_web.v1.usuarios.schemas import UsuarioOut
 
 v1_autoridades = APIRouter(prefix="/v1/autoridades", tags=["autoridades"])
 
@@ -95,6 +97,24 @@ async def listado_listas_de_acuerdos_de_autoridad(
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_listas_de_acuerdos(db, autoridad_id=autoridad_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
+
+
+@v1_autoridades.get("/{autoridad_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut])
+async def listado_sentencias_de_autoridad(
+    autoridad_id: int,
+    current_user: UsuarioInBD = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Listado de sentencias de una autoridad"""
+    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        listado = get_sentencias(db, autoridad_id=autoridad_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

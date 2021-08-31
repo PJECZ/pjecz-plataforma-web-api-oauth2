@@ -23,7 +23,7 @@ async def listado_roles(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado paginado de roles"""
+    """Listado de roles"""
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_roles(db))

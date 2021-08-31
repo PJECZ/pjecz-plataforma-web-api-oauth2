@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class MateriaTipoJuicioOut(BaseModel):
-    """ Esquema para entregar tipo de juicio """
+    """Esquema para entregar tipo de juicio"""
 
     id: int
     descripcion: str
@@ -13,6 +13,6 @@ class MateriaTipoJuicioOut(BaseModel):
     materia_nombre: str
 
     class Config:
-        """ SQLAlchemy config """
+        """SQLAlchemy config"""
 
         orm_mode = True
