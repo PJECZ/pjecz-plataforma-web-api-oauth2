@@ -12,15 +12,10 @@ from plataforma_web.v1.listas_de_acuerdos_acuerdos.models import ListaDeAcuerdoA
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.schemas import ListaDeAcuerdoAcuerdoIn
 
 
-def get_acuerdos(
-    db: Session,
-    lista_de_acuerdo_id: int = None,
-) -> Any:
+def get_acuerdos(db: Session, lista_de_acuerdo_id: int) -> Any:
     """Consultar los acuerdos activos"""
-    consulta = db.query(ListaDeAcuerdoAcuerdo)
-    if lista_de_acuerdo_id:
-        lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
-        consulta = consulta.filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
+    lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
+    consulta = db.query(ListaDeAcuerdoAcuerdo).filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
     return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdoAcuerdo.folio)
 
 

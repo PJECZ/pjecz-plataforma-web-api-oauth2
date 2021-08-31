@@ -46,22 +46,6 @@ async def listado_listas_de_acuerdos(
     return paginate(listado)
 
 
-@v1_listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
-async def detalle_lista_de_acuerdos(
-    lista_de_acuerdo_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Detalle de una lista de acuerdos a partir de su id"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
-        raise HTTPException(status_code=403, detail="Forbidden")
-    try:
-        consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
-    except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return ListaDeAcuerdoOut.from_orm(consulta)
-
-
 @v1_listas_de_acuerdos.post("", response_model=ListaDeAcuerdoOut)
 async def nueva_lista_de_acuerdos(
     lista_de_acuerdo: ListaDeAcuerdoIn,
@@ -80,3 +64,19 @@ async def nueva_lista_de_acuerdos(
     except AlredyExistsError as error:
         raise HTTPException(status_code=409, detail=f"Conflict: {str(error)}") from error
     return ListaDeAcuerdoOut.from_orm(resultado)
+
+
+@v1_listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
+async def detalle_lista_de_acuerdos(
+    lista_de_acuerdo_id: int,
+    current_user: UsuarioInBD = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Detalle de una lista de acuerdos a partir de su id"""
+    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    return ListaDeAcuerdoOut.from_orm(consulta)

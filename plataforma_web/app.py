@@ -16,6 +16,7 @@ from plataforma_web.v1.distritos.paths import v1_distritos
 from plataforma_web.v1.listas_de_acuerdos.paths import v1_listas_de_acuerdos
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import v1_listas_de_acuerdos_acuerdos
 from plataforma_web.v1.materias.paths import v1_materias
+from plataforma_web.v1.materias_tipos_juicios.paths import v1_materias_tipos_juicios
 from plataforma_web.v1.roles.paths import v1_roles
 from plataforma_web.v1.usuarios.paths import v1_usuarios
 
@@ -32,6 +33,7 @@ app.include_router(v1_distritos)
 app.include_router(v1_listas_de_acuerdos)
 app.include_router(v1_listas_de_acuerdos_acuerdos)
 app.include_router(v1_materias)
+app.include_router(v1_materias_tipos_juicios)
 app.include_router(v1_roles)
 app.include_router(v1_usuarios)
 

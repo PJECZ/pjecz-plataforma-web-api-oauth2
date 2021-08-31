@@ -18,6 +18,7 @@ v1_usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 @v1_usuarios.get("", response_model=LimitOffsetPage[UsuarioOut])
 async def listado_usuarios(
     autoridad_id: int = None,
+    rol_id: int = None,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -25,7 +26,7 @@ async def listado_usuarios(
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        listado = get_usuarios(db, autoridad_id=autoridad_id)
+        listado = get_usuarios(db, autoridad_id=autoridad_id, rol_id=rol_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
