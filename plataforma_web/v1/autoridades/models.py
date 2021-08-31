@@ -62,18 +62,22 @@ class Autoridad(Base, UniversalMixin):
 
     # Hijos
     listas_de_acuerdos = relationship("ListaDeAcuerdo", back_populates="autoridad", lazy="noload")
+    sentencias = relationship("Sentencia", back_populates="autoridad", lazy="noload")
     usuarios = relationship("Usuario", back_populates="autoridad")
 
     @property
     def distrito_nombre(self):
+        """Nombre del distrito"""
         return self.distrito.nombre
 
     @property
     def distrito_nombre_corto(self):
+        """Nombre corto del distrito"""
         return self.distrito.nombre_corto
 
     @property
     def materia_nombre(self):
+        """Nombre de la materia"""
         return self.materia.nombre
 
     def __repr__(self):

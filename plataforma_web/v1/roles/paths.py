@@ -9,27 +9,28 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioInBD, UsuarioOut
 
-from .crud import get_roles, get_rol
-from .schemas import RolOut
+from plataforma_web.v1.roles.crud import get_roles, get_rol
+from plataforma_web.v1.roles.schemas import RolOut
+from plataforma_web.v1.usuarios.crud import get_usuarios
 
-router = APIRouter()
+v1_roles = APIRouter(prefix="/v1/roles", tags=["roles"])
 
 
-@router.get("", response_model=LimitOffsetPage[RolOut])
-async def list_paginate(
+@v1_roles.get("", response_model=LimitOffsetPage[RolOut])
+async def listado_roles(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado paginado de roles"""
+    """Listado de roles"""
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_roles(db))
 
 
-@router.get("/id/{rol_id}", response_model=RolOut)
-async def detail(
+@v1_roles.get("/{rol_id}", response_model=RolOut)
+async def detalle_rol(
     rol_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -38,7 +39,25 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_rol(db, rol_id=rol_id)
+        rol = get_rol(db, rol_id=rol_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return RolOut.from_orm(consulta)
+    return RolOut.from_orm(rol)
+
+
+@v1_roles.get("/{rol_id}/usuarios", response_model=LimitOffsetPage[UsuarioOut])
+async def listado_usuarios_de_rol(
+    rol_id: int,
+    current_user: UsuarioInBD = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Listado de usuarios de un rol"""
+    if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        listado = get_usuarios(db, rol_id=rol_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)

@@ -10,7 +10,7 @@ Genere el `SECRET_KEY` con este comando
 
 Cree un archivo para las variables de entorno `.env`
 
-    # MariaDB en Minos
+    # Base de datos
     DB_USER=pjeczadmin
     DB_PASS=****************
     DB_NAME=pjecz_plataforma_web
@@ -41,15 +41,15 @@ Para Bash Shell cree un archivo `.bashrc` con este contenido
     echo "   DB_PASS: ${DB_PASS}"
     echo "   DB_NAME: ${DB_NAME}"
     echo "   DB_HOST: ${DB_HOST}"
-    echo "   PYTHONPATH: ${PYTHONPATH}"
     echo "   SECRET_KEY: ${SECRET_KEY}"
     echo "   ALGORITHM: ${ALGORITHM}"
     echo "   ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}"
+    echo "   PYTHONPATH: ${PYTHONPATH}"
     echo
 
     alias arrancar="uvicorn plataforma_web.app:app --port 8002 --reload"
-    echo "-- FastAPI"
-    echo "   arrancar == uvicorn plataforma_web.app:app --port 8002 --reload"
+    echo "-- Aliases"
+    echo "   arrancar = uvicorn plataforma_web.app:app --port 8002 --reload"
     echo
 
 Cree el archivo `instance/settings.py` que cargue las variables de entorno
@@ -111,3 +111,9 @@ Arrancar con uvicorn
 O arrancar con gunicorn
 
     gunicorn -w 4 -k uvicorn.workers.UvicornWorker plataforma_web.app:app
+
+## Jupyter notebooks
+
+Instale el kernel para ejecutar notebooks de Jupyter
+
+    pip install ipykernel

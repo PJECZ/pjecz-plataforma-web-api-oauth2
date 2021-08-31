@@ -6,21 +6,16 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import AlredyExistsError
 from lib.safe_string import safe_string
-from .models import ListaDeAcuerdoAcuerdo
-from .schemas import ListaDeAcuerdoAcuerdoIn
-from ..listas_de_acuerdos.crud import get_lista_de_acuerdo
-from ..listas_de_acuerdos.models import ListaDeAcuerdo
+from plataforma_web.v1.listas_de_acuerdos.crud import get_lista_de_acuerdo
+from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.models import ListaDeAcuerdoAcuerdo
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.schemas import ListaDeAcuerdoAcuerdoIn
 
 
-def get_acuerdos(
-    db: Session,
-    lista_de_acuerdo_id: int = None,
-) -> Any:
+def get_acuerdos(db: Session, lista_de_acuerdo_id: int) -> Any:
     """Consultar los acuerdos activos"""
-    consulta = db.query(ListaDeAcuerdoAcuerdo)
-    if lista_de_acuerdo_id:
-        lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
-        consulta = consulta.filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
+    lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
+    consulta = db.query(ListaDeAcuerdoAcuerdo).filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
     return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdoAcuerdo.folio)
 
 
@@ -28,7 +23,7 @@ def get_acuerdo(db: Session, lista_de_acuerdo_acuerdo_id: int) -> ListaDeAcuerdo
     """Consultar un acuerdo por su id"""
     lista_de_acuerdo_acuerdo = db.query(ListaDeAcuerdoAcuerdo).get(lista_de_acuerdo_acuerdo_id)
     if lista_de_acuerdo_acuerdo is None:
-        raise IndexError
+        raise IndexError("No existe ese acuerdo")
     if lista_de_acuerdo_acuerdo.estatus != "A":
         raise ValueError("No es activo el acuerdo, está eliminado")
     return lista_de_acuerdo_acuerdo

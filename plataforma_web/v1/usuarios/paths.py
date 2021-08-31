@@ -12,23 +12,30 @@ from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
 from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInBD
 
-router = APIRouter()
+v1_usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
 
-@router.get("", response_model=LimitOffsetPage[UsuarioOut])
-async def list_paginate(
+@v1_usuarios.get("", response_model=LimitOffsetPage[UsuarioOut])
+async def listado_usuarios(
     autoridad_id: int = None,
+    rol_id: int = None,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado paginado de usuarios"""
+    """Listado de usuarios"""
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
-    return paginate(get_usuarios(db, autoridad_id=autoridad_id))
+    try:
+        listado = get_usuarios(db, autoridad_id=autoridad_id, rol_id=rol_id)
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
-@router.get("/id/{usuario_id}", response_model=UsuarioOut)
-async def detail(
+@v1_usuarios.get("/{usuario_id}", response_model=UsuarioOut)
+async def detalle_usuario(
     usuario_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -37,7 +44,7 @@ async def detail(
     if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        consulta = get_usuario(db, usuario_id=usuario_id)
+        usuario = get_usuario(db, usuario_id=usuario_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return UsuarioOut.from_orm(consulta)
+    return UsuarioOut.from_orm(usuario)
