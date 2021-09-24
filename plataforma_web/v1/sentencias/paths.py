@@ -14,10 +14,10 @@ from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 from plataforma_web.v1.sentencias.crud import get_sentencias, get_sentencia
 from plataforma_web.v1.sentencias.schemas import SentenciaOut
 
-v1_sentencias = APIRouter(prefix="/v1/sentencias", tags=["sentencias"])
+sentencias = APIRouter(prefix="/v1/sentencias", tags=["sentencias"])
 
 
-@v1_sentencias.get("", response_model=LimitOffsetPage[SentenciaOut])
+@sentencias.get("", response_model=LimitOffsetPage[SentenciaOut])
 async def listado_sentencias(
     autoridad_id: int = None,
     materia_tipo_juicio_id: int = None,
@@ -40,7 +40,7 @@ async def listado_sentencias(
     return paginate(listado)
 
 
-@v1_sentencias.get("/{sentencia_id}", response_model=SentenciaOut)
+@sentencias.get("/{sentencia_id}", response_model=SentenciaOut)
 async def detalle_sentencia(
     sentencia_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

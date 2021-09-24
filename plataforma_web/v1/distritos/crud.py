@@ -7,12 +7,9 @@ from sqlalchemy.orm import Session
 from plataforma_web.v1.distritos.models import Distrito
 
 
-def get_distritos(db: Session, solo_distritos: bool = False) -> Any:
+def get_distritos(db: Session) -> Any:
     """Consultar los distritos judiciales activos"""
-    consulta = db.query(Distrito).filter_by(es_distrito_judicial=True)
-    if solo_distritos:
-        consulta = consulta.filter(Distrito.nombre.like("Distrito%"))
-    return consulta.filter_by(estatus="A").order_by(Distrito.nombre)
+    return db.query(Distrito).filter_by(es_distrito_judicial=True).filter_by(estatus="A").order_by(Distrito.nombre)
 
 
 def get_distrito(db: Session, distrito_id: int) -> Distrito:
@@ -22,4 +19,6 @@ def get_distrito(db: Session, distrito_id: int) -> Distrito:
         raise IndexError("No existe ese distrito")
     if distrito.estatus != "A":
         raise ValueError("No es activo el distrito, está eliminado")
+    if distrito.es_distrito_judicial is False:
+        raise ValueError("No es distrito judicial")
     return distrito

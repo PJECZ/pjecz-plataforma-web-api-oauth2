@@ -16,10 +16,7 @@ class AutoridadOut(BaseModel):
     materia_nombre: str
     descripcion: str
     descripcion_corta: str
-    es_jurisdiccional: bool
-    es_notaria: bool
     organo_jurisdiccional: str
-    audiencia_categoria: str
 
     class Config:
         """SQLAlchemy config"""

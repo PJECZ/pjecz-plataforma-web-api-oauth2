@@ -14,10 +14,10 @@ from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_juicios, get_materia_tipo_juicio
 from plataforma_web.v1.materias_tipos_juicios.schemas import MateriaTipoJuicioOut
 
-v1_materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["materias"])
+materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["materias"])
 
 
-@v1_materias_tipos_juicios.get("/{materia_id}/tipos_juicios", response_model=LimitOffsetPage[MateriaTipoJuicioOut])
+@materias_tipos_juicios.get("/{materia_id}/tipos_juicios", response_model=LimitOffsetPage[MateriaTipoJuicioOut])
 async def listado_materias_tipos_juicios(
     materia_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -35,7 +35,7 @@ async def listado_materias_tipos_juicios(
     return paginate(listado)
 
 
-@v1_materias_tipos_juicios.get("/{materia_id}/tipos_juicios/{tipo_juicio_id}", response_model=MateriaTipoJuicioOut)
+@materias_tipos_juicios.get("/{materia_id}/tipos_juicios/{tipo_juicio_id}", response_model=MateriaTipoJuicioOut)
 async def detalle_materia_tipo_juicio(
     materia_id: int,
     tipo_juicio_id: int,
