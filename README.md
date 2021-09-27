@@ -23,6 +23,8 @@ Cree un archivo para las variables de entorno `.env`
 
     # Jupyter notebooks
     PYTHONPATH=/ruta/al/directorio/GitHub/guivaloz/pjecz-plataforma-web-api-oauth2
+    USERNAME=nombres.apellido_paterno@pjecz.gob.mx
+    PASSWORD=****************
 
 Para Bash Shell cree un archivo `.bashrc` con este contenido
 
@@ -78,11 +80,11 @@ O con virtualenv
 
     virtualenv -p python3 venv
 
-Active el entorno virtual, en Linux con...
+Active el entorno virtual, en GNU/Linux con...
 
     source venv/bin/activate
 
-O en windows con
+O en Windows con
 
     venv/Scripts/activate
 
@@ -114,6 +116,6 @@ O arrancar con gunicorn
 
 ## Jupyter notebooks
 
-Instale el kernel para ejecutar notebooks de Jupyter
+Instale el kernel para ejecutar notebooks de Jupyter en VSCode
 
-    pip install ipykernel
+    pip install ipykernel pandas requests
