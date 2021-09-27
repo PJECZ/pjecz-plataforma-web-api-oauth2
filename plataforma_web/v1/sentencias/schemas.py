@@ -22,7 +22,7 @@ class SentenciaOut(BaseModel):
     materia_tipo_juicio_id: int
     materia_tipo_juicio_descripcion: str
     sentencia: str
-    # sentencia_fecha: date
+    sentencia_fecha: date
     expediente: str
     fecha: date
     descripcion: str

@@ -3,7 +3,7 @@ Listas de Acuerdos v1, rutas (paths)
 """
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_pagination import LimitOffsetPage
+from lib.fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
