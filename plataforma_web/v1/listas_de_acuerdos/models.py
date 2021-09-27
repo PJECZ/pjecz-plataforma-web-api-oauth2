@@ -55,6 +55,11 @@ class ListaDeAcuerdo(Base, UniversalMixin):
         """Autoridad descripcion corta"""
         return self.autoridad.descripcion_corta
 
+    @property
+    def autoridad_clave(self):
+        """Autoridad clave"""
+        return self.autoridad.clave
+
     def __repr__(self):
         """Representación"""
         return f"<ListaDeAcuerdo {self.fecha}>"

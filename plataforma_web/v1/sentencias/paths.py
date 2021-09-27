@@ -1,6 +1,7 @@
 """
 Sentencias v1, rutas (paths)
 """
+from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -19,8 +20,13 @@ sentencias = APIRouter(prefix="/v1/sentencias", tags=["sentencias"])
 
 @sentencias.get("", response_model=LimitOffsetPage[SentenciaOut])
 async def listado_sentencias(
+    distrito_id: int = None,
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     materia_tipo_juicio_id: int = None,
+    fecha: date = None,
+    fecha_desde: date = None,
+    fecha_hasta: date = None,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -30,8 +36,13 @@ async def listado_sentencias(
     try:
         listado = get_sentencias(
             db,
+            distrito_id=distrito_id,
             autoridad_id=autoridad_id,
+            autoridad_clave=autoridad_clave,
             materia_tipo_juicio_id=materia_tipo_juicio_id,
+            fecha=fecha,
+            fecha_desde=fecha_desde,
+            fecha_hasta=fecha_hasta,
         )
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error

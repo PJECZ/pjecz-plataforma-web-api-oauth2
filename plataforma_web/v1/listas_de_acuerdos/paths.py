@@ -21,10 +21,12 @@ listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de
 
 @listas_de_acuerdos.get("", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
 async def listado_listas_de_acuerdos(
+    distrito_id: int = None,
     autoridad_id: int = None,
     autoridad_clave: str = None,
     fecha: date = None,
-    anio: int = None,
+    fecha_desde: date = None,
+    fecha_hasta: date = None,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -34,10 +36,12 @@ async def listado_listas_de_acuerdos(
     try:
         listado = get_listas_de_acuerdos(
             db,
+            distrito_id=distrito_id,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
             fecha=fecha,
-            anio=anio,
+            fecha_desde=fecha_desde,
+            fecha_hasta=fecha_hasta,
         )
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error

@@ -16,6 +16,7 @@ class SentenciaOut(BaseModel):
     autoridad_id: int
     autoridad_descripcion: str
     autoridad_descripcion_corta: str
+    autoridad_clave: str
     materia_id: int
     materia_nombre: str
     materia_tipo_juicio_id: int

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import AlredyExistsError
 from lib.safe_string import safe_string
-from plataforma_web.v1.autoridades.crud import get_autoridad, get_autoridad_from_clave
+from plataforma_web.v1.autoridades.crud import get_autoridad, get_autoridad_from_clave, get_autoridades
 from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
 from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoIn
 
@@ -16,13 +16,19 @@ LIMITE_DIAS = 7
 
 def get_listas_de_acuerdos(
     db: Session,
+    distrito_id: int = None,
     autoridad_id: int = None,
     autoridad_clave: str = None,
     fecha: date = None,
-    anio: int = None,
+    fecha_desde: date = None,
+    fecha_hasta: date = None,
 ) -> Any:
     """Consultar las listas de acuerdos activas"""
     consulta = db.query(ListaDeAcuerdo)
+    if distrito_id:
+        autoridades = get_autoridades(db, distrito_id)
+        autoridades_ids = [autoridad.id for autoridad in autoridades]
+        consulta = consulta.filter(ListaDeAcuerdo.autoridad_id.in_(autoridades_ids))
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
@@ -33,11 +39,15 @@ def get_listas_de_acuerdos(
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
             raise ValueError("Fecha fuera de rango")
         consulta = consulta.filter_by(fecha=fecha)
-    if anio:
-        if not 2000 <= anio <= date.today().year:
-            raise ValueError("Año fuera de rango")
-        consulta = consulta.filter(ListaDeAcuerdo.fecha >= date(anio, 1, 1))
-        consulta = consulta.filter(ListaDeAcuerdo.fecha <= date(anio, 12, 31))
+    else:
+        if fecha_desde:
+            if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
+                raise ValueError("Fecha fuera de rango")
+            consulta = consulta.filter(ListaDeAcuerdo.fecha >= fecha_desde)
+        if fecha_hasta:
+            if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
+                raise ValueError("Fecha fuera de rango")
+            consulta = consulta.filter(ListaDeAcuerdo.fecha <= fecha_hasta)
     return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdo.fecha.desc())
 
 
