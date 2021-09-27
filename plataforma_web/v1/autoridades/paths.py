@@ -27,8 +27,6 @@ autoridades = APIRouter(prefix="/v1/autoridades", tags=["autoridades"])
 async def listado_autoridades(
     distrito_id: int = None,
     materia_id: int = None,
-    organo_jurisdiccional: str = None,
-    con_notarias: bool = False,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -40,8 +38,6 @@ async def listado_autoridades(
             db,
             distrito_id=distrito_id,
             materia_id=materia_id,
-            organo_jurisdiccional=organo_jurisdiccional,
-            con_notarias=con_notarias,
         )
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
