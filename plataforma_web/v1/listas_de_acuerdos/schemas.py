@@ -23,6 +23,7 @@ class ListaDeAcuerdoOut(ListaDeAcuerdoIn):
     distrito_nombre_corto: str
     autoridad_descripcion: str
     autoridad_descripcion_corta: str
+    autoridad_clave: str
     archivo: Optional[str] = ""
     url: Optional[str] = ""
 

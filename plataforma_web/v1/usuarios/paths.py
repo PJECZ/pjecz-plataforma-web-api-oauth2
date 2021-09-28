@@ -2,7 +2,7 @@
 Usuarios v1.0, rutas (paths)
 """
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_pagination import LimitOffsetPage
+from lib.fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
@@ -12,10 +12,10 @@ from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
 from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInBD
 
-v1_usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
+usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
 
-@v1_usuarios.get("", response_model=LimitOffsetPage[UsuarioOut])
+@usuarios.get("", response_model=LimitOffsetPage[UsuarioOut])
 async def listado_usuarios(
     autoridad_id: int = None,
     rol_id: int = None,
@@ -34,7 +34,7 @@ async def listado_usuarios(
     return paginate(listado)
 
 
-@v1_usuarios.get("/{usuario_id}", response_model=UsuarioOut)
+@usuarios.get("/{usuario_id}", response_model=UsuarioOut)
 async def detalle_usuario(
     usuario_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

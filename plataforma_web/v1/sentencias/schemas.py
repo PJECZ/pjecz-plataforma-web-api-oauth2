@@ -16,12 +16,13 @@ class SentenciaOut(BaseModel):
     autoridad_id: int
     autoridad_descripcion: str
     autoridad_descripcion_corta: str
+    autoridad_clave: str
     materia_id: int
     materia_nombre: str
     materia_tipo_juicio_id: int
     materia_tipo_juicio_descripcion: str
     sentencia: str
-    # sentencia_fecha: date
+    sentencia_fecha: date
     expediente: str
     fecha: date
     descripcion: str

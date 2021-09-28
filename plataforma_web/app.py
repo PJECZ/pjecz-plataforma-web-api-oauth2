@@ -11,15 +11,16 @@ from fastapi_pagination import add_pagination
 from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from lib.database import get_db
 
-from plataforma_web.v1.autoridades.paths import v1_autoridades
-from plataforma_web.v1.distritos.paths import v1_distritos
-from plataforma_web.v1.listas_de_acuerdos.paths import v1_listas_de_acuerdos
-from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import v1_listas_de_acuerdos_acuerdos
-from plataforma_web.v1.materias.paths import v1_materias
-from plataforma_web.v1.materias_tipos_juicios.paths import v1_materias_tipos_juicios
-from plataforma_web.v1.roles.paths import v1_roles
-from plataforma_web.v1.sentencias.paths import v1_sentencias
-from plataforma_web.v1.usuarios.paths import v1_usuarios
+from plataforma_web.v1.autoridades.paths import autoridades
+from plataforma_web.v1.departamentos.paths import departamentos
+from plataforma_web.v1.distritos.paths import distritos
+from plataforma_web.v1.listas_de_acuerdos.paths import listas_de_acuerdos
+from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import listas_de_acuerdos_acuerdos
+from plataforma_web.v1.materias.paths import materias
+from plataforma_web.v1.materias_tipos_juicios.paths import materias_tipos_juicios
+from plataforma_web.v1.roles.paths import roles
+from plataforma_web.v1.sentencias.paths import sentencias
+from plataforma_web.v1.usuarios.paths import usuarios
 
 from plataforma_web.v1.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user
 from plataforma_web.v1.usuarios.schemas import Token, UsuarioInBD
@@ -29,15 +30,16 @@ app = FastAPI(
     description="Información del Sitio Web www.pjecz.gob.mx",
 )
 
-app.include_router(v1_autoridades)
-app.include_router(v1_distritos)
-app.include_router(v1_listas_de_acuerdos)
-app.include_router(v1_listas_de_acuerdos_acuerdos)
-app.include_router(v1_materias)
-app.include_router(v1_materias_tipos_juicios)
-app.include_router(v1_roles)
-app.include_router(v1_sentencias)
-app.include_router(v1_usuarios)
+app.include_router(autoridades)
+app.include_router(departamentos)
+app.include_router(distritos)
+app.include_router(listas_de_acuerdos)
+app.include_router(listas_de_acuerdos_acuerdos)
+app.include_router(materias)
+app.include_router(materias_tipos_juicios)
+app.include_router(roles)
+app.include_router(sentencias)
+app.include_router(usuarios)
 
 add_pagination(app)
 

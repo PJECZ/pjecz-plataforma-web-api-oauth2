@@ -20,15 +20,13 @@ from plataforma_web.v1.sentencias.schemas import SentenciaOut
 from plataforma_web.v1.usuarios.crud import get_usuarios
 from plataforma_web.v1.usuarios.schemas import UsuarioOut
 
-v1_autoridades = APIRouter(prefix="/v1/autoridades", tags=["autoridades"])
+autoridades = APIRouter(prefix="/v1/autoridades", tags=["autoridades"])
 
 
-@v1_autoridades.get("", response_model=LimitOffsetPage[AutoridadOut])
+@autoridades.get("", response_model=LimitOffsetPage[AutoridadOut])
 async def listado_autoridades(
     distrito_id: int = None,
     materia_id: int = None,
-    organo_jurisdiccional: str = None,
-    con_notarias: bool = False,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -40,8 +38,6 @@ async def listado_autoridades(
             db,
             distrito_id=distrito_id,
             materia_id=materia_id,
-            organo_jurisdiccional=organo_jurisdiccional,
-            con_notarias=con_notarias,
         )
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
@@ -50,7 +46,7 @@ async def listado_autoridades(
     return paginate(listado)
 
 
-@v1_autoridades.get("/clave/{clave}", response_model=AutoridadOut)
+@autoridades.get("/clave/{clave}", response_model=AutoridadOut)
 async def detalle_autoridad_con_clave(
     clave: str,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -68,7 +64,7 @@ async def detalle_autoridad_con_clave(
     return AutoridadOut.from_orm(autoridad)
 
 
-@v1_autoridades.get("/{autoridad_id}", response_model=AutoridadOut)
+@autoridades.get("/{autoridad_id}", response_model=AutoridadOut)
 async def detalle_autoridad(
     autoridad_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -86,7 +82,7 @@ async def detalle_autoridad(
     return AutoridadOut.from_orm(autoridad)
 
 
-@v1_autoridades.get("/{autoridad_id}/listas_de_acuerdos", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
+@autoridades.get("/{autoridad_id}/listas_de_acuerdos", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
 async def listado_listas_de_acuerdos_de_autoridad(
     autoridad_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -104,7 +100,7 @@ async def listado_listas_de_acuerdos_de_autoridad(
     return paginate(listado)
 
 
-@v1_autoridades.get("/{autoridad_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut])
+@autoridades.get("/{autoridad_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut])
 async def listado_sentencias_de_autoridad(
     autoridad_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
@@ -122,7 +118,7 @@ async def listado_sentencias_de_autoridad(
     return paginate(listado)
 
 
-@v1_autoridades.get("/{autoridad_id}/usuarios", response_model=LimitOffsetPage[UsuarioOut])
+@autoridades.get("/{autoridad_id}/usuarios", response_model=LimitOffsetPage[UsuarioOut])
 async def listado_usuarios_de_autoridad(
     autoridad_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

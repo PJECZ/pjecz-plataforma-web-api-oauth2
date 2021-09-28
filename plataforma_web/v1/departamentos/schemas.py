@@ -1,11 +1,11 @@
 """
-Distritos v1.0, esquemas
+Departamentos v1.0, esquemas
 """
 from pydantic import BaseModel
 
 
-class DistritoOut(BaseModel):
-    """Esquema para entregar distrito"""
+class DepartamentoOut(BaseModel):
+    """Esquema para entregar departamento"""
 
     id: int
     nombre: str

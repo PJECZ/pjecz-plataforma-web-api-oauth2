@@ -59,6 +59,11 @@ class Sentencia(Base, UniversalMixin):
         return self.autoridad.descripcion_corta
 
     @property
+    def autoridad_clave(self):
+        """Autoridad clave"""
+        return self.autoridad.clave
+
+    @property
     def materia_id(self):
         """Materia id"""
         return self.materia_tipo_juicio.materia_id
