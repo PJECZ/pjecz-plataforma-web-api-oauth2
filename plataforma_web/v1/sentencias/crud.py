@@ -43,11 +43,11 @@ def get_sentencias(
         if fecha_desde:
             if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
                 raise ValueError("Fecha fuera de rango")
-            consulta = consulta.filter(Sentencia.sentencia_fecha >= fecha_desde)
+            consulta = consulta.filter(Sentencia.fecha >= fecha_desde)
         if fecha_hasta:
             if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
                 raise ValueError("Fecha fuera de rango")
-            consulta = consulta.filter(Sentencia.sentencia_fecha <= fecha_hasta)
+            consulta = consulta.filter(Sentencia.fecha <= fecha_hasta)
     return consulta.filter_by(estatus="A").order_by(Sentencia.fecha.desc())
 
 
