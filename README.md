@@ -21,11 +21,6 @@ Cree un archivo para las variables de entorno `.env`
     ALGORITHM=HS256
     ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-    # Jupyter notebooks
-    PYTHONPATH=/ruta/al/directorio/GitHub/guivaloz/pjecz-plataforma-web-api-oauth2
-    USERNAME=nombres.apellido_paterno@pjecz.gob.mx
-    PASSWORD=****************
-
 Para Bash Shell cree un archivo `.bashrc` con este contenido
 
     #!/bin/bash
@@ -115,6 +110,13 @@ O arrancar con gunicorn
     gunicorn -w 4 -k uvicorn.workers.UvicornWorker plataforma_web.app:app
 
 ## Jupyter notebooks
+
+Agregue sus variables de entorno
+
+    # Jupyter notebooks
+    PYTHONPATH=/ruta/al/directorio/GitHub/guivaloz/pjecz-plataforma-web-api-oauth2
+    USERNAME=nombres.apellido_paterno@correo.com.mx
+    PASSWORD=****************
 
 Instale el kernel para ejecutar notebooks de Jupyter en VSCode
 
