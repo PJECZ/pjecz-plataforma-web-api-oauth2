@@ -18,17 +18,18 @@ class Usuario(Base, UniversalMixin):
     id = Column(Integer, primary_key=True)
 
     # Claves foráneas
-    rol_id = Column(Integer, ForeignKey("roles.id"), index=True, nullable=False)
-    rol = relationship("Rol", back_populates="usuarios")
     autoridad_id = Column(Integer, ForeignKey("autoridades.id"), index=True, nullable=False)
     autoridad = relationship("Autoridad", back_populates="usuarios")
 
     # Columnas
     email = Column(String(256), unique=True, index=True)
+    contrasena = Column(String(256), nullable=False)
     nombres = Column(String(256), nullable=False)
     apellido_paterno = Column(String(256), nullable=False)
     apellido_materno = Column(String(256))
-    contrasena = Column(String(256), nullable=False)
+    curp = Column(String(18))
+    puesto = Column(String(256))
+    telefono_celular = Column(String(256))
 
     @property
     def rol_nombre(self):
