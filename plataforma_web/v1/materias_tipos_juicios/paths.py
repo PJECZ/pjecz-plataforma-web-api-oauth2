@@ -7,7 +7,6 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
@@ -15,6 +14,8 @@ from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_jui
 from plataforma_web.v1.materias_tipos_juicios.schemas import MateriaTipoJuicioOut
 from plataforma_web.v1.sentencias.crud import get_sentencias
 from plataforma_web.v1.sentencias.schemas import SentenciaOut
+
+MODULO = "MATERIAS TIPOS JUICIOS"
 
 materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["materias"])
 
@@ -26,7 +27,7 @@ async def listado_materias_tipos_juicios(
     db: Session = Depends(get_db),
 ):
     """Listado de tipos de juicios de una materia"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_materias_tipos_juicios(db, materia_id=materia_id)
@@ -45,7 +46,7 @@ async def detalle_materia_tipo_juicio(
     db: Session = Depends(get_db),
 ):
     """Detalle de una materia_tipo_juicio a partir de su id"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id=tipo_juicio_id)
@@ -66,7 +67,7 @@ async def listado_materias_tipos_juicios_sentencias(
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias de un tipo de juicio"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(db, tipo_juicio_id)

@@ -9,12 +9,13 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from lib.exceptions import AlredyExistsError
-from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 from plataforma_web.v1.listas_de_acuerdos.crud import get_listas_de_acuerdos, get_lista_de_acuerdo, insert_lista_de_acuerdo
 from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
+
+MODULO = "LISTAS DE ACUERDOS"
 
 listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de acuerdos"])
 
@@ -31,7 +32,7 @@ async def listado_listas_de_acuerdos(
     db: Session = Depends(get_db),
 ):
     """Listado de listas de acuerdos"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_listas_de_acuerdos(
@@ -57,7 +58,7 @@ async def nueva_lista_de_acuerdos(
     db: Session = Depends(get_db),
 ):
     """Insertar una lista de acuerdos"""
-    if not current_user.permissions & Permiso.CREAR_JUSTICIABLES == Permiso.CREAR_JUSTICIABLES:
+    if not current_user.can_insert(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         resultado = insert_lista_de_acuerdo(db, lista_de_acuerdo)
@@ -77,7 +78,7 @@ async def detalle_lista_de_acuerdos(
     db: Session = Depends(get_db),
 ):
     """Detalle de una lista de acuerdos a partir de su id"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)

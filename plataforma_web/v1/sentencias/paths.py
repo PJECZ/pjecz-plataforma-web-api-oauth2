@@ -8,12 +8,13 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
-from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 from plataforma_web.v1.sentencias.crud import get_sentencias, get_sentencia
 from plataforma_web.v1.sentencias.schemas import SentenciaOut
+
+MODULO = "SENTENCIAS"
 
 sentencias = APIRouter(prefix="/v1/sentencias", tags=["sentencias"])
 
@@ -31,7 +32,7 @@ async def listado_sentencias(
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_sentencias(
@@ -58,7 +59,7 @@ async def detalle_sentencia(
     db: Session = Depends(get_db),
 ):
     """Detalle de una sentencia a partir de su id"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         sentencia = get_sentencia(db, sentencia_id)

@@ -7,13 +7,14 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD, UsuarioOut
 
 from plataforma_web.v1.roles.crud import get_roles, get_rol
 from plataforma_web.v1.roles.schemas import RolOut
 from plataforma_web.v1.usuarios.crud import get_usuarios
+
+MODULO = "ROLES"
 
 roles = APIRouter(prefix="/v1/roles", tags=["roles"])
 
@@ -24,7 +25,7 @@ async def listado_roles(
     db: Session = Depends(get_db),
 ):
     """Listado de roles"""
-    if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_roles(db))
 
@@ -36,7 +37,7 @@ async def detalle_rol(
     db: Session = Depends(get_db),
 ):
     """Detalle de un rol a partir de su id"""
-    if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         rol = get_rol(db, rol_id=rol_id)
@@ -52,7 +53,7 @@ async def listado_usuarios_de_rol(
     db: Session = Depends(get_db),
 ):
     """Listado de usuarios de un rol"""
-    if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_usuarios(db, rol_id=rol_id)

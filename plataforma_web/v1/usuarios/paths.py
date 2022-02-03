@@ -7,10 +7,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
 from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInBD
+
+MODULO = "USUARIOS"
 
 usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
@@ -23,7 +24,7 @@ async def listado_usuarios(
     db: Session = Depends(get_db),
 ):
     """Listado de usuarios"""
-    if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_usuarios(db, autoridad_id=autoridad_id, rol_id=rol_id)
@@ -41,7 +42,7 @@ async def detalle_usuario(
     db: Session = Depends(get_db),
 ):
     """Detalle de un usuario a partir de su id"""
-    if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         usuario = get_usuario(db, usuario_id=usuario_id)

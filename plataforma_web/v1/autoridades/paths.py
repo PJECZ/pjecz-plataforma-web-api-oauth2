@@ -7,7 +7,6 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from plataforma_web.v1.roles.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
@@ -20,6 +19,8 @@ from plataforma_web.v1.sentencias.schemas import SentenciaOut
 from plataforma_web.v1.usuarios.crud import get_usuarios
 from plataforma_web.v1.usuarios.schemas import UsuarioOut
 
+MODULO = "AUTORIDADES"
+
 autoridades = APIRouter(prefix="/v1/autoridades", tags=["autoridades"])
 
 
@@ -31,7 +32,7 @@ async def listado_autoridades(
     db: Session = Depends(get_db),
 ):
     """Listado de autoridades"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_autoridades(
@@ -53,7 +54,7 @@ async def detalle_autoridad_con_clave(
     db: Session = Depends(get_db),
 ):
     """Detalle de una autoridad a partir de su clave"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         autoridad = get_autoridad_from_clave(db, clave=clave)
@@ -71,7 +72,7 @@ async def detalle_autoridad(
     db: Session = Depends(get_db),
 ):
     """Detalle de una autoridad a partir de su id"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.can_view(MODULO):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         autoridad = get_autoridad(db, autoridad_id=autoridad_id)
@@ -89,7 +90,7 @@ async def listado_listas_de_acuerdos_de_autoridad(
     db: Session = Depends(get_db),
 ):
     """Listado de listas de acuerdos de una autoridad"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+    if not current_user.can_view("LISTAS DE ACUERDOS"):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_listas_de_acuerdos(db, autoridad_id=autoridad_id)
@@ -107,7 +108,7 @@ async def listado_sentencias_de_autoridad(
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias de una autoridad"""
-    if not current_user.permissions & Permiso.VER_JUSTICIABLES == Permiso.VER_JUSTICIABLES:
+    if not current_user.can_view("LISTAS DE ACUERDOS ACUERDOS"):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_sentencias(db, autoridad_id=autoridad_id)
@@ -125,7 +126,7 @@ async def listado_usuarios_de_autoridad(
     db: Session = Depends(get_db),
 ):
     """Listado de usuarios de una autoridad"""
-    if not current_user.permissions & Permiso.VER_CUENTAS == Permiso.VER_CUENTAS:
+    if not current_user.can_view("USUARIOS"):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_usuarios(db, autoridad_id=autoridad_id)
