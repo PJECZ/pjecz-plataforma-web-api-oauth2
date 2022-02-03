@@ -9,10 +9,10 @@ from lib.universal_mixin import UniversalMixin
 
 
 class UsuarioRol(Base, UniversalMixin):
-    """ UsuarioRol """
+    """UsuarioRol"""
 
     # Nombre de la tabla
-    __tablename__ = 'usuarios_roles'
+    __tablename__ = "usuarios_roles"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
@@ -26,6 +26,16 @@ class UsuarioRol(Base, UniversalMixin):
     # Columnas
     descripcion = Column(String(256), nullable=False)
 
+    @property
+    def rol_nombre(self):
+        """Nombre del rol"""
+        return self.rol.nombre
+
+    @property
+    def usuario_nombre(self):
+        """Nombre del usuario"""
+        return self.usuario.nombre
+
     def __repr__(self):
-        """ Representación """
+        """Representación"""
         return f"<UsuarioRol {self.descripcion}>"

@@ -38,6 +38,16 @@ class Permiso(Base, UniversalMixin):
     nombre = Column(String(256), nullable=False, unique=True)
     nivel = Column(Integer(), nullable=False)
 
+    @property
+    def rol_nombre(self):
+        """Nombre del rol"""
+        return self.rol.nombre
+
+    @property
+    def modulo_nombre(self):
+        """Nombre del rol"""
+        return self.rol.nombre
+
     def __repr__(self):
         """ Representación """
         return f"<Permiso {self.nombre}>"

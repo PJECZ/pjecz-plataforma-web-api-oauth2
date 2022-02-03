@@ -32,11 +32,6 @@ class Usuario(Base, UniversalMixin):
     telefono_celular = Column(String(256))
 
     @property
-    def rol_nombre(self):
-        """Rol nombre"""
-        return self.rol.nombre
-
-    @property
     def distrito_id(self):
         """Distrito id"""
         return self.autoridad.distrito_id

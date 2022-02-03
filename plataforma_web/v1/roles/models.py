@@ -24,10 +24,6 @@ class Rol(Base, UniversalMixin):
     permisos = relationship('Permiso', back_populates='rol')
     usuarios_roles = relationship("UsuarioRol", back_populates="rol")
 
-    def has_permission(self, perm):
-        """¿Tiene el permiso dado?"""
-        return self.permiso & perm == perm
-
     def __repr__(self):
         """Representación"""
         return f"<Rol {self.nombre}>"
