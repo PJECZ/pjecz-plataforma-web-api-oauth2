@@ -7,13 +7,12 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 from plataforma_web.v1.modulos.crud import get_modulos, get_modulo
 from plataforma_web.v1.modulos.schemas import ModuloOut
-
-MODULO = "MODULOS"
+from plataforma_web.v1.permisos.models import Permiso
+from plataforma_web.v1.usuarios.authentications import get_current_active_user
+from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 modulos = APIRouter(prefix="/v1/modulos", tags=["modulos"])
 
@@ -24,7 +23,7 @@ async def list_paginate(
     db: Session = Depends(get_db),
 ):
     """Listado de modulos"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["MODULOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_modulos(db))
 
@@ -36,7 +35,7 @@ async def detail(
     db: Session = Depends(get_db),
 ):
     """Detalle de una modulo a partir de su id"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["MODULOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         modulo = get_modulo(db, modulo_id)

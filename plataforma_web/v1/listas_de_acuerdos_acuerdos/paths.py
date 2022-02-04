@@ -8,13 +8,12 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 from lib.exceptions import AlredyExistsError
 from lib.fastapi_pagination import LimitOffsetPage
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.crud import get_acuerdos, get_acuerdo, insert_acuerdo
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.schemas import ListaDeAcuerdoAcuerdoIn, ListaDeAcuerdoAcuerdoOut
-
-MODULO = "LISTAS DE ACUERDOS ACUERDOS"
+from plataforma_web.v1.permisos.models import Permiso
+from plataforma_web.v1.usuarios.authentications import get_current_active_user
+from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 listas_de_acuerdos_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de acuerdos"])
 
@@ -26,7 +25,7 @@ async def listado_acuerdos(
     db: Session = Depends(get_db),
 ):
     """Listado de Acuerdos de una Lista de Acuerdos"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["LISTAS DE ACUERDOS ACUERDOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_acuerdos(db, lista_de_acuerdo_id=lista_de_acuerdo_id)
@@ -44,7 +43,7 @@ async def nuevo_acuerdo(
     db: Session = Depends(get_db),
 ):
     """Insertar un acuerdo"""
-    if not current_user.can_insert(MODULO):
+    if not current_user.permissions["LISTAS DE ACUERDOS ACUERDOS"] >= Permiso.CREAR:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = insert_acuerdo(db, acuerdo)
@@ -64,7 +63,7 @@ async def detalle_acuerdo(
     db: Session = Depends(get_db),
 ):
     """Detalle de una acuerdo a partir de su id"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["LISTAS DE ACUERDOS ACUERDOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         acuerdo = get_acuerdo(db, lista_de_acuerdo_acuerdo_id=acuerdo_id)

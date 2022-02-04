@@ -7,15 +7,14 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_juicios, get_materia_tipo_juicio
 from plataforma_web.v1.materias_tipos_juicios.schemas import MateriaTipoJuicioOut
+from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.sentencias.crud import get_sentencias
 from plataforma_web.v1.sentencias.schemas import SentenciaOut
-
-MODULO = "MATERIAS TIPOS JUICIOS"
+from plataforma_web.v1.usuarios.authentications import get_current_active_user
+from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["materias"])
 
@@ -27,7 +26,7 @@ async def listado_materias_tipos_juicios(
     db: Session = Depends(get_db),
 ):
     """Listado de tipos de juicios de una materia"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["MATERIAS TIPOS JUICIOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_materias_tipos_juicios(db, materia_id=materia_id)
@@ -46,7 +45,7 @@ async def detalle_materia_tipo_juicio(
     db: Session = Depends(get_db),
 ):
     """Detalle de una materia_tipo_juicio a partir de su id"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["MATERIAS TIPOS JUICIOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id=tipo_juicio_id)
@@ -67,7 +66,7 @@ async def listado_materias_tipos_juicios_sentencias(
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias de un tipo de juicio"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["SENTENCIAS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(db, tipo_juicio_id)

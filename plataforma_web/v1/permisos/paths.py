@@ -7,13 +7,12 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 from plataforma_web.v1.permisos.crud import get_permisos, get_permiso
+from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.permisos.schemas import PermisoOut
-
-MODULO = "PERMISOS"
+from plataforma_web.v1.usuarios.authentications import get_current_active_user
+from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 permisos = APIRouter(prefix="/v1/permisos", tags=["permisos"])
 
@@ -24,7 +23,7 @@ async def list_paginate(
     db: Session = Depends(get_db),
 ):
     """Listado de permisos"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["PERMISOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_permisos(db))
 
@@ -36,7 +35,7 @@ async def detail(
     db: Session = Depends(get_db),
 ):
     """Detalle de una permiso a partir de su id"""
-    if not current_user.can_view(MODULO):
+    if not current_user.permissions["PERMISOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         permiso = get_permiso(db, permiso_id)

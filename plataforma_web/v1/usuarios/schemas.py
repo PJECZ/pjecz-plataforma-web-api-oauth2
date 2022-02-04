@@ -33,7 +33,7 @@ class UsuarioInBD(UsuarioOut):
     """Usuario en base de datos"""
 
     username: str
-    permissions: int
+    permissions: dict
     hashed_password: str
     disabled: bool
 

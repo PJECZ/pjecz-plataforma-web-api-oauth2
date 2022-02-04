@@ -34,6 +34,9 @@ class Usuario(Base, UniversalMixin):
     puesto = Column(String(256))
     telefono_celular = Column(String(256))
 
+    # Hijos
+    usuarios_roles = relationship("UsuarioRol", back_populates="usuario")
+
     @property
     def distrito_id(self):
         """Distrito id"""
@@ -59,35 +62,17 @@ class Usuario(Base, UniversalMixin):
         """Autoridad descripcion corta"""
         return self.autoridad.descripcion_corta
 
-    def can(self, module, permission):
-        """¿Tiene permiso?"""
-        if isinstance(module, str):
-            this_module = Modulo.query.filter_by(nombre=module.upper()).filter_by(estatus="A").first()
-            if this_module is None:
-                return False
-        elif isinstance(module, Modulo):
-            this_module = module
-        else:
-            return False
-        max_permission = 0
+    def permissions(self):
+        """Entrega un diccionario con todos los permisos"""
+        todos = {}
         for usuario_rol in self.usuarios_roles:
             if usuario_rol.estatus == "A":
                 for permiso in usuario_rol.rol.permisos:
-                    if permiso.estatus == "A" and permiso.modulo == this_module and permiso.nivel > max_permission:
-                        max_permission = permiso.nivel
-        return max_permission >= int(permission)
-
-    def can_view(self, module):
-        """¿Tiene permiso para ver?"""
-        return self.can(module, Permiso.VER)
-
-    def can_edit(self, module):
-        """¿Tiene permiso para editar?"""
-        return self.can(module, Permiso.MODIFICAR)
-
-    def can_insert(self, module):
-        """¿Tiene permiso para agregar?"""
-        return self.can(module, Permiso.CREAR)
+                    if permiso.estatus == "A":
+                        etiqueta = permiso.modulo.nombre
+                        if etiqueta not in todos or permiso.nivel > todos[etiqueta]:
+                            todos[etiqueta] = permiso.nivel
+        return todos
 
     def __repr__(self):
         """Representación"""
