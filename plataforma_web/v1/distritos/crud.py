@@ -19,6 +19,4 @@ def get_distrito(db: Session, distrito_id: int) -> Distrito:
         raise IndexError("No existe ese distrito")
     if distrito.estatus != "A":
         raise ValueError("No es activo el distrito, está eliminado")
-    if distrito.es_distrito_judicial is False:
-        raise ValueError("No es distrito judicial")
     return distrito

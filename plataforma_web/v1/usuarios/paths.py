@@ -2,11 +2,11 @@
 Usuarios v1.0, rutas (paths)
 """
 from fastapi import APIRouter, Depends, HTTPException
-from lib.fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.fastapi_pagination import LimitOffsetPage
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
 from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInBD
