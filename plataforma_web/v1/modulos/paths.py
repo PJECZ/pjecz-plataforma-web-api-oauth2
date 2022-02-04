@@ -1,5 +1,5 @@
 """
-Roles v1.0, rutas (paths)
+Modulos v1, rutas (paths)
 """
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -8,37 +8,39 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.roles.crud import get_roles, get_rol
-from plataforma_web.v1.roles.schemas import RolOut
+from plataforma_web.v1.modulos.crud import get_modulos, get_modulo
+from plataforma_web.v1.modulos.schemas import ModuloOut
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
-roles = APIRouter(prefix="/v1/roles", tags=["roles"])
+modulos = APIRouter(prefix="/v1/modulos", tags=["modulos"])
 
 
-@roles.get("", response_model=LimitOffsetPage[RolOut])
-async def listado_roles(
+@modulos.get("", response_model=LimitOffsetPage[ModuloOut])
+async def list_paginate(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado de roles"""
-    if not current_user.permissions["ROLES"] >= Permiso.VER:
+    """Listado de modulos"""
+    if not current_user.permissions["MODULOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
-    return paginate(get_roles(db))
+    return paginate(get_modulos(db))
 
 
-@roles.get("/{rol_id}", response_model=RolOut)
-async def detalle_rol(
-    rol_id: int,
+@modulos.get("/{modulo_id}", response_model=ModuloOut)
+async def detail(
+    modulo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Detalle de un rol a partir de su id"""
-    if not current_user.permissions["ROLES"] >= Permiso.VER:
+    """Detalle de una modulo a partir de su id"""
+    if not current_user.permissions["MODULOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        rol = get_rol(db, rol_id=rol_id)
+        modulo = get_modulo(db, modulo_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    return RolOut.from_orm(rol)
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return ModuloOut.from_orm(modulo)

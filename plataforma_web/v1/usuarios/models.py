@@ -7,6 +7,9 @@ from sqlalchemy.orm import relationship
 from lib.database import Base
 from lib.universal_mixin import UniversalMixin
 
+from plataforma_web.v1.modulos.models import Modulo
+from plataforma_web.v1.permisos.models import Permiso
+
 
 class Usuario(Base, UniversalMixin):
     """Usuario"""
@@ -18,22 +21,21 @@ class Usuario(Base, UniversalMixin):
     id = Column(Integer, primary_key=True)
 
     # Claves foráneas
-    rol_id = Column(Integer, ForeignKey("roles.id"), index=True, nullable=False)
-    rol = relationship("Rol", back_populates="usuarios")
     autoridad_id = Column(Integer, ForeignKey("autoridades.id"), index=True, nullable=False)
     autoridad = relationship("Autoridad", back_populates="usuarios")
 
     # Columnas
     email = Column(String(256), unique=True, index=True)
+    contrasena = Column(String(256), nullable=False)
     nombres = Column(String(256), nullable=False)
     apellido_paterno = Column(String(256), nullable=False)
     apellido_materno = Column(String(256))
-    contrasena = Column(String(256), nullable=False)
+    curp = Column(String(18))
+    puesto = Column(String(256))
+    telefono_celular = Column(String(256))
 
-    @property
-    def rol_nombre(self):
-        """Rol nombre"""
-        return self.rol.nombre
+    # Hijos
+    usuarios_roles = relationship("UsuarioRol", back_populates="usuario")
 
     @property
     def distrito_id(self):
@@ -59,6 +61,18 @@ class Usuario(Base, UniversalMixin):
     def autoridad_descripcion_corta(self):
         """Autoridad descripcion corta"""
         return self.autoridad.descripcion_corta
+
+    def permissions(self):
+        """Entrega un diccionario con todos los permisos"""
+        todos = {}
+        for usuario_rol in self.usuarios_roles:
+            if usuario_rol.estatus == "A":
+                for permiso in usuario_rol.rol.permisos:
+                    if permiso.estatus == "A":
+                        etiqueta = permiso.modulo.nombre
+                        if etiqueta not in todos or permiso.nivel > todos[etiqueta]:
+                            todos[etiqueta] = permiso.nivel
+        return todos
 
     def __repr__(self):
         """Representación"""

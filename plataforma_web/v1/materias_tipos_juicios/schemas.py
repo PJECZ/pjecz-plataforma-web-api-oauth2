@@ -8,9 +8,9 @@ class MateriaTipoJuicioOut(BaseModel):
     """Esquema para entregar tipo de juicio"""
 
     id: int
-    descripcion: str
     materia_id: int
     materia_nombre: str
+    descripcion: str
 
     class Config:
         """SQLAlchemy config"""

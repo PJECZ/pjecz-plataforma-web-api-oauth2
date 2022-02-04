@@ -1,19 +1,43 @@
-@root = http://justicia:8002
-@api = {{root}}/v1
+@root = http://{{$dotenv HOST}}:{{$dotenv PORT}}
+@baseUrl = {{root}}/v1
+@limit = offset=0&limit=10
+@username = {{$dotenv USERNAME}}
+@password = {{$dotenv PASSWORD}}
 
-###
+### Bienvenida
 GET {{root}}
 
-###
-
+### Autorizacion
+# @name auth
 POST {{root}}/token
-Content-Type: application/xml
-Authorization: token xxx
+Content-Type: application/x-www-form-urlencoded
 
-<request>
-    <username>guillermo.valdes@pjecz.gob.mx</username>
-    <password>BadPassword</password>
-</request>
+username={{username}}&password={{password}}
 
-###
-GET {{api}}/materias
+### Materias
+GET {{baseUrl}}/materias
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Tipos de juicios civiles
+GET {{baseUrl}}/materias/2/tipos_juicios
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Distritos
+GET {{baseUrl}}/distritos
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Autoridades
+GET {{baseUrl}}/autoridades
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Roles
+GET {{baseUrl}}/roles
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Listas de Acuerdos
+GET {{baseUrl}}/listas_de_acuerdos?{{limit}}
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Sentencias
+GET {{baseUrl}}/sentencias?{{limit}}
+Authorization: Bearer {{auth.response.body.access_token}}

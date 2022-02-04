@@ -2,19 +2,19 @@
 Distritos v1.0, rutas (paths)
 """
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_pagination import LimitOffsetPage
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from plataforma_web.v1.roles.models import Permiso
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.distritos.crud import get_distritos, get_distrito
-from plataforma_web.v1.distritos.schemas import DistritoOut
 from plataforma_web.v1.autoridades.crud import get_autoridades
 from plataforma_web.v1.autoridades.schemas import AutoridadOut
+from plataforma_web.v1.distritos.crud import get_distritos, get_distrito
+from plataforma_web.v1.distritos.schemas import DistritoOut
+from plataforma_web.v1.permisos.models import Permiso
+from plataforma_web.v1.usuarios.authentications import get_current_active_user
+from plataforma_web.v1.usuarios.schemas import UsuarioInBD
 
 distritos = APIRouter(prefix="/v1/distritos", tags=["distritos"])
 
@@ -25,7 +25,7 @@ async def listado_distritos(
     db: Session = Depends(get_db),
 ):
     """Listado de distritos"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.permissions["DISTRITOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_distritos(db))
 
@@ -37,7 +37,7 @@ async def detalle_distrito(
     db: Session = Depends(get_db),
 ):
     """Detalle de un distrito"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.permissions["DISTRITOS"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         distrito = get_distrito(db, distrito_id=distrito_id)
@@ -54,7 +54,7 @@ async def listado_autoridades_del_distrito(
     db: Session = Depends(get_db),
 ):
     """Listado de autoridades del distrito"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.permissions["AUTORIDADES"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_autoridades(
@@ -77,7 +77,7 @@ async def listado_notarias_del_distrito(
     db: Session = Depends(get_db),
 ):
     """Listado de notarias del distrito"""
-    if not current_user.permissions & Permiso.VER_CATALOGOS == Permiso.VER_CATALOGOS:
+    if not current_user.permissions["AUTORIDADES"] >= Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_autoridades(

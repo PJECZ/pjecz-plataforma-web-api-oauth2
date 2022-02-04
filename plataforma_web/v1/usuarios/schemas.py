@@ -9,8 +9,6 @@ class UsuarioOut(BaseModel):
     """Esquema para entregar usuario"""
 
     id: int
-    rol_id: int
-    rol_nombre: str
     distrito_id: int
     distrito_nombre: str
     distrito_nombre_corto: str
@@ -21,6 +19,9 @@ class UsuarioOut(BaseModel):
     nombres: str
     apellido_paterno: str
     apellido_materno: str
+    curp: str
+    puesto: str
+    telefono_celular: str
 
     class Config:
         """SQLAlchemy config"""
@@ -32,7 +33,7 @@ class UsuarioInBD(UsuarioOut):
     """Usuario en base de datos"""
 
     username: str
-    permissions: int
+    permissions: dict
     hashed_password: str
     disabled: bool
 
