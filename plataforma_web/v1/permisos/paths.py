@@ -15,10 +15,10 @@ from plataforma_web.v1.permisos.schemas import PermisoOut
 
 MODULO = "PERMISOS"
 
-router = APIRouter()
+permisos = APIRouter(prefix="/v1/permisos", tags=["permisos"])
 
 
-@router.get("", response_model=LimitOffsetPage[PermisoOut])
+@permisos.get("", response_model=LimitOffsetPage[PermisoOut])
 async def list_paginate(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -29,7 +29,7 @@ async def list_paginate(
     return paginate(get_permisos(db))
 
 
-@router.get("/{permiso_id}", response_model=PermisoOut)
+@permisos.get("/{permiso_id}", response_model=PermisoOut)
 async def detail(
     permiso_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

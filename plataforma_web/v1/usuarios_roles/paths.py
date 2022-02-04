@@ -15,10 +15,10 @@ from plataforma_web.v1.usuarios_roles.schemas import UsuarioRolOut
 
 MODULO = "USUARIOS ROLES"
 
-router = APIRouter()
+usuarios_roles = APIRouter(prefix="/v1/usuarios_roles", tags=["usuarios_roles"])
 
 
-@router.get("", response_model=LimitOffsetPage[UsuarioRolOut])
+@usuarios_roles.get("", response_model=LimitOffsetPage[UsuarioRolOut])
 async def list_paginate(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -29,7 +29,7 @@ async def list_paginate(
     return paginate(get_usuarios_roles(db))
 
 
-@router.get("/{usuario_rol_id}", response_model=UsuarioRolOut)
+@usuarios_roles.get("/{usuario_rol_id}", response_model=UsuarioRolOut)
 async def detail(
     usuario_rol_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),

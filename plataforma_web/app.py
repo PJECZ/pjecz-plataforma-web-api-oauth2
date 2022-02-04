@@ -17,9 +17,12 @@ from plataforma_web.v1.listas_de_acuerdos.paths import listas_de_acuerdos
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import listas_de_acuerdos_acuerdos
 from plataforma_web.v1.materias.paths import materias
 from plataforma_web.v1.materias_tipos_juicios.paths import materias_tipos_juicios
+from plataforma_web.v1.modulos.paths import modulos
+from plataforma_web.v1.permisos.paths import permisos
 from plataforma_web.v1.roles.paths import roles
 from plataforma_web.v1.sentencias.paths import sentencias
 from plataforma_web.v1.usuarios.paths import usuarios
+from plataforma_web.v1.usuarios_roles.paths import usuarios_roles
 
 from plataforma_web.v1.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user
 from plataforma_web.v1.usuarios.schemas import Token, UsuarioInBD
@@ -35,9 +38,12 @@ app.include_router(listas_de_acuerdos)
 app.include_router(listas_de_acuerdos_acuerdos)
 app.include_router(materias)
 app.include_router(materias_tipos_juicios)
+app.include_router(modulos)
+app.include_router(permisos)
 app.include_router(roles)
 app.include_router(sentencias)
 app.include_router(usuarios)
+app.include_router(usuarios_roles)
 
 add_pagination(app)
 

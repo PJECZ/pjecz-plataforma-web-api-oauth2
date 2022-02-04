@@ -15,10 +15,10 @@ from plataforma_web.v1.modulos.schemas import ModuloOut
 
 MODULO = "MODULOS"
 
-router = APIRouter()
+modulos = APIRouter(prefix="/v1/modulos", tags=["modulos"])
 
 
-@router.get("", response_model=LimitOffsetPage[ModuloOut])
+@modulos.get("", response_model=LimitOffsetPage[ModuloOut])
 async def list_paginate(
     current_user: UsuarioInBD = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -29,7 +29,7 @@ async def list_paginate(
     return paginate(get_modulos(db))
 
 
-@router.get("/{modulo_id}", response_model=ModuloOut)
+@modulos.get("/{modulo_id}", response_model=ModuloOut)
 async def detail(
     modulo_id: int,
     current_user: UsuarioInBD = Depends(get_current_active_user),
