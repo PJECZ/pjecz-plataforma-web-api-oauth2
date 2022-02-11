@@ -63,7 +63,13 @@ Cree el archivo `instance/settings.py` que cargue las variables de entorno
     DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
 
     # MariaDB o MySQL
-    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+    # SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+
+    # PostgreSQL
+    SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
+
+    # SQLite
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///pjecz_rrhh_personal.sqlite3'
 
 ## Crear Entorno Virtual
 
@@ -114,10 +120,10 @@ O arrancar con gunicorn
 Agregue sus variables de entorno
 
     # Jupyter notebooks
-    PYTHONPATH=/ruta/al/directorio/GitHub/guivaloz/pjecz-plataforma-web-api-oauth2
+    PYTHONPATH=/ruta/al/directorio/GitHub/PJECZ/pjecz-plataforma-web-api-oauth2
     USERNAME=nombres.apellido_paterno@correo.com.mx
     PASSWORD=****************
 
 Instale el kernel para ejecutar notebooks de Jupyter en VSCode
 
-    pip install ipykernel pandas requests
+    pip install ipykernel pandas
