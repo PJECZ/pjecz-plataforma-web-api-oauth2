@@ -9,10 +9,10 @@ from lib.universal_mixin import UniversalMixin
 
 
 class Materia(Base, UniversalMixin):
-    """ Materia """
+    """Materia"""
 
     # Nombre de la tabla
-    __tablename__ = 'materias'
+    __tablename__ = "materias"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)

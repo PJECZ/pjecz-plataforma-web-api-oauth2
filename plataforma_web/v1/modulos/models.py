@@ -9,10 +9,10 @@ from lib.universal_mixin import UniversalMixin
 
 
 class Modulo(Base, UniversalMixin):
-    """ Modulo """
+    """Modulo"""
 
     # Nombre de la tabla
-    __tablename__ = 'modulos'
+    __tablename__ = "modulos"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
@@ -25,5 +25,5 @@ class Modulo(Base, UniversalMixin):
     permisos = relationship("Permiso", back_populates="modulo")
 
     def __repr__(self):
-        """ Representación """
+        """Representación"""
         return f"<Modulo {self.nombre}>"

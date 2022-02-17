@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class UsuarioRolOut(BaseModel):
-    """ Esquema para entregar usuario-rol """
+    """Esquema para entregar usuario-rol"""
 
     id: int
     rol_id: int
@@ -15,6 +15,6 @@ class UsuarioRolOut(BaseModel):
     descripcion: str
 
     class Config:
-        """ SQLAlchemy config """
+        """SQLAlchemy config"""
 
         orm_mode = True

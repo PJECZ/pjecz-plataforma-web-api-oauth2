@@ -9,10 +9,10 @@ from lib.universal_mixin import UniversalMixin
 
 
 class MateriaTipoJuicio(Base, UniversalMixin):
-    """ MateriaTipoJuicio """
+    """MateriaTipoJuicio"""
 
     # Nombre de la tabla
-    __tablename__ = 'materias_tipos_juicios'
+    __tablename__ = "materias_tipos_juicios"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
@@ -33,5 +33,5 @@ class MateriaTipoJuicio(Base, UniversalMixin):
         return self.materia.nombre
 
     def __repr__(self):
-        """ Representación """
+        """Representación"""
         return f"<MateriaTipoJuicio {self.descripcion}>"

@@ -21,7 +21,7 @@ class Rol(Base, UniversalMixin):
     nombre = Column(String(256), unique=True, nullable=False)
 
     # Hijos
-    permisos = relationship('Permiso', back_populates='rol')
+    permisos = relationship("Permiso", back_populates="rol")
     usuarios_roles = relationship("UsuarioRol", back_populates="rol")
 
     def __repr__(self):

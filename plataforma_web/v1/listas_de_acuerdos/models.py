@@ -28,7 +28,7 @@ class ListaDeAcuerdo(Base, UniversalMixin):
     url = Column(String(512), default="")
 
     # Hijos
-    listas_de_acuerdos_acuerdos = relationship('ListaDeAcuerdoAcuerdo', back_populates='lista_de_acuerdo')
+    listas_de_acuerdos_acuerdos = relationship("ListaDeAcuerdoAcuerdo", back_populates="lista_de_acuerdo")
 
     @property
     def distrito_id(self):
