@@ -9,7 +9,7 @@ from lib.universal_mixin import UniversalMixin
 
 
 class Permiso(Base, UniversalMixin):
-    """ Permiso """
+    """Permiso"""
 
     VER = 1
     MODIFICAR = 2
@@ -23,7 +23,7 @@ class Permiso(Base, UniversalMixin):
     }
 
     # Nombre de la tabla
-    __tablename__ = 'permisos'
+    __tablename__ = "permisos"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
@@ -49,5 +49,5 @@ class Permiso(Base, UniversalMixin):
         return self.rol.nombre
 
     def __repr__(self):
-        """ Representación """
+        """Representación"""
         return f"<Permiso {self.nombre}>"

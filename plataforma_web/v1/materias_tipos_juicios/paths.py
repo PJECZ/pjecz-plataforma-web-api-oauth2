@@ -58,7 +58,9 @@ async def detalle_materia_tipo_juicio(
     return MateriaTipoJuicioOut.from_orm(materia_tipo_juicio)
 
 
-@materias_tipos_juicios.get("/{materia_id}/tipos_juicios/{tipo_juicio_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut])
+@materias_tipos_juicios.get(
+    "/{materia_id}/tipos_juicios/{tipo_juicio_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut]
+)
 async def listado_materias_tipos_juicios_sentencias(
     materia_id: int,
     tipo_juicio_id: int,

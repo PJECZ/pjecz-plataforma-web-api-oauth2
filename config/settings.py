@@ -22,6 +22,6 @@ SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}/
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # OAuth2
-SECRET_KEY = os.environ.get("SECRET_KEY") # openssl rand -hex 32
+SECRET_KEY = os.environ.get("SECRET_KEY")  # openssl rand -hex 32
 ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))

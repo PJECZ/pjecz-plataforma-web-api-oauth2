@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 
 class PermisoOut(BaseModel):
-    """ Esquema para entregar permisos """
+    """Esquema para entregar permisos"""
 
     id: int
     rol_id: int
@@ -18,6 +18,6 @@ class PermisoOut(BaseModel):
     nivel: int
 
     class Config:
-        """ SQLAlchemy config """
+        """SQLAlchemy config"""
 
         orm_mode = True
