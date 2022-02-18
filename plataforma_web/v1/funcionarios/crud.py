@@ -40,7 +40,7 @@ def get_funcionario(db: Session, funcionario_id: int) -> Funcionario:
     return funcionario
 
 
-def get_funcionario_from_curp(db: Session, curp: str) -> Funcionario:
+def get_funcionario_with_curp(db: Session, curp: str) -> Funcionario:
     """Consultar un funcionario por su id"""
     if re.match(CURP_REGEXP, curp) is None:
         raise ValueError("El CURP es incorrecto")
