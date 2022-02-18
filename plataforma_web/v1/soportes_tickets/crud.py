@@ -30,7 +30,7 @@ def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:
     """ Consultar un soporte_ticket por su id """
     soporte_ticket = db.query(SoporteTicket).get(soporte_ticket_id)
     if soporte_ticket is None:
-        raise IndexError("No existe ese ___")
+        raise IndexError("No existe ese ticket")
     if soporte_ticket.estatus != "A":
-        raise ValueError("No es activa ese ___, está eliminado")
+        raise ValueError("No es activo ese ticket, está eliminado")
     return soporte_ticket

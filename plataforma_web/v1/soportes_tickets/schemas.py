@@ -14,7 +14,6 @@ class SoporteTicketOut(BaseModel):
     usuario_nombre: str
     descripcion: str
     estado: str
-    resolucion: str
     soluciones: str
 
     class Config:

@@ -43,8 +43,7 @@ class SoporteTicket(Base, UniversalMixin):
     # Columnas
     descripcion = Column(Text, nullable=False)
     estado = Column(Enum(*ESTADOS, name="estados", native_enum=False), index=True, nullable=False)
-    resolucion = Column(DateTime, nullable=True)
-    soluciones = Column(Text, nullable=True)
+    soluciones = Column(Text, nullable=False)
 
     @property
     def funcionario_nombre(self):
@@ -52,9 +51,9 @@ class SoporteTicket(Base, UniversalMixin):
         return self.funcionario.nombre
 
     @property
-    def sopote_categoria_nombre(self):
+    def soporte_categoria_nombre(self):
         """Nombre del sopote categoria"""
-        return self.sopote_categoria.nombre
+        return self.soporte_categoria.nombre
 
     @property
     def usuario_nombre(self):
