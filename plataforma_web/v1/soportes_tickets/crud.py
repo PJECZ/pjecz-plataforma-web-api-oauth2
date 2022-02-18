@@ -1,6 +1,7 @@
 """
 Soportes Tickets v1, CRUD (create, read, update, and delete)
 """
+from datetime import date
 from typing import Any
 from sqlalchemy.orm import Session
 
@@ -13,6 +14,8 @@ def get_soportes_tickets(
     soporte_categoria_id: int = None,
     usuario_id: int = None,
     estado: str = None,
+    fecha_desde: date = None,
+    fecha_hasta: date = None,
 ) -> Any:
     """ Consultar los soportes_tickets activos """
     consulta = db.query(SoporteTicket)
@@ -23,6 +26,14 @@ def get_soportes_tickets(
     estado = safe_string(estado)
     if estado:
         consulta = consulta.filter_by(estado=estado)
+    if fecha_desde:
+        if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
+            raise ValueError("Fecha fuera de rango")
+        consulta = consulta.filter(SoporteTicket.creado >= fecha_desde)
+    if fecha_hasta:
+        if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
+            raise ValueError("Fecha fuera de rango")
+        consulta = consulta.filter(SoporteTicket.creado <= fecha_hasta)
     return consulta.filter_by(estatus="A").order_by(SoporteTicket.id)
 
 

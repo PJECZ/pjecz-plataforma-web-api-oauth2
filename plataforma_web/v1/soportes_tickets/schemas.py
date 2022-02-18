@@ -1,6 +1,7 @@
 """
 Soportes Tickets v1, esquemas de pydantic
 """
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -15,6 +16,7 @@ class SoporteTicketOut(BaseModel):
     descripcion: str
     estado: str
     soluciones: str
+    creado: datetime
 
     class Config:
         """SQLAlchemy config"""
