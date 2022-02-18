@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class SoporteTicketOut(BaseModel):
-    """Esquema para entregar Soporte Ticket"""
+    """Esquema para entregar soporte ticket"""
 
     id: int
     soporte_categoria_id: int

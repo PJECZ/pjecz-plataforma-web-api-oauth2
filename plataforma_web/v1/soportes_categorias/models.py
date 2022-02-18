@@ -1,7 +1,7 @@
 """
 Soportes Categorias v1, modelos
 """
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from lib.database import Base
@@ -20,10 +20,15 @@ class SoporteCategoria(Base, UniversalMixin):
 
     # Columnas
     nombre = Column(String(256), unique=True, nullable=False)
-    instrucciones = Column(Text(), default="", server_default="")
+    instrucciones = Column(Text())
 
     # Hijos
     soportes_tickets = relationship("SoporteTicket", back_populates="soporte_categoria")
+
+    @property
+    def rol_nombre(self):
+        """Nombre de la rol"""
+        return self.rol.nombre
 
     def __repr__(self):
         """ Representación """

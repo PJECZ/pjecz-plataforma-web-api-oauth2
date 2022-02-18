@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class SoporteCategoria(BaseModel):
-    """ Esquema para entregar Soporte Categoria """
+    """Esquema para entregar soporte categoria"""
 
     id: int
     rol_id: int
@@ -14,6 +14,6 @@ class SoporteCategoria(BaseModel):
     instrucciones: str
 
     class Config:
-        """ SQLAlchemy config """
+        """SQLAlchemy config"""
 
         orm_mode = True

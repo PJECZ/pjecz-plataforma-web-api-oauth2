@@ -36,6 +36,7 @@ class Usuario(Base, UniversalMixin):
 
     # Hijos
     usuarios_roles = relationship("UsuarioRol", back_populates="usuario")
+    soportes_tickets = relationship("SoporteTicket", back_populates="usuario")
 
     @property
     def distrito_id(self):
@@ -61,6 +62,11 @@ class Usuario(Base, UniversalMixin):
     def autoridad_descripcion_corta(self):
         """Autoridad descripcion corta"""
         return self.autoridad.descripcion_corta
+
+    @property
+    def nombre(self):
+        """Junta nombres, apellido_paterno y apellido materno"""
+        return self.nombres + " " + self.apellido_paterno + " " + self.apellido_materno
 
     def permissions(self):
         """Entrega un diccionario con todos los permisos"""
