@@ -13,7 +13,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.sentencias.crud import get_sentencias, get_sentencia
 from plataforma_web.v1.sentencias.schemas import SentenciaOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
 sentencias = APIRouter(prefix="/v1/sentencias", tags=["sentencias"])
 
@@ -27,11 +27,11 @@ async def listado_sentencias(
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias"""
-    if not current_user.permissions["SENTENCIAS"] >= Permiso.VER:
+    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_sentencias(
@@ -54,11 +54,11 @@ async def listado_sentencias(
 @sentencias.get("/{sentencia_id}", response_model=SentenciaOut)
 async def detalle_sentencia(
     sentencia_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de una sentencia a partir de su id"""
-    if not current_user.permissions["SENTENCIAS"] >= Permiso.VER:
+    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         sentencia = get_sentencia(db, sentencia_id)

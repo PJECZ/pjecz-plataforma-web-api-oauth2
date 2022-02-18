@@ -29,7 +29,7 @@ class UsuarioOut(BaseModel):
         orm_mode = True
 
 
-class UsuarioInBD(UsuarioOut):
+class UsuarioInDB(UsuarioOut):
     """Usuario en base de datos"""
 
     username: str

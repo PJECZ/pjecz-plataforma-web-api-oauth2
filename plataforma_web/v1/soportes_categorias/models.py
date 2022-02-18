@@ -14,9 +14,12 @@ class SoporteCategoria(Base, UniversalMixin):
     # Nombre de la tabla
     __tablename__ = 'soportes_categorias'
 
+    # Clave primaria
+    id = Column(Integer, primary_key=True)
+
     # Clave foránea
     rol_id = Column(Integer, ForeignKey('roles.id'), index=True, nullable=False)
-    rol = relationship('Rol', back_populates='soportes_categorias_roles')
+    rol = relationship('Rol', back_populates='soportes_categorias')
 
     # Columnas
     nombre = Column(String(256), unique=True, nullable=False)

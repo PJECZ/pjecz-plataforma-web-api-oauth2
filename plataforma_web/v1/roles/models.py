@@ -22,6 +22,7 @@ class Rol(Base, UniversalMixin):
 
     # Hijos
     permisos = relationship("Permiso", back_populates="rol")
+    soportes_categorias = relationship("SoporteCategoria", back_populates="rol")
     usuarios_roles = relationship("UsuarioRol", back_populates="rol")
 
     def __repr__(self):

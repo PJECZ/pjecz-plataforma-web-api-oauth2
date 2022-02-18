@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from config.settings import SECRET_KEY, ALGORITHM
 from lib.database import get_db
 from .models import Usuario
-from .schemas import TokenData, UsuarioInBD
+from .schemas import TokenData, UsuarioInDB
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256", "des_crypt"], deprecated="auto")  # In tutorial use schemes=["bcrypt"]
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -49,11 +49,11 @@ def get_user(username: str, db: Session = Depends(get_db)):
             "puesto": "",
             "telefono_celular": "",
             "username": usuario.email,
-            "permissions": usuario.permissions(),
+            "permissions": usuario.permissions,
             "hashed_password": usuario.contrasena,
             "disabled": usuario.estatus != "A",
         }
-        return UsuarioInBD(**datos)
+        return UsuarioInDB(**datos)
 
 
 def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
@@ -100,7 +100,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return usuario
 
 
-async def get_current_active_user(current_user: UsuarioInBD = Depends(get_current_user)):
+async def get_current_active_user(current_user: UsuarioInDB = Depends(get_current_user)):
     """Obtener el usuario a partir del token y provocar error si está inactivo"""
     if current_user.disabled:
         raise HTTPException(status_code=401, detail="Unauthorized (usuario inactivo)")

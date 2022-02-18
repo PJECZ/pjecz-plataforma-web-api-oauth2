@@ -11,7 +11,7 @@ from lib.fastapi_pagination import LimitOffsetPage
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
-from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInDB
 
 usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
@@ -19,11 +19,11 @@ usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 @usuarios.get("", response_model=LimitOffsetPage[UsuarioOut])
 async def listado_usuarios(
     autoridad_id: int = None,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de usuarios"""
-    if not current_user.permissions["USUARIOS"] >= Permiso.VER:
+    if "USUARIOS" not in current_user.permissions or current_user.permissions["USUARIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_usuarios(db, autoridad_id=autoridad_id)
@@ -37,11 +37,11 @@ async def listado_usuarios(
 @usuarios.get("/{usuario_id}", response_model=UsuarioOut)
 async def detalle_usuario(
     usuario_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de un usuario a partir de su id"""
-    if not current_user.permissions["USUARIOS"] >= Permiso.VER:
+    if "USUARIOS" not in current_user.permissions or current_user.permissions["USUARIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         usuario = get_usuario(db, usuario_id=usuario_id)

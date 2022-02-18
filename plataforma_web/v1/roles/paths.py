@@ -8,22 +8,22 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
+from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.roles.crud import get_roles, get_rol
 from plataforma_web.v1.roles.schemas import RolOut
-from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-roles = APIRouter(prefix="/v1/roles", tags=["roles"])
+roles = APIRouter(prefix="/v1/roles", tags=["usuarios"])
 
 
 @roles.get("", response_model=LimitOffsetPage[RolOut])
 async def listado_roles(
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de roles"""
-    if not current_user.permissions["ROLES"] >= Permiso.VER:
+    if "ROLES" not in current_user.permissions or current_user.permissions["ROLES"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_roles(db))
 
@@ -31,11 +31,11 @@ async def listado_roles(
 @roles.get("/{rol_id}", response_model=RolOut)
 async def detalle_rol(
     rol_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de un rol a partir de su id"""
-    if not current_user.permissions["ROLES"] >= Permiso.VER:
+    if "ROLES" not in current_user.permissions or current_user.permissions["ROLES"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         rol = get_rol(db, rol_id=rol_id)

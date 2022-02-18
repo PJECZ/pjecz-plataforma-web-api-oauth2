@@ -12,18 +12,18 @@ from plataforma_web.v1.permisos.crud import get_permisos, get_permiso
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.permisos.schemas import PermisoOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-permisos = APIRouter(prefix="/v1/permisos", tags=["permisos"])
+permisos = APIRouter(prefix="/v1/permisos", tags=["usuarios"])
 
 
 @permisos.get("", response_model=LimitOffsetPage[PermisoOut])
 async def list_paginate(
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de permisos"""
-    if not current_user.permissions["PERMISOS"] >= Permiso.VER:
+    if "PERMISOS" not in current_user.permissions or current_user.permissions["PERMISOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_permisos(db))
 
@@ -31,11 +31,11 @@ async def list_paginate(
 @permisos.get("/{permiso_id}", response_model=PermisoOut)
 async def detail(
     permiso_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de una permiso a partir de su id"""
-    if not current_user.permissions["PERMISOS"] >= Permiso.VER:
+    if "PERMISOS" not in current_user.permissions or current_user.permissions["PERMISOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         permiso = get_permiso(db, permiso_id)

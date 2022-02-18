@@ -14,7 +14,7 @@ from plataforma_web.v1.listas_de_acuerdos.crud import get_listas_de_acuerdos, ge
 from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
 listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de acuerdos"])
 
@@ -27,11 +27,11 @@ async def listado_listas_de_acuerdos(
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de listas de acuerdos"""
-    if not current_user.permissions["LISTAS DE ACUERDOS"] >= Permiso.VER:
+    if "LISTAS DE ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_listas_de_acuerdos(
@@ -53,11 +53,11 @@ async def listado_listas_de_acuerdos(
 @listas_de_acuerdos.post("", response_model=ListaDeAcuerdoOut)
 async def nueva_lista_de_acuerdos(
     lista_de_acuerdo: ListaDeAcuerdoIn,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Insertar una lista de acuerdos"""
-    if not current_user.permissions["LISTAS DE ACUERDOS"] >= Permiso.CREAR:
+    if "LISTAS DE ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS"] < Permiso.CREAR:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         resultado = insert_lista_de_acuerdo(db, lista_de_acuerdo)
@@ -73,11 +73,11 @@ async def nueva_lista_de_acuerdos(
 @listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
 async def detalle_lista_de_acuerdos(
     lista_de_acuerdo_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de una lista de acuerdos a partir de su id"""
-    if not current_user.permissions["LISTAS DE ACUERDOS"] >= Permiso.VER:
+    if "LISTAS DE ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
