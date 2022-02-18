@@ -22,6 +22,7 @@ soportes_tickets = APIRouter(prefix="/v1/soportes_tickets", tags=["soportes"])
 async def listado_soportes_tickets(
     soporte_categoria_id: int = None,
     usuario_id: int = None,
+    estado: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -33,8 +34,9 @@ async def listado_soportes_tickets(
     try:
         listado = get_soportes_tickets(
             db,
-            soporte_categoria_id,
-            usuario_id,
+            soporte_categoria_id=soporte_categoria_id,
+            usuario_id=usuario_id,
+            estado=estado,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
         )
