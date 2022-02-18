@@ -25,7 +25,7 @@ async def listado_soportes_tickets(
     db: Session = Depends(get_db),
 ):
     """Listado de tickets de soporte"""
-    if "SOPORTE TICKETS" not in current_user.permissions or current_user.permissions["SOPORTE TICKETS"] < Permiso.VER:
+    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_soportes_tickets(db, soporte_categoria_id, usuario_id))
 
@@ -37,7 +37,7 @@ async def detalle_soporte_ticket(
     db: Session = Depends(get_db),
 ):
     """Detalle de una ticket a partir de su id"""
-    if not current_user.can_view("SOPORTE TICKETS"):
+    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         soporte_ticket = get_soporte_ticket(db, soporte_ticket_id)

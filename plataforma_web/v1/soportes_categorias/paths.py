@@ -23,7 +23,7 @@ async def listado_soportes_categorias(
     db: Session = Depends(get_db),
 ):
     """Listado de Soporte Categorias"""
-    if "SOPORTE CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTE CATEGORIAS"] < Permiso.VER:
+    if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_soportes_categorias(db))
 
@@ -35,7 +35,7 @@ async def detalle_soporte_categoria(
     db: Session = Depends(get_db),
 ):
     """Detalle de una Soporte Categoria a partir de su id"""
-    if "SOPORTE CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTE CATEGORIAS"] < Permiso.VER:
+    if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         soporte_categoria = get_soporte_categoria(db, soporte_categoria_id)
