@@ -6,41 +6,62 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.safe_string import safe_string
+
+from plataforma_web.v1.oficinas.crud import get_oficina, get_oficina_from_clave
+from plataforma_web.v1.soportes_categorias.crud import get_soporte_categoria
 from plataforma_web.v1.soportes_tickets.models import SoporteTicket
+from plataforma_web.v1.usuarios.crud import get_usuario, get_usuario_from_email
+from plataforma_web.v1.usuarios.models import Usuario
 
 
 def get_soportes_tickets(
     db: Session,
     soporte_categoria_id: int = None,
     usuario_id: int = None,
+    usuario_email: str = None,
+    oficina_id: int = None,
+    oficina_clave: str = None,
     estado: str = None,
-    fecha_desde: date = None,
-    fecha_hasta: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
     descripcion: str = None,
 ) -> Any:
     """Consultar los soportes_tickets activos"""
-    consulta = db.query(SoporteTicket)
+    oficina = None
+    if oficina_id:
+        oficina = get_oficina(db, oficina_id)
+    elif oficina_clave:
+        oficina = get_oficina_from_clave(db, oficina_clave)
+    if oficina:
+        consulta = db.query(SoporteTicket).join(Usuario).filter(Usuario.oficina_id == oficina.id)
+    else:
+        consulta = db.query(SoporteTicket)
     if soporte_categoria_id:
-        consulta = consulta.filter_by(soporte_categoria_id=soporte_categoria_id)
+        soporte_categoria = get_soporte_categoria(db, soporte_categoria_id)
+        consulta = consulta.filter(SoporteTicket.soporte_categoria == soporte_categoria)
     if usuario_id:
-        consulta = consulta.filter_by(usuario_id=usuario_id)
+        usuario = get_usuario(db, usuario_id)
+        consulta = consulta.filter(SoporteTicket.usuario == usuario)
+    else:
+        usuario = get_usuario_from_email(db, usuario_email)
+        consulta = consulta.filter(SoporteTicket.usuario == usuario)
     estado = safe_string(estado)
     if estado:
         if estado not in SoporteTicket.ESTADOS:
             raise ValueError("Estado incorrecto")
-        consulta = consulta.filter_by(estado=estado)
-    if fecha_desde:
-        if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
+        consulta = consulta.filter(SoporteTicket.estado == estado)
+    if creado_desde:
+        if not date(year=2000, month=1, day=1) <= creado_desde <= date.today():
             raise ValueError("Fecha fuera de rango")
-        consulta = consulta.filter(SoporteTicket.creado >= fecha_desde)
-    if fecha_hasta:
-        if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
+        consulta = consulta.filter(SoporteTicket.creado >= creado_desde)
+    if creado_hasta:
+        if not date(year=2000, month=1, day=1) <= creado_hasta <= date.today():
             raise ValueError("Fecha fuera de rango")
-        consulta = consulta.filter(SoporteTicket.creado <= fecha_hasta)
+        consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
     descripcion = safe_string(descripcion)
     if descripcion:
         consulta = consulta.filter(SoporteTicket.descripcion.contains(descripcion))
-    return consulta.filter_by(estatus="A").order_by(SoporteTicket.id)
+    return consulta.filter_by(estatus="A").order_by(SoporteTicket.id.desc())
 
 
 def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:

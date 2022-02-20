@@ -14,7 +14,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-oficinas = APIRouter(prefix="/v1/oficinas", tags=["usuarios"])
+oficinas = APIRouter(prefix="/v1/oficinas", tags=["inventarios"])
 
 
 @oficinas.get("", response_model=LimitOffsetPage[OficinaOut])
@@ -25,19 +25,19 @@ async def listado_oficinas(
     db: Session = Depends(get_db),
 ):
     """Listado de oficinas"""
-    if "oficina" not in current_user.permissions or current_user.permissions["oficina"] < Permiso.VER:
+    if "OFICINAS" not in current_user.permissions or current_user.permissions["OFICINAS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_oficinas(db, domicilio_id, es_juridicional))
 
 
-@oficinas.get("/{oficina_id}", response_model=OficinaOut)
+@oficinas.get("/clave/{oficina_clave}", response_model=OficinaOut)
 async def detalle_oficina_con_clave(
     oficina_clave: str,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de una oficina a partir de su id"""
-    if "oficina" not in current_user.permissions or current_user.permissions["oficina"] < Permiso.VER:
+    if "OFICINAS" not in current_user.permissions or current_user.permissions["OFICINAS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         oficina = get_oficina_from_clave(db, oficina_clave)
@@ -55,7 +55,7 @@ async def detalle_oficina(
     db: Session = Depends(get_db),
 ):
     """Detalle de una oficina a partir de su id"""
-    if "oficina" not in current_user.permissions or current_user.permissions["oficina"] < Permiso.VER:
+    if "OFICINAS" not in current_user.permissions or current_user.permissions["OFICINAS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         oficina = get_oficina(db, oficina_id)

@@ -10,7 +10,7 @@ class OficinaOut(BaseModel):
 
     id: int
     domicilio_id: int
-    domicilio_nombre: str
+    domicilio_completo: str
     clave: str
     descripcion: str
     descripcion_corta: str

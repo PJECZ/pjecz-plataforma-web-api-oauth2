@@ -14,7 +14,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-domicilios = APIRouter(prefix="/v1/domicilios", tags=["usuarios"])
+domicilios = APIRouter(prefix="/v1/domicilios", tags=["inventarios"])
 
 
 @domicilios.get("", response_model=LimitOffsetPage[DomicilioOut])
@@ -23,7 +23,7 @@ async def listado_domicilios(
     db: Session = Depends(get_db),
 ):
     """Listado de domicilios"""
-    if "domicilio" not in current_user.permissions or current_user.permissions["domicilio"] < Permiso.VER:
+    if "DOMICILIOS" not in current_user.permissions or current_user.permissions["DOMICILIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_domicilios(db))
 
@@ -35,7 +35,7 @@ async def detalle_domicilio(
     db: Session = Depends(get_db),
 ):
     """Detalle de una domicilio a partir de su id"""
-    if "domicilio" not in current_user.permissions or current_user.permissions["domicilio"] < Permiso.VER:
+    if "DOMICILIOS" not in current_user.permissions or current_user.permissions["DOMICILIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         domicilio = get_domicilio(db, domicilio_id)

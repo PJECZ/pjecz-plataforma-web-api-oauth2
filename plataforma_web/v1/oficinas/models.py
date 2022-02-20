@@ -34,9 +34,9 @@ class Oficina(Base, UniversalMixin):
     usuarios = relationship("Usuario", back_populates="oficina", lazy="noload")
 
     @property
-    def domicilio_nombre(self):
-        """Nombre del domicilio"""
-        return self.domicilio.nombre
+    def domicilio_completo(self):
+        """Domicilio completo de la oficina"""
+        return self.domicilio.completo
 
     def __repr__(self):
         """Representación"""

@@ -13,12 +13,14 @@ from lib.database import get_db
 
 from plataforma_web.v1.autoridades.paths import autoridades
 from plataforma_web.v1.distritos.paths import distritos
+from plataforma_web.v1.domicilios.paths import domicilios
 from plataforma_web.v1.funcionarios.paths import funcionarios
 from plataforma_web.v1.listas_de_acuerdos.paths import listas_de_acuerdos
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import listas_de_acuerdos_acuerdos
 from plataforma_web.v1.materias.paths import materias
 from plataforma_web.v1.materias_tipos_juicios.paths import materias_tipos_juicios
 from plataforma_web.v1.modulos.paths import modulos
+from plataforma_web.v1.oficinas.paths import oficinas
 from plataforma_web.v1.permisos.paths import permisos
 from plataforma_web.v1.roles.paths import roles
 from plataforma_web.v1.sentencias.paths import sentencias
@@ -37,12 +39,14 @@ app = FastAPI(
 
 app.include_router(autoridades)
 app.include_router(distritos)
+app.include_router(domicilios)
 app.include_router(funcionarios)
 app.include_router(listas_de_acuerdos)
 app.include_router(listas_de_acuerdos_acuerdos)
 app.include_router(materias)
 app.include_router(materias_tipos_juicios)
 app.include_router(modulos)
+app.include_router(oficinas)
 app.include_router(permisos)
 app.include_router(roles)
 app.include_router(sentencias)
