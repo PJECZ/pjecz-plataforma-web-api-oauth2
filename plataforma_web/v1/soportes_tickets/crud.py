@@ -16,6 +16,7 @@ def get_soportes_tickets(
     estado: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    descripcion: str = None,
 ) -> Any:
     """ Consultar los soportes_tickets activos """
     consulta = db.query(SoporteTicket)
@@ -25,6 +26,8 @@ def get_soportes_tickets(
         consulta = consulta.filter_by(usuario_id=usuario_id)
     estado = safe_string(estado)
     if estado:
+        if estado not in SoporteTicket.ESTADOS:
+            raise ValueError("Estado incorrecto")
         consulta = consulta.filter_by(estado=estado)
     if fecha_desde:
         if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
@@ -34,6 +37,9 @@ def get_soportes_tickets(
         if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
             raise ValueError("Fecha fuera de rango")
         consulta = consulta.filter(SoporteTicket.creado <= fecha_hasta)
+    descripcion = safe_string(descripcion)
+    if descripcion:
+        consulta = consulta.filter(SoporteTicket.descripcion.contains(descripcion))
     return consulta.filter_by(estatus="A").order_by(SoporteTicket.id)
 
 

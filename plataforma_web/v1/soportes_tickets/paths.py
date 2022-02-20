@@ -25,6 +25,7 @@ async def listado_soportes_tickets(
     estado: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    descripcion: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -39,6 +40,7 @@ async def listado_soportes_tickets(
             estado=estado,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
+            descripcion=descripcion,
         )
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
