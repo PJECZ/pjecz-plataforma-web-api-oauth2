@@ -45,9 +45,9 @@ async def listado_autoridades(
     return paginate(listado)
 
 
-@autoridades.get("/clave/{clave}", response_model=AutoridadOut)
+@autoridades.get("/clave/{autoridad_clave}", response_model=AutoridadOut)
 async def detalle_autoridad_con_clave(
-    clave: str,
+    autoridad_clave: str,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -55,7 +55,7 @@ async def detalle_autoridad_con_clave(
     if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        autoridad = get_autoridad_from_clave(db, clave=clave)
+        autoridad = get_autoridad_from_clave(db, clave=autoridad_clave)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

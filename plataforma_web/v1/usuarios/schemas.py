@@ -15,6 +15,8 @@ class UsuarioOut(BaseModel):
     autoridad_id: int
     autoridad_descripcion: str
     autoridad_descripcion_corta: str
+    oficina_id: int
+    oficina_clave: str
     email: str
     nombres: str
     apellido_paterno: str

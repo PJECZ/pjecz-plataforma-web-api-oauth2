@@ -9,10 +9,10 @@ from lib.universal_mixin import UniversalMixin
 
 
 class Funcionario(Base, UniversalMixin):
-    """ Funcionario """
+    """Funcionario"""
 
     # Nombre de la tabla
-    __tablename__ = 'funcionarios'
+    __tablename__ = "funcionarios"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
@@ -38,5 +38,5 @@ class Funcionario(Base, UniversalMixin):
         return self.nombres + " " + self.apellido_paterno + " " + self.apellido_materno
 
     def __repr__(self):
-        """ Representación """
+        """Representación"""
         return f"<Funcionario {self.curp}>"

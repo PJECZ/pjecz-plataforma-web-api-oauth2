@@ -41,6 +41,8 @@ def get_user(username: str, db: Session = Depends(get_db)):
             "autoridad_id": usuario.autoridad_id,
             "autoridad_descripcion": usuario.autoridad.descripcion,
             "autoridad_descripcion_corta": usuario.autoridad.descripcion_corta,
+            "oficina_id": usuario.oficina_id,
+            "oficina_clave": usuario.oficina.clave,
             "email": usuario.email,
             "nombres": usuario.nombres,
             "apellido_paterno": usuario.apellido_paterno,

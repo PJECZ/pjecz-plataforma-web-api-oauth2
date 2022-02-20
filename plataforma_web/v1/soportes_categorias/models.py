@@ -9,17 +9,17 @@ from lib.universal_mixin import UniversalMixin
 
 
 class SoporteCategoria(Base, UniversalMixin):
-    """ SoporteCategoria """
+    """SoporteCategoria"""
 
     # Nombre de la tabla
-    __tablename__ = 'soportes_categorias'
+    __tablename__ = "soportes_categorias"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
 
     # Clave foránea
-    rol_id = Column(Integer, ForeignKey('roles.id'), index=True, nullable=False)
-    rol = relationship('Rol', back_populates='soportes_categorias')
+    rol_id = Column(Integer, ForeignKey("roles.id"), index=True, nullable=False)
+    rol = relationship("Rol", back_populates="soportes_categorias")
 
     # Columnas
     nombre = Column(String(256), unique=True, nullable=False)
@@ -34,5 +34,5 @@ class SoporteCategoria(Base, UniversalMixin):
         return self.rol.nombre
 
     def __repr__(self):
-        """ Representación """
+        """Representación"""
         return f"<SoporteCategoria {self.nombre}>"

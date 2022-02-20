@@ -23,6 +23,8 @@ class Usuario(Base, UniversalMixin):
     # Claves foráneas
     autoridad_id = Column(Integer, ForeignKey("autoridades.id"), index=True, nullable=False)
     autoridad = relationship("Autoridad", back_populates="usuarios")
+    oficina_id = Column(Integer, ForeignKey("oficinas.id"), index=True, nullable=False)
+    oficina = relationship("Oficina", back_populates="usuarios")
 
     # Columnas
     email = Column(String(256), unique=True, index=True)
@@ -65,6 +67,11 @@ class Usuario(Base, UniversalMixin):
     def autoridad_descripcion_corta(self):
         """Autoridad descripcion corta"""
         return self.autoridad.descripcion_corta
+
+    @property
+    def oficina_clave(self):
+        """Clave de la oficina"""
+        return self.oficina.clave
 
     @property
     def nombre(self):
