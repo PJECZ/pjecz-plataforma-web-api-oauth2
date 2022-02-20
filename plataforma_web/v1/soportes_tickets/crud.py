@@ -18,7 +18,7 @@ def get_soportes_tickets(
     fecha_hasta: date = None,
     descripcion: str = None,
 ) -> Any:
-    """ Consultar los soportes_tickets activos """
+    """Consultar los soportes_tickets activos"""
     consulta = db.query(SoporteTicket)
     if soporte_categoria_id:
         consulta = consulta.filter_by(soporte_categoria_id=soporte_categoria_id)
@@ -44,7 +44,7 @@ def get_soportes_tickets(
 
 
 def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:
-    """ Consultar un soporte_ticket por su id """
+    """Consultar un soporte_ticket por su id"""
     soporte_ticket = db.query(SoporteTicket).get(soporte_ticket_id)
     if soporte_ticket is None:
         raise IndexError("No existe ese ticket")
