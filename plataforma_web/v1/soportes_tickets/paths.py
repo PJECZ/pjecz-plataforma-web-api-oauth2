@@ -1,5 +1,5 @@
 """
-Sentencias v1, rutas (paths)
+Soportes Tickets v1, rutas (paths)
 """
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,39 +10,37 @@ from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.sentencias.crud import get_sentencias, get_sentencia
-from plataforma_web.v1.sentencias.schemas import SentenciaOut
+from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket
+from plataforma_web.v1.soportes_tickets.schemas import SoporteTicketOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-sentencias = APIRouter(prefix="/v1/sentencias", tags=["sentencias"])
+soportes_tickets = APIRouter(prefix="/v1/soportes_tickets", tags=["soportes"])
 
 
-@sentencias.get("", response_model=LimitOffsetPage[SentenciaOut])
-async def listado_sentencias(
-    distrito_id: int = None,
-    autoridad_id: int = None,
-    autoridad_clave: str = None,
-    materia_tipo_juicio_id: int = None,
-    fecha: date = None,
+@soportes_tickets.get("", response_model=LimitOffsetPage[SoporteTicketOut])
+async def listado_soportes_tickets(
+    soporte_categoria_id: int = None,
+    usuario_id: int = None,
+    estado: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    descripcion: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado de sentencias"""
-    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
+    """Listado de tickets de soporte"""
+    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        listado = get_sentencias(
+        listado = get_soportes_tickets(
             db,
-            distrito_id=distrito_id,
-            autoridad_id=autoridad_id,
-            autoridad_clave=autoridad_clave,
-            materia_tipo_juicio_id=materia_tipo_juicio_id,
-            fecha=fecha,
+            soporte_categoria_id=soporte_categoria_id,
+            usuario_id=usuario_id,
+            estado=estado,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
+            descripcion=descripcion,
         )
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
@@ -51,19 +49,19 @@ async def listado_sentencias(
     return paginate(listado)
 
 
-@sentencias.get("/{sentencia_id}", response_model=SentenciaOut)
-async def detalle_sentencia(
-    sentencia_id: int,
+@soportes_tickets.get("/{soporte_ticket_id}", response_model=SoporteTicketOut)
+async def detalle_soporte_ticket(
+    soporte_ticket_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Detalle de una sentencia a partir de su id"""
-    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
+    """Detalle de una ticket a partir de su id"""
+    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        sentencia = get_sentencia(db, sentencia_id)
+        soporte_ticket = get_soporte_ticket(db, soporte_ticket_id)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return SentenciaOut.from_orm(sentencia)
+    return SoporteTicketOut.from_orm(soporte_ticket)

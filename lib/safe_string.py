@@ -2,8 +2,9 @@
 Safe string
 """
 import re
-from datetime import date
 from unidecode import unidecode
+
+CURP_REGEXP = r"^[A-Z]{4}\d{6}[A-Z]{6}\d{2}$"
 
 
 def safe_clave(input_str):

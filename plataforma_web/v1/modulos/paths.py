@@ -12,18 +12,18 @@ from plataforma_web.v1.modulos.crud import get_modulos, get_modulo
 from plataforma_web.v1.modulos.schemas import ModuloOut
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-modulos = APIRouter(prefix="/v1/modulos", tags=["modulos"])
+modulos = APIRouter(prefix="/v1/modulos", tags=["usuarios"])
 
 
 @modulos.get("", response_model=LimitOffsetPage[ModuloOut])
 async def list_paginate(
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de modulos"""
-    if not current_user.permissions["MODULOS"] >= Permiso.VER:
+    if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_modulos(db))
 
@@ -31,11 +31,11 @@ async def list_paginate(
 @modulos.get("/{modulo_id}", response_model=ModuloOut)
 async def detail(
     modulo_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de una modulo a partir de su id"""
-    if not current_user.permissions["MODULOS"] >= Permiso.VER:
+    if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         modulo = get_modulo(db, modulo_id)

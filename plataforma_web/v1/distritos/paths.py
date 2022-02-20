@@ -14,18 +14,18 @@ from plataforma_web.v1.distritos.crud import get_distritos, get_distrito
 from plataforma_web.v1.distritos.schemas import DistritoOut
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInBD
+from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
 distritos = APIRouter(prefix="/v1/distritos", tags=["distritos"])
 
 
 @distritos.get("", response_model=LimitOffsetPage[DistritoOut])
 async def listado_distritos(
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de distritos"""
-    if not current_user.permissions["DISTRITOS"] >= Permiso.VER:
+    if "DISTRITOS" not in current_user.permissions or current_user.permissions["DISTRITOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     return paginate(get_distritos(db))
 
@@ -33,11 +33,11 @@ async def listado_distritos(
 @distritos.get("/{distrito_id}", response_model=DistritoOut)
 async def detalle_distrito(
     distrito_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Detalle de un distrito"""
-    if not current_user.permissions["DISTRITOS"] >= Permiso.VER:
+    if "DISTRITOS" not in current_user.permissions or current_user.permissions["DISTRITOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         distrito = get_distrito(db, distrito_id=distrito_id)
@@ -50,11 +50,11 @@ async def detalle_distrito(
 async def listado_autoridades_del_distrito(
     distrito_id: int,
     materia_id: int = None,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de autoridades del distrito"""
-    if not current_user.permissions["AUTORIDADES"] >= Permiso.VER:
+    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_autoridades(
@@ -73,11 +73,11 @@ async def listado_autoridades_del_distrito(
 @distritos.get("/{distrito_id}/notarias", response_model=LimitOffsetPage[AutoridadOut])
 async def listado_notarias_del_distrito(
     distrito_id: int,
-    current_user: UsuarioInBD = Depends(get_current_active_user),
+    current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de notarias del distrito"""
-    if not current_user.permissions["AUTORIDADES"] >= Permiso.VER:
+    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_autoridades(
