@@ -42,7 +42,7 @@ def get_soportes_tickets(
     if usuario_id:
         usuario = get_usuario(db, usuario_id)
         consulta = consulta.filter(SoporteTicket.usuario == usuario)
-    else:
+    elif usuario_email:
         usuario = get_usuario_from_email(db, usuario_email)
         consulta = consulta.filter(SoporteTicket.usuario == usuario)
     estado = safe_string(estado)

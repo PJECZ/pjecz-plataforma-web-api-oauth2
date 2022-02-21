@@ -46,6 +46,6 @@ Authorization: Bearer {{auth.response.body.access_token}}
 GET {{baseUrl}}/soportes_tickets?usuario_oficina_clave=DSAL&estado=abierto
 Authorization: Bearer {{auth.response.body.access_token}}
 
-### Soportes tickets de ezequiel.ulloa@pjecz.gob.mx
-GET {{baseUrl}}/soportes_tickets?usuario_email=ezequiel.ulloa@pjecz.gob.mx
+### Soportes tickets de un usuario
+GET {{baseUrl}}/soportes_tickets?usuario_email=mariamayela.ortiz@coahuila.gob.mx
 Authorization: Bearer {{auth.response.body.access_token}}
