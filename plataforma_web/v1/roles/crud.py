@@ -9,7 +9,7 @@ from plataforma_web.v1.roles.models import Rol
 
 def get_roles(db: Session) -> Any:
     """Consultar los roles activos"""
-    return db.query(Rol).filter_by(estatus="A").order_by(Rol.nombre)
+    return db.query(Rol).filter_by(estatus="A").order_by(Rol.id.desc())
 
 
 def get_rol(db: Session, rol_id: int) -> Rol:
