@@ -48,7 +48,7 @@ def get_listas_de_acuerdos(
             if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
                 raise ValueError("Fecha fuera de rango")
             consulta = consulta.filter(ListaDeAcuerdo.fecha <= fecha_hasta)
-    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdo.fecha.desc())
+    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdo.id.desc())
 
 
 def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int) -> ListaDeAcuerdo:

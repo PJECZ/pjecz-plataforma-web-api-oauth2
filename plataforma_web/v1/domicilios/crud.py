@@ -9,7 +9,7 @@ from plataforma_web.v1.domicilios.models import Domicilio
 
 def get_domicilios(db: Session) -> Any:
     """Consultar los domicilios activos"""
-    return db.query(Domicilio).filter_by(estatus="A").order_by(Domicilio.Domicilio)
+    return db.query(Domicilio).filter_by(estatus="A").order_by(Domicilio.id.desc())
 
 
 def get_domicilio(db: Session, domicilio_id: int) -> Domicilio:

@@ -16,7 +16,7 @@ def get_acuerdos(db: Session, lista_de_acuerdo_id: int) -> Any:
     """Consultar los acuerdos activos"""
     lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
     consulta = db.query(ListaDeAcuerdoAcuerdo).filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
-    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdoAcuerdo.folio)
+    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdoAcuerdo.id.desc())
 
 
 def get_acuerdo(db: Session, lista_de_acuerdo_acuerdo_id: int) -> ListaDeAcuerdoAcuerdo:

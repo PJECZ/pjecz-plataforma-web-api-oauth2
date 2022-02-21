@@ -48,7 +48,7 @@ def get_sentencias(
             if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
                 raise ValueError("Fecha fuera de rango")
             consulta = consulta.filter(Sentencia.fecha <= fecha_hasta)
-    return consulta.filter_by(estatus="A").order_by(Sentencia.fecha.desc())
+    return consulta.filter_by(estatus="A").order_by(Sentencia.id.desc())
 
 
 def get_sentencia(db: Session, sentencia_id: int) -> Sentencia:

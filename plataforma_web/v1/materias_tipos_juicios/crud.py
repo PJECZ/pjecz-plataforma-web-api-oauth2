@@ -12,7 +12,7 @@ def get_materias_tipos_juicios(db: Session, materia_id: int) -> Any:
     """Consultar los tipos de juicios activos de una materia"""
     materia = get_materia(db, materia_id)
     consulta = db.query(MateriaTipoJuicio).filter(MateriaTipoJuicio.materia == materia)
-    return consulta.filter_by(estatus="A").order_by(MateriaTipoJuicio.descripcion)
+    return consulta.filter_by(estatus="A").order_by(MateriaTipoJuicio.id.desc())
 
 
 def get_materia_tipo_juicio(db: Session, materia_tipo_juicio_id: int) -> MateriaTipoJuicio:
