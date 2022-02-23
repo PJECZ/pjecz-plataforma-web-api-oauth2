@@ -22,7 +22,7 @@ def get_usuarios_roles(
     if usuario_id:
         usuario = get_usuario(db, usuario_id)
         consulta = consulta.filter_by(UsuarioRol.usuario == usuario)
-    return consulta.filter_by(estatus="A").order_by(UsuarioRol.nombre)
+    return consulta.filter_by(estatus="A").order_by(UsuarioRol.id.desc())
 
 
 def get_usuario_rol(db: Session, usuario_rol_id: int) -> UsuarioRol:

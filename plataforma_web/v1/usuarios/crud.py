@@ -33,7 +33,7 @@ def get_usuarios(
     elif oficina_clave:
         oficina = get_oficina_from_clave(db, oficina_clave)
         consulta = consulta.filter(Usuario.oficina == oficina)
-    return consulta.order_by(Usuario.email)
+    return consulta.order_by(Usuario.email.asc())
 
 
 def get_usuario(db: Session, usuario_id: int) -> Usuario:

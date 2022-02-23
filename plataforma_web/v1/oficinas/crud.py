@@ -22,7 +22,7 @@ def get_oficinas(
         consulta = consulta.filter(Oficina.domicilio == domicilio)
     if es_jurisdiccional is True:
         consulta = consulta.filter_by(es_jurisdiccional=True)
-    return consulta.filter_by(estatus="A").order_by(Oficina.clave)
+    return consulta.filter_by(estatus="A").order_by(Oficina.clave.asc())
 
 
 def get_oficina(db: Session, oficina_id: int) -> Oficina:

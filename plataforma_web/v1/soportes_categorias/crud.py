@@ -9,7 +9,7 @@ from plataforma_web.v1.soportes_categorias.models import SoporteCategoria
 
 def get_soportes_categorias(db: Session) -> Any:
     """Consultar los soportes_categorias activos"""
-    return db.query(SoporteCategoria).filter_by(estatus="A").order_by(SoporteCategoria.id)
+    return db.query(SoporteCategoria).filter_by(estatus="A").order_by(SoporteCategoria.id.desc())
 
 
 def get_soporte_categoria(db: Session, soporte_categoria_id: int) -> SoporteCategoria:

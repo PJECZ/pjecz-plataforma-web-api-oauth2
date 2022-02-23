@@ -27,7 +27,7 @@ def get_funcionarios(
         consulta = consulta.filetr_by(en_soportes=True)
     if en_tesis_jurisprudencias is True:
         consulta = consulta.filetr_by(en_tesis_jurisprudencias=True)
-    return consulta.filter_by(estatus="A").order_by(Funcionario.id)
+    return consulta.filter_by(estatus="A").order_by(Funcionario.curp.asc())
 
 
 def get_funcionario(db: Session, funcionario_id: int) -> Funcionario:

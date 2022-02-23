@@ -32,7 +32,7 @@ def get_autoridades(
         consulta = consulta.filter_by(es_notaria=True)
     else:
         consulta = consulta.filter_by(es_notaria=False)
-    return consulta.filter_by(estatus="A").order_by(Autoridad.clave)
+    return consulta.filter_by(estatus="A").order_by(Autoridad.clave.asc())
 
 
 def get_autoridad(db: Session, autoridad_id: int) -> Autoridad:
