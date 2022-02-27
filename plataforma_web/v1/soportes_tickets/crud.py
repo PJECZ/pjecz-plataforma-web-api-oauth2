@@ -84,13 +84,17 @@ def get_total_by_oficina_and_categoria(
     creado_hasta: date = None,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
-    consulta = db.\
-        query(
+    consulta = (
+        db.query(
             func.substring(Oficina.clave, 1, 4).label("distrito_clave"),
             SoporteCategoria.nombre.label("soporte_categoria_nombre"),
             func.count("*").label("cantidad"),
-        ).\
-        select_from(SoporteTicket).join(Usuario).join(Oficina).join(SoporteCategoria)
+        )
+        .select_from(SoporteTicket)
+        .join(Usuario)
+        .join(Oficina)
+        .join(SoporteCategoria)
+    )
     estado = safe_string(estado)
     if estado:
         if estado not in SoporteTicket.ESTADOS:
@@ -104,6 +108,4 @@ def get_total_by_oficina_and_categoria(
         if not date(year=2000, month=1, day=1) <= creado_hasta <= date.today():
             raise ValueError("Fecha fuera de rango")
         consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
-    return consulta.\
-        order_by("distrito_clave", "soporte_categoria_nombre").\
-        group_by("distrito_clave", "soporte_categoria_nombre")
+    return consulta.order_by("distrito_clave", "soporte_categoria_nombre").group_by("distrito_clave", "soporte_categoria_nombre")

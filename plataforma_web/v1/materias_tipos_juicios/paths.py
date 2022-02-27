@@ -26,10 +26,7 @@ async def listado_materias_tipos_juicios(
     db: Session = Depends(get_db),
 ):
     """Listado de tipos de juicios de una materia"""
-    if (
-        "MATERIAS TIPOS JUICIOS" not in current_user.permissions
-        or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER
-    ):
+    if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         listado = get_materias_tipos_juicios(db, materia_id=materia_id)
@@ -48,10 +45,7 @@ async def detalle_materia_tipo_juicio(
     db: Session = Depends(get_db),
 ):
     """Detalle de una materia_tipo_juicio a partir de su id"""
-    if (
-        "MATERIAS TIPOS JUICIOS" not in current_user.permissions
-        or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER
-    ):
+    if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id=tipo_juicio_id)
@@ -64,9 +58,7 @@ async def detalle_materia_tipo_juicio(
     return MateriaTipoJuicioOut.from_orm(materia_tipo_juicio)
 
 
-@materias_tipos_juicios.get(
-    "/{materia_id}/tipos_juicios/{tipo_juicio_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut]
-)
+@materias_tipos_juicios.get("/{materia_id}/tipos_juicios/{tipo_juicio_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut])
 async def listado_materias_tipos_juicios_sentencias(
     materia_id: int,
     tipo_juicio_id: int,

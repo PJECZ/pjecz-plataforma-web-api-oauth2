@@ -80,9 +80,7 @@ def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> 
         if not limite_dt <= datetime(year=fecha.year, month=fecha.month, day=fecha.day) <= hoy_dt:
             raise ValueError("Fecha fuera de rango")
     # Si ya existe una lista de acuerdos con esa fecha, se aborta
-    existe_esa_lista = (
-        db.query(ListaDeAcuerdo).filter_by(autoridad_id=autoridad.id).filter_by(fecha=fecha).filter_by(estatus="A").first()
-    )
+    existe_esa_lista = db.query(ListaDeAcuerdo).filter_by(autoridad_id=autoridad.id).filter_by(fecha=fecha).filter_by(estatus="A").first()
     if existe_esa_lista:
         raise AlredyExistsError("No se permite otra lista de acuerdos para la autoridad y fechas dadas")
     # Validar descripcion
