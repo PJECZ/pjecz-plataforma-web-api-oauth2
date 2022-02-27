@@ -3,6 +3,7 @@ Soportes Tickets v1, rutas (paths)
 """
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
@@ -10,8 +11,8 @@ from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket
-from plataforma_web.v1.soportes_tickets.schemas import SoporteTicketOut
+from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket, get_total_by_oficina_and_categoria
+from plataforma_web.v1.soportes_tickets.schemas import SoporteTicketOut, SoporteTicketTotalOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
@@ -47,6 +48,31 @@ async def listado_soportes_tickets(
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
             descripcion=descripcion,
+        )
+    except IndexError as error:
+        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
+
+
+@soportes_tickets.get("/totales", response_model=Page[SoporteTicketTotalOut])
+async def listado_totales_soportes_tickets(
+    estado: str = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
+    current_user: UsuarioInDB = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Listado de totales de tickets por oficina y por categoria"""
+    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        listado = get_total_by_oficina_and_categoria(
+            db,
+            estado=estado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
         )
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
