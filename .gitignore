@@ -6,6 +6,7 @@
 *.sqlite3
 *.xlsx
 __pycache__/
+.ipynb_checkpoints/
 /app.yaml
 /instance/settings.py
 /venv/
