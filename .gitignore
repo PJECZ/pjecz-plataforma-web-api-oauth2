@@ -4,6 +4,7 @@
 .DS_Store
 *.py[cod]
 *.sqlite3
+*.xlsx
 __pycache__/
 /app.yaml
 /instance/settings.py

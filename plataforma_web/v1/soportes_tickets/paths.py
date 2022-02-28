@@ -3,12 +3,11 @@ Soportes Tickets v1, rutas (paths)
 """
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi_pagination import Page
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.fastapi_pagination import LimitOffsetPage, Page
 
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket, get_total_by_oficina_and_categoria
