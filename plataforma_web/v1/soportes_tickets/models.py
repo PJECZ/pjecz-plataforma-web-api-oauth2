@@ -2,7 +2,7 @@
 Soportes Tickets v1, modelos
 """
 from collections import OrderedDict
-from sqlalchemy import Column, Enum, ForeignKey, Integer, Text
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 
 from lib.database import Base
@@ -14,10 +14,11 @@ class SoporteTicket(Base, UniversalMixin):
 
     ESTADOS = OrderedDict(
         [
-            ("ABIERTO", "Abierto o pendiente"),
+            ("SIN ATENDER", "Abierto o pendiente"),
             ("TRABAJANDO", "Trabjando"),
-            ("CERRADO", "Cerrado o terminado"),
-            ("NO RESUELTO", "No resuelto"),
+            ("TERMINADO", "Trabajo concluido, resultado satisfacorio"),
+            ("CERRADO", "Trabajo concluido, resultado indiferente"),
+            ("PENDIENTE", "Pendiente de resolver"),
             ("CANCELADO", "Cancelado"),
         ]
     )
@@ -43,6 +44,7 @@ class SoporteTicket(Base, UniversalMixin):
     # Columnas
     descripcion = Column(Text, nullable=False)
     estado = Column(Enum(*ESTADOS, name="estados", native_enum=False), index=True, nullable=False)
+    resolucion = Column(DateTime, nullable=True)
     soluciones = Column(Text, nullable=False)
 
     @property
