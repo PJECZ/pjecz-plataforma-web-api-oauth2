@@ -12,7 +12,7 @@ T = TypeVar("T")
 class LimitOffsetParams(BaseLimitOffsetParams):
     """Ajuste para que LimitOffsetPage entregue por defecto 50 resultados y tenga 2000 como maximo"""
 
-    limit: int = Query(50, ge=1, le=2000, description="Page size limit")
+    limit: int = Query(100, ge=1, le=1000, description="Page size limit")
     offset: int = Query(0, ge=0, description="Page offset")
 
 
@@ -25,7 +25,7 @@ class LimitOffsetPage(BaseLimitOffsetPage[T], Generic[T]):
 class PageParams(BaseParams):
     """Ajuste para que Page entregue por defecto 50 resultados y tenga 2000 como maximo"""
 
-    size: int = Query(50, ge=1, le=2000, description="Page size")
+    size: int = Query(100, ge=1, le=1000, description="Page size")
 
 
 class Page(BasePage[T], Generic[T]):
