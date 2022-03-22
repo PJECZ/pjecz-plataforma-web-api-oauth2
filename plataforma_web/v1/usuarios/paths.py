@@ -29,9 +29,7 @@ async def listado_usuarios(
     if "USUARIOS" not in current_user.permissions or current_user.permissions["USUARIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
-        listado = get_usuarios(
-            db, autoridad_id=autoridad_id, autoridad_clave=autoridad_clave, oficina_id=oficina_id, oficina_clave=oficina_clave
-        )
+        listado = get_usuarios(db, autoridad_id=autoridad_id, autoridad_clave=autoridad_clave, oficina_id=oficina_id, oficina_clave=oficina_clave)
     except IndexError as error:
         raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

@@ -27,3 +27,11 @@ class SoporteTicketOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class SoporteTicketTotalOut(BaseModel):
+    """Esquema para entregar totales de tickets por oficina y por categoria"""
+
+    distrito_clave: str
+    soporte_categoria_nombre: str
+    cantidad: int

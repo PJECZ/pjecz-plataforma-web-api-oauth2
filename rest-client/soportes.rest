@@ -23,11 +23,14 @@ GET {{baseUrl}}/soportes_tickets
 Authorization: Bearer {{auth.response.body.access_token}}
 
 ### Soportes tickets ABIERTOS
-GET {{baseUrl}}/soportes_tickets?estado=abierto
+GET {{baseUrl}}/soportes_tickets
+    ?estado=abierto
 Authorization: Bearer {{auth.response.body.access_token}}
 
 ### Soportes tickets paiij
-GET {{baseUrl}}/soportes_tickets?descripcion=paiij&estado=abierto
+GET {{baseUrl}}/soportes_tickets
+    ?descripcion=paiij
+    &estado=abierto
 Authorization: Bearer {{auth.response.body.access_token}}
 
 ### Oficinas
@@ -39,13 +42,25 @@ GET {{baseUrl}}/oficinas/clave/DSAL
 Authorization: Bearer {{auth.response.body.access_token}}
 
 ### Usuarios de la oficina DTOR
-GET {{baseUrl}}/usuarios?oficina_clave=DTOR
+GET {{baseUrl}}/usuarios
+    ?oficina_clave=DTOR
 Authorization: Bearer {{auth.response.body.access_token}}
 
 ### Soportes tickets ABIERTOS de DSAL
-GET {{baseUrl}}/soportes_tickets?usuario_oficina_clave=DSAL&estado=abierto
+GET {{baseUrl}}/soportes_tickets
+    ?usuario_oficina_clave=DSAL
+    &estado=abierto
 Authorization: Bearer {{auth.response.body.access_token}}
 
-### Soportes tickets de un usuario
-GET {{baseUrl}}/soportes_tickets?usuario_email=mariamayela.ortiz@coahuila.gob.mx
+### Soportes tickets de ezequiel.ulloa@pjecz.gob.mx
+GET {{baseUrl}}/soportes_tickets
+    ?usuario_email=ezequiel.ulloa@pjecz.gob.mx
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Totales de tickets CERRADOS por oficina y por categoria
+GET {{baseUrl}}/soportes_tickets/totales
+    ?estado=cerrado
+    &creado_desde=2022-02-14
+    &creado_hasta=2022-02-18
+    &size=100
 Authorization: Bearer {{auth.response.body.access_token}}

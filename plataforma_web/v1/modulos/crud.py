@@ -9,7 +9,7 @@ from plataforma_web.v1.modulos.models import Modulo
 
 def get_modulos(db: Session) -> Any:
     """Consultar los modulos activos"""
-    return db.query(Modulo).filter_by(estatus="A").order_by(Modulo.id.desc())
+    return db.query(Modulo).filter_by(estatus="A").order_by(Modulo.nombre.asc())
 
 
 def get_modulo(db: Session, modulo_id: int) -> Modulo:
