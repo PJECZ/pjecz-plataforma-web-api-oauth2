@@ -1,6 +1,7 @@
 """
 Funcionarios v1, esquemas de pydantic
 """
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -18,6 +19,8 @@ class FuncionarioOut(BaseModel):
     en_sentencias: bool
     en_soportes: bool
     en_tesis_jurisprudencias: bool
+    telefono: Optional[str]
+    extension: Optional[str]
 
     class Config:
         """SQLAlchemy config"""
