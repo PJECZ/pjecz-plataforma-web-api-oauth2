@@ -41,3 +41,7 @@ Authorization: Bearer {{auth.response.body.access_token}}
 ### Sentencias
 GET {{baseUrl}}/sentencias?{{limit}}
 Authorization: Bearer {{auth.response.body.access_token}}
+
+### Funcionarios
+GET {{baseUrl}}/funcionarios?{{limit}}
+Authorization: Bearer {{auth.response.body.access_token}}

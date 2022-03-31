@@ -28,6 +28,8 @@ class Funcionario(Base, UniversalMixin):
     en_sentencias = Column(Boolean, nullable=False, default=False)
     en_soportes = Column(Boolean, nullable=False, default=False)
     en_tesis_jurisprudencias = Column(Boolean, nullable=False, default=False)
+    telefono = Column(String(48), nullable=False)
+    extension = Column(String(24), nullable=False)
 
     # Hijos
     soportes_tickets = relationship("SoporteTicket", back_populates="funcionario", lazy="noload")
