@@ -13,20 +13,14 @@ from plataforma_web.v1.funcionarios.models import Funcionario
 def get_funcionarios(
     db: Session,
     en_funciones: bool = False,
-    en_sentencias: bool = False,
     en_soportes: bool = False,
-    en_tesis_jurisprudencias: bool = False,
 ) -> Any:
     """Consultar los funcionarios activos"""
     consulta = db.query(Funcionario)
     if en_funciones is True:
         consulta = consulta.filetr_by(en_funciones=True)
-    if en_sentencias is True:
-        consulta = consulta.filetr_by(en_sentencias=True)
     if en_soportes is True:
         consulta = consulta.filetr_by(en_soportes=True)
-    if en_tesis_jurisprudencias is True:
-        consulta = consulta.filetr_by(en_tesis_jurisprudencias=True)
     return consulta.filter_by(estatus="A").order_by(Funcionario.curp.asc())
 
 

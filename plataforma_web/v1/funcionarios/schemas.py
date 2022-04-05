@@ -1,6 +1,7 @@
 """
 Funcionarios v1, esquemas de pydantic
 """
+from datetime import date
 from typing import Optional
 from pydantic import BaseModel
 
@@ -16,11 +17,13 @@ class FuncionarioOut(BaseModel):
     email: str
     puesto: str
     en_funciones: bool
-    en_sentencias: bool
     en_soportes: bool
-    en_tesis_jurisprudencias: bool
-    telefono: Optional[str]
-    extension: Optional[str]
+    telefono: Optional[str] = ""
+    extension: Optional[str] = ""
+    domicilio_oficial: Optional[str] = ""
+    ingreso_fecha: Optional[date]
+    puesto_clave: Optional[str] = ""
+    fotografia_url: Optional[str] = ""
 
     class Config:
         """SQLAlchemy config"""
