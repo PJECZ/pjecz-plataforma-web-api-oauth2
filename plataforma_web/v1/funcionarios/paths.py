@@ -20,16 +20,14 @@ funcionarios = APIRouter(prefix="/v1/funcionarios", tags=["funcionarios"])
 @funcionarios.get("", response_model=LimitOffsetPage[FuncionarioOut])
 async def listado_funcionarios(
     en_funciones: bool = None,
-    en_sentencias: bool = None,
     en_soportes: bool = None,
-    en_tesis_jurisprudencias: bool = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Listado de funcionarios"""
     if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
         raise HTTPException(status_code=403, detail="Forbidden")
-    return paginate(get_funcionarios(db, en_funciones, en_sentencias, en_soportes, en_tesis_jurisprudencias))
+    return paginate(get_funcionarios(db, en_funciones, en_soportes))
 
 
 @funcionarios.get("/{funcionario_id}", response_model=FuncionarioOut)

@@ -1,7 +1,7 @@
 """
 Funcionarios v1, modelos
 """
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Date, Integer, String
 from sqlalchemy.orm import relationship
 
 from lib.database import Base
@@ -25,11 +25,13 @@ class Funcionario(Base, UniversalMixin):
     email = Column(String(256), unique=True, index=True)
     puesto = Column(String(256))
     en_funciones = Column(Boolean, nullable=False, default=True)
-    en_sentencias = Column(Boolean, nullable=False, default=False)
     en_soportes = Column(Boolean, nullable=False, default=False)
-    en_tesis_jurisprudencias = Column(Boolean, nullable=False, default=False)
     telefono = Column(String(48), nullable=False)
     extension = Column(String(24), nullable=False)
+    domicilio_oficial = Column(String(512), nullable=False)
+    ingreso_fecha = Column(Date(), nullable=False)
+    puesto_clave = Column(String(32))
+    fotografia_url = Column(String(512), nullable=False)
 
     # Hijos
     soportes_tickets = relationship("SoporteTicket", back_populates="funcionario", lazy="noload")
