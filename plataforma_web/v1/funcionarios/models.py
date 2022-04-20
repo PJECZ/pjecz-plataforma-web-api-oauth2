@@ -1,7 +1,7 @@
 """
 Funcionarios v1, modelos
 """
-from sqlalchemy import Boolean, Column, Date, Integer, String
+from sqlalchemy import Boolean, ForeignKey, Column, Date, Integer, String
 from sqlalchemy.orm import relationship
 
 from lib.database import Base
@@ -16,6 +16,10 @@ class Funcionario(Base, UniversalMixin):
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
+
+    # Clave foránea
+    centro_trabajo_id = Column(Integer, ForeignKey("centros_trabajos.id"), index=True, nullable=False)
+    centro_trabajo = relationship("CentroTrabajo", back_populates="funcionarios")
 
     # Columnas
     nombres = Column(String(256), nullable=False)

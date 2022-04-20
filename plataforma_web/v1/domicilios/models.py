@@ -26,9 +26,11 @@ class Domicilio(Base, UniversalMixin):
     colonia = Column(String(256), nullable=False)
     cp = Column(Integer(), nullable=False)
     completo = Column(String(1024), nullable=False)
+    numeracion_telefonica = Column(String(256), nullable=False)
 
     # Hijos
-    oficinas = relationship("Oficina", back_populates="domicilio")
+    centros_trabajos = relationship("CentroTrabajo", back_populates="domicilio", lazy="noload")
+    oficinas = relationship("Oficina", back_populates="domicilio", lazy="noload")
 
     def __repr__(self):
         """Representación"""
