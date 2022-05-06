@@ -4,7 +4,7 @@ Instale la extension REST Client
 
     https://marketplace.visualstudio.com/items?itemName=humao.rest-client
 
-Cree un archivo `.env` en este directorio con estas variables
+Cree un archivo `.env` en este directorio con las variables de entorno...
 
     HOST=127.0.0.1
     PORT=8002

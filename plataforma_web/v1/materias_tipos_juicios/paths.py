@@ -1,7 +1,7 @@
 """
 Materias Tipos Juicios v1, rutas (paths)
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
@@ -27,13 +27,13 @@ async def listado_materias_tipos_juicios(
 ):
     """Listado de tipos de juicios de una materia"""
     if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_materias_tipos_juicios(db, materia_id=materia_id)
     except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
-        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
 
@@ -46,15 +46,15 @@ async def detalle_materia_tipo_juicio(
 ):
     """Detalle de una materia_tipo_juicio a partir de su id"""
     if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id=tipo_juicio_id)
         if materia_tipo_juicio.materia_id != materia_id:
             raise ValueError("No corresponde la materia al tipo de juicio")
     except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
-        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return MateriaTipoJuicioOut.from_orm(materia_tipo_juicio)
 
 
@@ -67,14 +67,14 @@ async def listado_materias_tipos_juicios_sentencias(
 ):
     """Listado de sentencias de un tipo de juicio"""
     if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(db, tipo_juicio_id)
         if materia_tipo_juicio.materia_id != materia_id:
             raise ValueError("No corresponde la materia al tipo de juicio")
         listado = get_sentencias(db, materia_tipo_juicio_id=tipo_juicio_id)
     except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
-        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)

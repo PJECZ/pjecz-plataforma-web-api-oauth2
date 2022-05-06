@@ -1,7 +1,7 @@
 """
 Usuarios v1.0, rutas (paths)
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
@@ -27,13 +27,13 @@ async def listado_usuarios(
 ):
     """Listado de usuarios"""
     if "USUARIOS" not in current_user.permissions or current_user.permissions["USUARIOS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_usuarios(db, autoridad_id=autoridad_id, autoridad_clave=autoridad_clave, oficina_id=oficina_id, oficina_clave=oficina_clave)
     except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
-        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
 
@@ -45,9 +45,9 @@ async def detalle_usuario(
 ):
     """Detalle de un usuario a partir de su id"""
     if "USUARIOS" not in current_user.permissions or current_user.permissions["USUARIOS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         usuario = get_usuario(db, usuario_id=usuario_id)
     except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     return UsuarioOut.from_orm(usuario)

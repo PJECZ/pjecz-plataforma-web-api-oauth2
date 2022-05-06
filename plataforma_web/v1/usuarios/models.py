@@ -35,6 +35,9 @@ class Usuario(Base, UniversalMixin):
     curp = Column(String(18))
     puesto = Column(String(256))
     telefono_celular = Column(String(256))
+    telefono = Column(String(48), nullable=False)
+    extension = Column(String(24), nullable=False)
+    fotografia_url = Column(String(512), nullable=False)
 
     # Hijos
     usuarios_roles = relationship("UsuarioRol", back_populates="usuario")
