@@ -12,6 +12,7 @@ from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from lib.database import get_db
 
 from plataforma_web.v1.autoridades.paths import autoridades
+from plataforma_web.v1.centros_trabajos.paths import centros_trabajos
 from plataforma_web.v1.distritos.paths import distritos
 from plataforma_web.v1.domicilios.paths import domicilios
 from plataforma_web.v1.funcionarios.paths import funcionarios
@@ -38,6 +39,7 @@ app = FastAPI(
 )
 
 app.include_router(autoridades)
+app.include_router(centros_trabajos)
 app.include_router(distritos)
 app.include_router(domicilios)
 app.include_router(funcionarios)

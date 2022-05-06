@@ -31,6 +31,21 @@ class CentroTrabajo(Base, UniversalMixin):
     # Hijos
     funcionarios = relationship("Funcionario", back_populates="centro_trabajo", lazy="noload")
 
+    @property
+    def distrito_nombre(self):
+        """Nombre del distrito"""
+        return self.distrito.nombre
+
+    @property
+    def distrito_nombre_corto(self):
+        """Nombre corto del distrito"""
+        return self.distrito.nombre_corto
+
+    @property
+    def domicilio_completo(self):
+        """Domicilio completo"""
+        return self.domicilio.completo
+
     def __repr__(self):
         """Representación"""
         return f"<CentroTrabajo {self.clave}>"

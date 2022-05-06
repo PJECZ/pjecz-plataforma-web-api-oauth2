@@ -1,6 +1,5 @@
 @root = http://{{$dotenv HOST}}:{{$dotenv PORT}}
 @baseUrl = {{root}}/v1
-@limit = offset=0&limit=10
 @username = {{$dotenv USERNAME}}
 @password = {{$dotenv PASSWORD}}
 
@@ -23,5 +22,7 @@ GET {{baseUrl}}/distritos
 Authorization: Bearer {{auth.response.body.access_token}}
 
 ### Autoridades
-GET {{baseUrl}}/autoridades{{limit}}
+GET {{baseUrl}}/autoridades
+    ?offset=0
+    &limit=10
 Authorization: Bearer {{auth.response.body.access_token}}

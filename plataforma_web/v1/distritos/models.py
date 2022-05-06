@@ -23,7 +23,8 @@ class Distrito(Base, UniversalMixin):
     es_distrito_judicial = Column(Boolean(), nullable=False, default=False)
 
     # Hijos
-    autoridades = relationship("Autoridad", back_populates="distrito")
+    autoridades = relationship("Autoridad", back_populates="distrito", lazy="noload")
+    centros_trabajos = relationship("CentroTrabajo", back_populates="distrito", lazy="noload")
 
     def __repr__(self):
         """Representación"""

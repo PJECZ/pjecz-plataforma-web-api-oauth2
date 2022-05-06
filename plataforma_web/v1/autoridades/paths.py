@@ -51,7 +51,7 @@ async def detalle_autoridad_con_clave(
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Detalle de una autoridad a partir de su id"""
+    """Detalle de una autoridad a partir de su clave"""
     if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
