@@ -1,7 +1,7 @@
 """
 Funcionarios v1, rutas (paths)
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
@@ -26,29 +26,11 @@ async def listado_funcionarios(
 ):
     """Listado de funcionarios"""
     if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     return paginate(get_funcionarios(db, en_funciones, en_soportes))
 
 
-@funcionarios.get("/{funcionario_id}", response_model=FuncionarioOut)
-async def detalle_funcionario(
-    funcionario_id: int,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Detalle de una funcionario a partir de su id"""
-    if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
-    try:
-        funcionario = get_funcionario(db, funcionario_id)
-    except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
-        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
-    return FuncionarioOut.from_orm(funcionario)
-
-
-@funcionarios.get("/curp/{curp}", response_model=FuncionarioOut)
+@funcionarios.get("/{curp}", response_model=FuncionarioOut)
 async def detalle_funcionario_con_curp(
     curp: str,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -56,11 +38,11 @@ async def detalle_funcionario_con_curp(
 ):
     """Detalle de una funcionario a partir de su id"""
     if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         funcionario = get_funcionario_with_curp(db, curp)
     except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
-        raise HTTPException(status_code=406, detail=f"Not acceptable: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return FuncionarioOut.from_orm(funcionario)

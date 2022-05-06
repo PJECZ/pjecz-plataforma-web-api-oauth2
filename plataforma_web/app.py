@@ -65,7 +65,7 @@ async def root():
 
 
 @app.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+async def ingresar_para_solicitar_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Entregar el token como un JSON"""
     usuario = authenticate_user(form_data.username, form_data.password, db)
     if not usuario:
@@ -79,7 +79,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/usuarios/yo/", response_model=UsuarioInDB)
-async def read_users_me(current_user: UsuarioInDB = Depends(get_current_active_user)):
+@app.get("/profile", response_model=UsuarioInDB)
+async def mi_perfil(current_user: UsuarioInDB = Depends(get_current_active_user)):
     """Mostrar el perfil del usuario"""
     return current_user

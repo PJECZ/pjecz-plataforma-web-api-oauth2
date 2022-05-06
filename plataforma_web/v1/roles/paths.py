@@ -1,7 +1,7 @@
 """
 Roles v1.0, rutas (paths)
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
@@ -24,7 +24,7 @@ async def listado_roles(
 ):
     """Listado de roles"""
     if "ROLES" not in current_user.permissions or current_user.permissions["ROLES"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     return paginate(get_roles(db))
 
 
@@ -36,9 +36,9 @@ async def detalle_rol(
 ):
     """Detalle de un rol a partir de su id"""
     if "ROLES" not in current_user.permissions or current_user.permissions["ROLES"] < Permiso.VER:
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         rol = get_rol(db, rol_id=rol_id)
     except IndexError as error:
-        raise HTTPException(status_code=404, detail=f"Not found: {str(error)}") from error
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     return RolOut.from_orm(rol)
