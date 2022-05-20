@@ -3,6 +3,7 @@ Plataforma Web API OAuth2
 """
 from datetime import timedelta
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -33,9 +34,22 @@ from plataforma_web.v1.usuarios_roles.paths import usuarios_roles
 from plataforma_web.v1.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user
 from plataforma_web.v1.usuarios.schemas import Token, UsuarioInDB
 
+try:
+    from instance.settings import ORIGINS
+except ImportError:
+    from config.settings import ORIGINS
+
 app = FastAPI(
     title="Plataforma Web API OAuth2",
     description="Información del Sitio Web www.pjecz.gob.mx",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGINS,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(autoridades)
