@@ -25,3 +25,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = os.environ.get("SECRET_KEY")  # openssl rand -hex 32
 ALGORITHM = os.environ.get("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+
+# CORS or "Cross-Origin Resource Sharing" refers to the situations when a frontend
+# running in a browser has JavaScript code that communicates with a backend,
+# and the backend is in a different "origin" than the frontend.
+# https://fastapi.tiangolo.com/tutorial/cors/
+ORIGINS = [
+    "https://plataforma-web.justiciadigital.gob.mx",
+]
