@@ -6,17 +6,22 @@ from sqlalchemy.orm import Session
 
 from lib.safe_string import safe_string
 
+from plataforma_web.v1.distritos.crud import get_distrito
 from plataforma_web.v1.domicilios.crud import get_domicilio
 from plataforma_web.v1.oficinas.models import Oficina
 
 
 def get_oficinas(
     db: Session,
+    distrito_id: int = None,
     domicilio_id: int = None,
     es_jurisdiccional: bool = False,
 ) -> Any:
     """Consultar los oficina activos"""
     consulta = db.query(Oficina)
+    if distrito_id:
+        distrito = get_distrito(db, distrito_id)
+        consulta = consulta.filter(Oficina.distrito == distrito)
     if domicilio_id:
         domicilio = get_domicilio(db, domicilio_id)
         consulta = consulta.filter(Oficina.domicilio == domicilio)
