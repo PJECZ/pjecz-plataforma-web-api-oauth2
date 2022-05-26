@@ -18,6 +18,8 @@ class Oficina(Base, UniversalMixin):
     id = Column(Integer, primary_key=True)
 
     # Clave foránea
+    distrito_id = Column(Integer, ForeignKey("distritos.id"), index=True, nullable=False)
+    distrito = relationship("Distrito", back_populates="oficinas")
     domicilio_id = Column(Integer, ForeignKey("domicilios.id"), index=True, nullable=False)
     domicilio = relationship("Domicilio", back_populates="oficinas")
 

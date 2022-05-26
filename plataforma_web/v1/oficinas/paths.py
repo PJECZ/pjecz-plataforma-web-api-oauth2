@@ -19,6 +19,7 @@ oficinas = APIRouter(prefix="/v1/oficinas", tags=["inventarios"])
 
 @oficinas.get("", response_model=LimitOffsetPage[OficinaOut])
 async def listado_oficinas(
+    distrito_id: int = None,
     domicilio_id: int = None,
     es_juridicional: bool = False,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -27,7 +28,7 @@ async def listado_oficinas(
     """Listado de oficinas"""
     if "OFICINAS" not in current_user.permissions or current_user.permissions["OFICINAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_oficinas(db, domicilio_id, es_juridicional))
+    return paginate(get_oficinas(db, distrito_id, domicilio_id, es_juridicional))
 
 
 @oficinas.get("/{oficina_id}", response_model=OficinaOut)
