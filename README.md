@@ -71,6 +71,14 @@ Cree el archivo `instance/settings.py` que cargue las variables de entorno
     # SQLite
     # SQLALCHEMY_DATABASE_URI = 'sqlite:///pjecz_rrhh_personal.sqlite3'
 
+    # CORS or "Cross-Origin Resource Sharing" refers to the situations when a frontend
+    # running in a browser has JavaScript code that communicates with a backend,
+    # and the backend is in a different "origin" than the frontend.
+    # https://fastapi.tiangolo.com/tutorial/cors/
+    ORIGINS = [
+        "http://localhost:3000",
+    ]
+
 ## Crear Entorno Virtual
 
 Crear el enorno virtual dentro de la copia local del repositorio, con
