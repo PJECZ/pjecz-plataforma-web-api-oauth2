@@ -36,9 +36,9 @@ def get_centro_trabajo(db: Session, centro_trabajo_id: int) -> CentroTrabajo:
     return centro_trabajo
 
 
-def get_centro_trabajo_from_clave(db: Session, clave: str) -> CentroTrabajo:
+def get_centro_trabajo_from_clave(db: Session, centro_trabajo_clave: str) -> CentroTrabajo:
     """Consultar un centro de trabajo por su id"""
-    clave = safe_clave(clave)  # Si no es correcta causa ValueError
+    clave = safe_clave(centro_trabajo_clave)  # Si no es correcta causa ValueError
     centro_trabajo = db.query(CentroTrabajo).filter_by(clave=clave).first()
     if centro_trabajo is None:
         raise IndexError("No existe ese centro de trabajo")

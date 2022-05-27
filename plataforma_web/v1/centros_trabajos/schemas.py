@@ -8,12 +8,12 @@ class CentroTrabajoOut(BaseModel):
     """Esquema para entregar centro de trabajo"""
 
     id: int
-    clave: str
     distrito_id: int
     distrito_nombre: str
     distrito_nombre_corto: str
     domicilio_id: int
     domicilio_completo: str
+    clave: str
     nombre: str
     telefono: str
 

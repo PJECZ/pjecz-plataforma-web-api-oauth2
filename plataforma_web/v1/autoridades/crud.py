@@ -45,9 +45,9 @@ def get_autoridad(db: Session, autoridad_id: int) -> Autoridad:
     return autoridad
 
 
-def get_autoridad_from_clave(db: Session, clave: str) -> Autoridad:
+def get_autoridad_from_clave(db: Session, autoridad_clave: str) -> Autoridad:
     """Consultar una autoridad por su clave"""
-    clave = safe_clave(clave)  # Si no es correcta causa ValueError
+    clave = safe_clave(autoridad_clave)  # Si no es correcta causa ValueError
     autoridad = db.query(Autoridad).filter_by(clave=clave).first()
     if autoridad is None:
         raise IndexError("No existe esa autoridad")

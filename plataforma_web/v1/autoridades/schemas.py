@@ -8,12 +8,12 @@ class AutoridadOut(BaseModel):
     """Esquema para entregar autoridad"""
 
     id: int
-    clave: str
     distrito_id: int
     distrito_nombre: str
     distrito_nombre_corto: str
     materia_id: int
     materia_nombre: str
+    clave: str
     descripcion: str
     descripcion_corta: str
     organo_jurisdiccional: str
