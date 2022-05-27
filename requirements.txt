@@ -2,6 +2,7 @@ black
 fastapi
 fastapi-pagination[sqlalchemy]
 gunicorn
+hashids
 httptools
 passlib[bcrypt]
 psycopg2-binary
