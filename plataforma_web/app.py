@@ -39,11 +39,13 @@ try:
 except ImportError:
     from config.settings import ORIGINS
 
+# FastAPI
 app = FastAPI(
     title="Plataforma Web API OAuth2",
     description="Información del Sitio Web www.pjecz.gob.mx",
 )
 
+# CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,
@@ -52,6 +54,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Paths
 app.include_router(autoridades)
 app.include_router(centros_trabajos)
 app.include_router(distritos)
@@ -71,6 +74,7 @@ app.include_router(soportes_tickets)
 app.include_router(usuarios)
 app.include_router(usuarios_roles)
 
+# Pagination
 add_pagination(app)
 
 
@@ -81,6 +85,7 @@ async def root():
 
 
 @app.post("/token", response_model=Token)
+@app.post("/v1/token", response_model=Token)
 async def ingresar_para_solicitar_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Entregar el token como un JSON"""
     usuario = authenticate_user(form_data.username, form_data.password, db)
@@ -96,6 +101,7 @@ async def ingresar_para_solicitar_token(form_data: OAuth2PasswordRequestForm = D
 
 
 @app.get("/profile", response_model=UsuarioInDB)
+@app.get("/v1/profile", response_model=UsuarioInDB)
 async def mi_perfil(current_user: UsuarioInDB = Depends(get_current_active_user)):
     """Mostrar el perfil del usuario"""
     return current_user
