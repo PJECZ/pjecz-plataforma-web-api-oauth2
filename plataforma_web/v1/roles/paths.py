@@ -25,7 +25,13 @@ async def listado_roles(
     """Listado de roles"""
     if "ROLES" not in current_user.permissions or current_user.permissions["ROLES"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_roles(db))
+    try:
+        listado = get_roles(db)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @roles.get("/{rol_id}", response_model=RolOut)

@@ -25,7 +25,13 @@ async def listado_permisos(
     """Listado de permisos"""
     if "PERMISOS" not in current_user.permissions or current_user.permissions["PERMISOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_permisos(db))
+    try:
+        listado = get_permisos(db)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @permisos.get("/{permiso_id}", response_model=PermisoOut)
@@ -38,7 +44,7 @@ async def detalle_permiso(
     if "PERMISOS" not in current_user.permissions or current_user.permissions["PERMISOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        permiso = get_permiso(db, permiso_id)
+        permiso = get_permiso(db, permiso_id=permiso_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

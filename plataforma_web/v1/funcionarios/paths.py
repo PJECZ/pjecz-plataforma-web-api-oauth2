@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.funcionarios.crud import get_funcionarios, get_funcionario, get_funcionario_with_curp
+from plataforma_web.v1.funcionarios.crud import get_funcionarios, get_funcionario
 from plataforma_web.v1.funcionarios.schemas import FuncionarioOut
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
@@ -27,12 +27,18 @@ async def listado_funcionarios(
     """Listado de funcionarios"""
     if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_funcionarios(db, en_funciones, en_soportes))
+    try:
+        listado = get_funcionarios(db, en_funciones=en_funciones, en_soportes=en_soportes)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
-@funcionarios.get("/{curp}", response_model=FuncionarioOut)
-async def detalle_funcionario_con_curp(
-    curp: str,
+@funcionarios.get("/{funcionario_id}", response_model=FuncionarioOut)
+async def detalle_funcionario(
+    funcionario_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -40,7 +46,7 @@ async def detalle_funcionario_con_curp(
     if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        funcionario = get_funcionario_with_curp(db, curp)
+        funcionario = get_funcionario(db, funcionario_id=funcionario_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

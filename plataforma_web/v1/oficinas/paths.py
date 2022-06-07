@@ -28,7 +28,13 @@ async def listado_oficinas(
     """Listado de oficinas"""
     if "OFICINAS" not in current_user.permissions or current_user.permissions["OFICINAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_oficinas(db, distrito_id, domicilio_id, es_juridicional))
+    try:
+        listado = get_oficinas(db, distrito_id=distrito_id, domicilio_id=domicilio_id, es_jurisdiccional=es_juridicional)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @oficinas.get("/{oficina_id}", response_model=OficinaOut)
@@ -41,7 +47,7 @@ async def detalle_oficina(
     if "OFICINAS" not in current_user.permissions or current_user.permissions["OFICINAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        oficina = get_oficina(db, oficina_id)
+        oficina = get_oficina(db, oficina_id=oficina_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

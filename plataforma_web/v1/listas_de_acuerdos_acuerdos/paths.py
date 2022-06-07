@@ -56,9 +56,9 @@ async def nuevo_acuerdo(
     return ListaDeAcuerdoAcuerdoOut.from_orm(listado)
 
 
-@listas_de_acuerdos_acuerdos.get("/{lista_de_acuerdo_id}/acuerdos/{acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
+@listas_de_acuerdos_acuerdos.get("/{lista_de_acuerdo_id}/acuerdos/{lista_de_acuerdo_acuerdo_id}", response_model=ListaDeAcuerdoAcuerdoOut)
 async def detalle_acuerdo(
-    acuerdo_id: int,
+    lista_de_acuerdo_acuerdo_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -66,7 +66,7 @@ async def detalle_acuerdo(
     if "LISTAS DE ACUERDOS ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS ACUERDOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        acuerdo = get_acuerdo(db, lista_de_acuerdo_acuerdo_id=acuerdo_id)
+        acuerdo = get_acuerdo(db, lista_de_acuerdo_acuerdo_id=lista_de_acuerdo_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     return ListaDeAcuerdoAcuerdoOut.from_orm(acuerdo)
