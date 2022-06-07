@@ -26,7 +26,7 @@ class SoporteCategoria(Base, UniversalMixin):
     instrucciones = Column(Text())
 
     # Hijos
-    soportes_tickets = relationship("SoporteTicket", back_populates="soporte_categoria")
+    soportes_tickets = relationship("SoporteTicket", back_populates="soporte_categoria", lazy="noload")
 
     @property
     def rol_nombre(self):
