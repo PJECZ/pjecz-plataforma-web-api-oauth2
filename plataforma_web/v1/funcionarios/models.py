@@ -38,7 +38,7 @@ class Funcionario(Base, UniversalMixin):
     fotografia_url = Column(String(512), nullable=False)
 
     # Hijos
-    soportes_tickets = relationship("SoporteTicket", back_populates="funcionario", lazy="noload")
+    soportes_tickets = relationship("SoporteTicket", back_populates="funcionario")
 
     @property
     def nombre(self):

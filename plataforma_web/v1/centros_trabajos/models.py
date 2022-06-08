@@ -29,7 +29,7 @@ class CentroTrabajo(Base, UniversalMixin):
     telefono = Column(String(48), nullable=False)
 
     # Hijos
-    funcionarios = relationship("Funcionario", back_populates="centro_trabajo", lazy="noload")
+    funcionarios = relationship("Funcionario", back_populates="centro_trabajo")
 
     @property
     def distrito_nombre(self):

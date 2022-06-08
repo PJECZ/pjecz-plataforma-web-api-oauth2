@@ -61,9 +61,9 @@ class Autoridad(Base, UniversalMixin):
     )
 
     # Hijos
-    listas_de_acuerdos = relationship("ListaDeAcuerdo", back_populates="autoridad", lazy="noload")
-    redams = relationship("Redam", back_populates="autoridad", lazy="noload")
-    sentencias = relationship("Sentencia", back_populates="autoridad", lazy="noload")
+    listas_de_acuerdos = relationship("ListaDeAcuerdo", back_populates="autoridad")
+    redams = relationship("Redam", back_populates="autoridad")
+    sentencias = relationship("Sentencia", back_populates="autoridad")
     usuarios = relationship("Usuario", back_populates="autoridad")
 
     @property
