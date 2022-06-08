@@ -24,6 +24,7 @@ from plataforma_web.v1.materias_tipos_juicios.paths import materias_tipos_juicio
 from plataforma_web.v1.modulos.paths import modulos
 from plataforma_web.v1.oficinas.paths import oficinas
 from plataforma_web.v1.permisos.paths import permisos
+from plataforma_web.v1.redams.paths import redams
 from plataforma_web.v1.roles.paths import roles
 from plataforma_web.v1.sentencias.paths import sentencias
 from plataforma_web.v1.soportes_categorias.paths import soportes_categorias
@@ -67,6 +68,7 @@ app.include_router(materias_tipos_juicios)
 app.include_router(modulos)
 app.include_router(oficinas)
 app.include_router(permisos)
+app.include_router(redams)
 app.include_router(roles)
 app.include_router(sentencias)
 app.include_router(soportes_categorias)
