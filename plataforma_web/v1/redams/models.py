@@ -12,7 +12,7 @@ class Redam(Base, UniversalMixin):
     """Redam"""
 
     # Nombre de la tabla
-    __tablename__ = "readm"
+    __tablename__ = "redam"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)
