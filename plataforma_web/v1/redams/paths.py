@@ -20,6 +20,7 @@ redams = APIRouter(prefix="/v1/redams", tags=["redamS"])
 @redams.get("", response_model=LimitOffsetPage[RedamOut])
 async def listado_redams(
     autoridad_id: int = None,
+    distrito_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,7 @@ async def listado_redams(
     if "REDAMS" not in current_user.permissions or current_user.permissions["REDAMS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_redams(db, autoridad_id=autoridad_id)
+        listado = get_redams(db, autoridad_id=autoridad_id, distrito_id=distrito_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
