@@ -61,7 +61,7 @@ async def detalle_sentencia(
     if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        sentencia = get_sentencia(db, sentencia_id)
+        sentencia = get_sentencia(db, sentencia_id=sentencia_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

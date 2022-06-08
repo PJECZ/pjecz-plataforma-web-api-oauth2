@@ -27,7 +27,13 @@ async def listado_distritos(
     """Listado de distritos"""
     if "DISTRITOS" not in current_user.permissions or current_user.permissions["DISTRITOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_distritos(db))
+    try:
+        listado = get_distritos(db)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @distritos.get("/{distrito_id}", response_model=DistritoOut)
@@ -57,12 +63,7 @@ async def listado_autoridades_del_distrito(
     if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_autoridades(
-            db,
-            distrito_id=distrito_id,
-            materia_id=materia_id,
-            son_notarias=False,
-        )
+        listado = get_autoridades(db, distrito_id=distrito_id, materia_id=materia_id, son_notarias=False)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
@@ -80,11 +81,7 @@ async def listado_notarias_del_distrito(
     if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_autoridades(
-            db,
-            distrito_id=distrito_id,
-            son_notarias=True,
-        )
+        listado = get_autoridades(db, distrito_id=distrito_id, son_notarias=True)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

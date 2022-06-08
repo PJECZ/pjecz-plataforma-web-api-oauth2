@@ -25,7 +25,13 @@ async def listado_modulos(
     """Listado de modulos"""
     if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_modulos(db))
+    try:
+        listado = get_modulos(db)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @modulos.get("/{modulo_id}", response_model=ModuloOut)
@@ -38,7 +44,7 @@ async def detalle_modulo(
     if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        modulo = get_modulo(db, modulo_id)
+        modulo = get_modulo(db, modulo_id=modulo_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

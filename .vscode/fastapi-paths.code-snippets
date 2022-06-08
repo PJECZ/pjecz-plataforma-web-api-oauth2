@@ -30,7 +30,13 @@
             "\t\"\"\"Listado de ${6:comentario}\"\"\"",
             "\tif \"${7:MODULO}\" not in current_user.permissions or current_user.permissions[\"${7:MODULO}\"] < Permiso.VER:",
             "\t\traise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=\"Forbidden\")",
-            "\treturn paginate(get_${2:blueprint}(db))",
+            "\ttry:",
+            "\t\tlistado = get_${2:blueprint}(db)",
+            "\texcept IndexError as error:",
+            "\t\traise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"Not found: {str(error)}\") from error",
+            "\texcept ValueError as error:",
+            "\t\traise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f\"Not acceptable: {str(error)}\") from error",
+            "\treturn paginate(listado)",
             "",
             "",
             "@${2:blueprint}.get(\"/{${3:singular}_id}\", response_model=${4:EsquemaOut})",
@@ -43,7 +49,7 @@
             "\tif \"${7:MODULO}\" not in current_user.permissions or current_user.permissions[\"${7:MODULO}\"] < Permiso.VER:",
             "\t\traise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=\"Forbidden\")",
             "\ttry:",
-            "\t\t${3:singular} = get_${3:singular}(db, ${3:singular}_id)",
+            "\t\t${3:singular} = get_${3:singular}(db, ${3:singular}_id=${3:singular}_id)",
             "\texcept IndexError as error:",
             "\t\traise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"Not found: {str(error)}\") from error",
             "\texcept ValueError as error:",
@@ -52,5 +58,28 @@
             ""
         ],
         "description": "Contenido para paths.py"
+    },
+    "FastAPI paths listado": {
+        "scope": "python",
+        "prefix": "fpaths_listado",
+        "body": [
+            "@${1:blueprint}.get(\"\", response_model=LimitOffsetPage[${2:EsquemaOut}])",
+            "async def listado_${1:blueprint}(",
+            "\tcurrent_user: UsuarioInDB = Depends(get_current_active_user),",
+            "\tdb: Session = Depends(get_db),",
+            "):",
+            "\t\"\"\"Listado de ${3:comentario}\"\"\"",
+            "\tif \"${4:MODULO}\" not in current_user.permissions or current_user.permissions[\"${4:MODULO}\"] < Permiso.VER:",
+            "\t\traise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=\"Forbidden\")",
+            "\ttry:",
+            "\t\tlistado = get_${1:blueprint}(db)",
+            "\texcept IndexError as error:",
+            "\t\traise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f\"Not found: {str(error)}\") from error",
+            "\texcept ValueError as error:",
+            "\t\traise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f\"Not acceptable: {str(error)}\") from error",
+            "\treturn paginate(listado)",
+            ""
+        ],
+        "description": "Listado"
     }
 }

@@ -10,6 +10,7 @@ from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios_roles.crud import get_usuarios_roles, get_usuario_rol
+from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios_roles.schemas import UsuarioRolOut
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
@@ -22,9 +23,15 @@ async def listado_usuarios_roles(
     db: Session = Depends(get_db),
 ):
     """Listado de usuarios_roles"""
-    if not current_user.can_view("USUARIOS ROLES"):
+    if "USUARIOS ROLES" not in current_user.permissions or current_user.permissions["USUARIOS ROLES"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_usuarios_roles(db))
+    try:
+        listado = get_usuarios_roles(db)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @usuarios_roles.get("/{usuario_rol_id}", response_model=UsuarioRolOut)
@@ -37,7 +44,7 @@ async def detalle_usuario_rol(
     if not current_user.can_view("USUARIOS ROLES"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        usuario_rol = get_usuario_rol(db, usuario_rol_id)
+        usuario_rol = get_usuario_rol(db, usuario_rol_id=usuario_rol_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

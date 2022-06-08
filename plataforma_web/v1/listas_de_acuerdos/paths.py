@@ -80,7 +80,7 @@ async def detalle_lista_de_acuerdos(
     if "LISTAS DE ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
+        consulta = get_lista_de_acuerdo(db, lista_de_acuerdo_id=lista_de_acuerdo_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

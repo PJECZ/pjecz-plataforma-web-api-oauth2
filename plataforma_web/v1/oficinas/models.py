@@ -33,7 +33,7 @@ class Oficina(Base, UniversalMixin):
     limite_personas = Column(Integer(), nullable=False)
 
     # Hijos
-    usuarios = relationship("Usuario", back_populates="oficina", lazy="noload")
+    usuarios = relationship("Usuario", back_populates="oficina")
 
     @property
     def domicilio_completo(self):

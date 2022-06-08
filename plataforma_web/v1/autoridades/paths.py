@@ -33,11 +33,7 @@ async def listado_autoridades(
     if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_autoridades(
-            db,
-            distrito_id=distrito_id,
-            materia_id=materia_id,
-        )
+        listado = get_autoridades(db, distrito_id=distrito_id, materia_id=materia_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

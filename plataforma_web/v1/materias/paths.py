@@ -27,7 +27,13 @@ async def listado_materias(
     """Listado de materias"""
     if "MATERIAS" not in current_user.permissions or current_user.permissions["MATERIAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_materias(db))
+    try:
+        listado = get_materias(db)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @materias.get("/{materia_id}", response_model=MateriaOut)
@@ -40,7 +46,7 @@ async def detalle_materia(
     if "MATERIAS" not in current_user.permissions or current_user.permissions["MATERIAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        materia = get_materia(db, materia_id)
+        materia = get_materia(db, materia_id=materia_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     return MateriaOut.from_orm(materia)

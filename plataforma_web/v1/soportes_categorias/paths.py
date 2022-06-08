@@ -22,10 +22,16 @@ async def listado_soportes_categorias(
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado de Soporte Categorias"""
+    """Listado de categorias"""
     if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    return paginate(get_soportes_categorias(db))
+    try:
+        listado = get_soportes_categorias(db)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return paginate(listado)
 
 
 @soportes_categorias.get("/{soporte_categoria_id}", response_model=SoporteCategoriaOut)
@@ -34,11 +40,11 @@ async def detalle_soporte_categoria(
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Detalle de una Soporte Categoria a partir de su id"""
+    """Detalle de una categoria a partir de su id"""
     if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        soporte_categoria = get_soporte_categoria(db, soporte_categoria_id)
+        soporte_categoria = get_soporte_categoria(db, soporte_categoria_id=soporte_categoria_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
