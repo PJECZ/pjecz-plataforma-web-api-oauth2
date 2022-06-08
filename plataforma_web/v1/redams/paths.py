@@ -24,7 +24,7 @@ async def listado_redams(
     db: Session = Depends(get_db),
 ):
     """Listado de deudores"""
-    if "REDAMS" not in current_user.permissions or current_user.permissions["REDAMS"] < Permiso.VER:
+    if "REDAM" not in current_user.permissions or current_user.permissions["REDAM"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_redams(db, autoridad_id=autoridad_id)
@@ -42,7 +42,7 @@ async def detalle_redam(
     db: Session = Depends(get_db),
 ):
     """Detalle de una deudores a partir de su id"""
-    if "REDAMS" not in current_user.permissions or current_user.permissions["REDAMS"] < Permiso.VER:
+    if "REDAM" not in current_user.permissions or current_user.permissions["REDAM"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         redam = get_redam(db, redam_id=redam_id)
