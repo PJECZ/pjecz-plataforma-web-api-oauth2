@@ -27,7 +27,7 @@ class InvCustodia(Base, UniversalMixin):
     nombre_completo = Column(String(256))
 
     # Hijos
-    inv_equipos = relationship("InvEquipo", back_populates="inv_custodia", lazy="noload")
+    inv_equipos = relationship("InvEquipo", back_populates="inv_custodia")
 
     @property
     def usuario_nombre(self):

@@ -25,7 +25,7 @@ class InvModelo(Base, UniversalMixin):
     descripcion = Column(String(256), nullable=False)
 
     # Hijos
-    inv_equipos = relationship("InvEquipo", back_populates="inv_modelo", lazy="noload")
+    inv_equipos = relationship("InvEquipo", back_populates="inv_modelo")
 
     @property
     def inv_marca_nombre(self):

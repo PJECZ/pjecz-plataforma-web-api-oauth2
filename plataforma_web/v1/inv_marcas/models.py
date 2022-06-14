@@ -21,7 +21,7 @@ class InvMarca(Base, UniversalMixin):
     nombre = Column(String(256), unique=True, nullable=False)
 
     # Hijos
-    inv_modelos = relationship("InvModelo", back_populates="inv_marca", lazy="noload")
+    inv_modelos = relationship("InvModelo", back_populates="inv_marca")
 
     def __repr__(self):
         """Representación"""

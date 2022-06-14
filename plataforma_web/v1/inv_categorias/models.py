@@ -21,7 +21,7 @@ class InvCategoria(Base, UniversalMixin):
     nombre = Column(String(256), unique=True, nullable=False)
 
     # Hijos
-    inv_componentes = relationship("InvComponente", back_populates="inv_categoria", lazy="noload")
+    inv_componentes = relationship("InvComponente", back_populates="inv_categoria")
 
     def __repr__(self):
         """Representación"""

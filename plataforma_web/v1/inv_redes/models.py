@@ -30,7 +30,7 @@ class InvRed(Base, UniversalMixin):
     tipo = Column(Enum(*TIPOS, name="tipos_redes", native_enum=False), index=True, nullable=False)
 
     # Hijos
-    inv_equipos = relationship("InvEquipo", back_populates="inv_red", lazy="noload")
+    inv_equipos = relationship("InvEquipo", back_populates="inv_red")
 
     def __repr__(self):
         """Representación"""
