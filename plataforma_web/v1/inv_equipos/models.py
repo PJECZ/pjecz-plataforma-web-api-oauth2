@@ -57,6 +57,26 @@ class InvEquipo(Base, UniversalMixin):
     # inv_componentes = relationship("InvComponente", back_populates="inv_equipo", lazy="noload")
     # inv_equipos_fotos = relationship("InvEquipoFoto", back_populates="inv_equipo", lazy="noload")
 
+    @property
+    def inv_custodia_nombre_completo(self):
+        """Nombre completo de la custodia"""
+        return self.inv_custodia.nombre_completo
+
+    @property
+    def inv_marca_nombre(self):
+        """Nombre de la marca"""
+        return self.inv_modelo.inv_marca.nombre
+
+    @property
+    def inv_modelo_descripcion(self):
+        """Descripción del modelo"""
+        return self.inv_modelo.descripcion
+
+    @property
+    def inv_red_nombre(self):
+        """Nombre de la red"""
+        return self.inv_red.nombre
+
     def __repr__(self):
         """Representación"""
         return f"<InvEquipo {self.id}>"
