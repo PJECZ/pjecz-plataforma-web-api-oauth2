@@ -8,7 +8,10 @@ from .models import InvModelo
 from ..inv_marcas.crud import get_inv_marca
 
 
-def get_inv_modelos(db: Session, inv_marca_id: int = None) -> Any:
+def get_inv_modelos(
+    db: Session,
+    inv_marca_id: int = None,
+) -> Any:
     """Consultar los modelos activos"""
     consulta = db.query(InvModelo)
     if inv_marca_id:

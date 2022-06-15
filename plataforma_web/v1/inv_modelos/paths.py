@@ -1,5 +1,5 @@
 """
-Inventarios Componentes v1, rutas (paths)
+Inventarios Modelos v1, rutas (paths)
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -8,32 +8,28 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.inv_componentes.crud import get_inv_componente, get_inv_componentes
-from plataforma_web.v1.inv_componentes.schemas import InvComponenteOut
+from plataforma_web.v1.inv_modelos.crud import get_inv_modelos, get_inv_modelo
+from plataforma_web.v1.inv_modelos.schemas import InvModeloOut
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-inv_componentes = APIRouter(prefix="/v1/inv_componentes", tags=["inventarios"])
+inv_modelos = APIRouter(prefix="/v1/inv_modelos", tags=["inventarios"])
 
 
-@inv_componentes.get("", response_model=LimitOffsetPage[InvComponenteOut])
-async def listado_inv_componentes(
-    inv_categoria_id: int = None,
-    inv_equipo_id: int = None,
-    generacion: str = False,
+@inv_modelos.get("", response_model=LimitOffsetPage[InvModeloOut])
+async def listado_inv_modelos(
+    inv_marca_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado de componentes"""
-    if "INV COMPONENTES" not in current_user.permissions or current_user.permissions["INV COMPONENTES"] < Permiso.VER:
+    """Listado de modelos"""
+    if "INV MODELOS" not in current_user.permissions or current_user.permissions["INV MODELOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_inv_componentes(
+        listado = get_inv_modelos(
             db,
-            inv_categoria_id=inv_categoria_id,
-            inv_equipo_id=inv_equipo_id,
-            generacion=generacion,
+            inv_marca_id=inv_marca_id,
         )
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
@@ -42,19 +38,19 @@ async def listado_inv_componentes(
     return paginate(listado)
 
 
-@inv_componentes.get("/{inv_componente_id}", response_model=InvComponenteOut)
-async def detalle_inv_componente(
-    inv_componente_id: int,
+@inv_modelos.get("/{inv_modelo_id}", response_model=InvModeloOut)
+async def detalle_inv_modelo(
+    inv_modelo_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Detalle de una componentes a partir de su id"""
-    if "INV COMPONENTES" not in current_user.permissions or current_user.permissions["INV COMPONENTES"] < Permiso.VER:
+    """Detalle de una modelos a partir de su id"""
+    if "INV MODELOS" not in current_user.permissions or current_user.permissions["INV MODELOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        inv_componente = get_inv_componente(db, inv_componente_id=inv_componente_id)
+        inv_modelo = get_inv_modelo(db, inv_modelo_id=inv_modelo_id)
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return InvComponenteOut.from_orm(inv_componente)
+    return InvModeloOut.from_orm(inv_modelo)

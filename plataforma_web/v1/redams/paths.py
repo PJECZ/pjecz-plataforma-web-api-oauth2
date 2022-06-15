@@ -14,7 +14,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-redams = APIRouter(prefix="/v1/redams", tags=["redamS"])
+redams = APIRouter(prefix="/v1/redams", tags=["redam"])
 
 
 @redams.get("", response_model=LimitOffsetPage[RedamOut])

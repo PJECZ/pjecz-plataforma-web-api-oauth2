@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.inv_categorias.crud import get_inv_categorias, get_inv_categoria
+from plataforma_web.v1.inv_categorias.crud import get_inv_categoria, get_inv_categorias
 from plataforma_web.v1.inv_categorias.schemas import InvCategoriaOut
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user

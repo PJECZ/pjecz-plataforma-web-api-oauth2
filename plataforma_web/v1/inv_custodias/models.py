@@ -12,7 +12,7 @@ class InvCustodia(Base, UniversalMixin):
     """InvCustodia"""
 
     # Nombre de la tabla
-    __tablename__ = "tables"
+    __tablename__ = "inv_custodias"
 
     # Clave primaria
     id = Column(Integer, primary_key=True)

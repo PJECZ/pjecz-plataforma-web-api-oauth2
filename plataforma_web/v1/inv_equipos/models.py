@@ -55,7 +55,6 @@ class InvEquipo(Base, UniversalMixin):
 
     # Hijos
     inv_componentes = relationship("InvComponente", back_populates="inv_equipo")
-    # inv_equipos_fotos = relationship("InvEquipoFoto", back_populates="inv_equipo")
 
     @property
     def inv_custodia_nombre_completo(self):
