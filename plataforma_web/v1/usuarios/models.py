@@ -40,8 +40,9 @@ class Usuario(Base, UniversalMixin):
     fotografia_url = Column(String(512), nullable=False)
 
     # Hijos
-    usuarios_roles = relationship("UsuarioRol", back_populates="usuario")
+    inv_custodias = relationship("InvCustodia", back_populates="usuario")
     soportes_tickets = relationship("SoporteTicket", back_populates="usuario")
+    usuarios_roles = relationship("UsuarioRol", back_populates="usuario")
 
     # Propiedades
     permisos_consultados = {}

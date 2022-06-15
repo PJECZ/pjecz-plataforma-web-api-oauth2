@@ -17,6 +17,13 @@ from plataforma_web.v1.centros_trabajos.paths import centros_trabajos
 from plataforma_web.v1.distritos.paths import distritos
 from plataforma_web.v1.domicilios.paths import domicilios
 from plataforma_web.v1.funcionarios.paths import funcionarios
+from plataforma_web.v1.inv_categorias.paths import inv_categorias
+from plataforma_web.v1.inv_componentes.paths import inv_componentes
+from plataforma_web.v1.inv_custodias.paths import inv_custodias
+from plataforma_web.v1.inv_equipos.paths import inv_equipos
+from plataforma_web.v1.inv_marcas.paths import inv_marcas
+from plataforma_web.v1.inv_modelos.paths import inv_modelos
+from plataforma_web.v1.inv_redes.paths import inv_redes
 from plataforma_web.v1.listas_de_acuerdos.paths import listas_de_acuerdos
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import listas_de_acuerdos_acuerdos
 from plataforma_web.v1.materias.paths import materias
@@ -61,6 +68,13 @@ app.include_router(centros_trabajos)
 app.include_router(distritos)
 app.include_router(domicilios)
 app.include_router(funcionarios)
+app.include_router(inv_categorias)
+app.include_router(inv_componentes)
+app.include_router(inv_custodias)
+app.include_router(inv_equipos)
+app.include_router(inv_marcas)
+app.include_router(inv_modelos)
+app.include_router(inv_redes)
 app.include_router(listas_de_acuerdos)
 app.include_router(listas_de_acuerdos_acuerdos)
 app.include_router(materias)
