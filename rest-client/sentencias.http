@@ -1,0 +1,18 @@
+@root = http://{{$dotenv HOST}}:{{$dotenv PORT}}
+@baseUrl = {{root}}/v1
+@username = {{$dotenv USERNAME}}
+@password = {{$dotenv PASSWORD}}
+
+### Bienvenida
+GET {{root}}
+
+### Autorizacion
+# @name auth
+POST {{root}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username={{username}}&password={{password}}
+
+### Sentencias
+GET {{baseUrl}}/sentencias
+Authorization: Bearer {{auth.response.body.access_token}}
