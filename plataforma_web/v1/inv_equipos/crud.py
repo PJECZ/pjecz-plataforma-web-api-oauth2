@@ -50,3 +50,9 @@ def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:
     if inv_equipo.estatus != "A":
         raise ValueError("No es activo ese equipo, está eliminado")
     return inv_equipo
+
+
+def get_cantidad_by_oficina_and_tipo(
+    db: Session,
+) -> Any:
+    """Consultar cantidades de equipos por oficina y por tipo"""

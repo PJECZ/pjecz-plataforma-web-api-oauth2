@@ -32,3 +32,10 @@ class InvEquipoOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class InvEquipoOficinaCantidadOut(BaseModel):
+
+    tipo: str
+    oficina_clave: str
+    cantidad: int
