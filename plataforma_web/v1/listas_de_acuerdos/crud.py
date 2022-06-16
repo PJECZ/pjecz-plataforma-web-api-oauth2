@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import AlredyExistsError
 from lib.safe_string import safe_string
-from plataforma_web.v1.autoridades.crud import get_autoridad, get_autoridad_from_clave, get_autoridades
+from plataforma_web.v1.autoridades.crud import get_autoridad
 from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
 from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoIn
 
@@ -16,24 +16,15 @@ LIMITE_DIAS = 7
 
 def get_listas_de_acuerdos(
     db: Session,
-    distrito_id: int = None,
     autoridad_id: int = None,
-    autoridad_clave: str = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
 ) -> Any:
     """Consultar las listas de acuerdos activas"""
     consulta = db.query(ListaDeAcuerdo)
-    if distrito_id:
-        autoridades = get_autoridades(db, distrito_id)
-        autoridades_ids = [autoridad.id for autoridad in autoridades]
-        consulta = consulta.filter(ListaDeAcuerdo.autoridad_id.in_(autoridades_ids))
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
-        consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
-    elif autoridad_clave:
-        autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
