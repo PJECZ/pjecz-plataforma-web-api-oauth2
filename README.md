@@ -68,15 +68,15 @@ Cree el archivo `instance/settings.py` que cargue las variables de entorno
     # PostgreSQL
     SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
 
-    # SQLite
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:///pjecz_rrhh_personal.sqlite3'
-
     # CORS or "Cross-Origin Resource Sharing" refers to the situations when a frontend
     # running in a browser has JavaScript code that communicates with a backend,
     # and the backend is in a different "origin" than the frontend.
     # https://fastapi.tiangolo.com/tutorial/cors/
     ORIGINS = [
         "http://localhost:3000",
+        "http://localhost:8002",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8002",
     ]
 
 ## Crear Entorno Virtual

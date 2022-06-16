@@ -16,6 +16,7 @@ from plataforma_web.v1.autoridades.paths import autoridades
 from plataforma_web.v1.centros_trabajos.paths import centros_trabajos
 from plataforma_web.v1.distritos.paths import distritos
 from plataforma_web.v1.domicilios.paths import domicilios
+from plataforma_web.v1.edictos.paths import edictos
 from plataforma_web.v1.funcionarios.paths import funcionarios
 from plataforma_web.v1.inv_categorias.paths import inv_categorias
 from plataforma_web.v1.inv_componentes.paths import inv_componentes
@@ -67,6 +68,7 @@ app.include_router(autoridades)
 app.include_router(centros_trabajos)
 app.include_router(distritos)
 app.include_router(domicilios)
+app.include_router(edictos)
 app.include_router(funcionarios)
 app.include_router(inv_categorias)
 app.include_router(inv_componentes)
