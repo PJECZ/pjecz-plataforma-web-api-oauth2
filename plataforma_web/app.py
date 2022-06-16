@@ -12,6 +12,7 @@ from fastapi_pagination import add_pagination
 from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from lib.database import get_db
 
+from plataforma_web.v1.abogados.paths import abogados
 from plataforma_web.v1.autoridades.paths import autoridades
 from plataforma_web.v1.centros_trabajos.paths import centros_trabajos
 from plataforma_web.v1.distritos.paths import distritos
@@ -64,6 +65,7 @@ app.add_middleware(
 )
 
 # Paths
+app.include_router(abogados)
 app.include_router(autoridades)
 app.include_router(centros_trabajos)
 app.include_router(distritos)
