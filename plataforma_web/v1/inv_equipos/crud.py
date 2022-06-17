@@ -65,16 +65,16 @@ def get_matriz(db: Session) -> Any:
     """Matriz con oficinas, usuarios, custodias, equipos, tipos, modelos y marcas"""
     return (
         db.query(
-            Oficina.clave,
-            Usuario.email,
+            Oficina.clave.label("oficina_clave"),
+            Usuario.email.label("usuario_email"),
             InvCustodia.id.label("inv_custodia_id"),
             InvCustodia.nombre_completo.label("inv_custodia_nombre_completo"),
             InvEquipo.id.label("inv_equipo_id"),
-            InvEquipo.tipo,
+            InvEquipo.tipo.label("inv_equipo_tipo"),
             InvMarca.nombre.label("inv_marca_nombre"),
             InvModelo.descripcion.label("inv_modelo_descripcion"),
             InvEquipo.descripcion.label("inv_equipo_descripcion"),
-            InvEquipo.fecha_fabricacion,
+            InvEquipo.fecha_fabricacion.label("inv_equipo_fecha_fabricacion"),
         )
         .select_from(Oficina)
         .join(Usuario, InvCustodia, InvEquipo, InvModelo, InvMarca)
@@ -90,8 +90,8 @@ def get_cantidades_oficina_tipo(db: Session) -> Any:
     """Obtener las cantidades de equipos por oficina y por tipo"""
     return (
         db.query(
-            Oficina.clave,
-            InvEquipo.tipo,
+            Oficina.clave.label("oficina_clave"),
+            InvEquipo.tipo.label("inv_equipo_tipo"),
             func.count("*").label("cantidad"),
         )
         .select_from(Oficina)

@@ -2,6 +2,7 @@
 Inventario Equipos v1, esquemas de pydantic
 """
 from datetime import date
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -46,12 +47,12 @@ class MatrizOut(BaseModel):
     inv_marca_nombre: str
     inv_modelo_descripcion: str
     inv_equipo_descripcion: str
-    inv_equipo_fecha_fabricacion: date
+    inv_equipo_fecha_fabricacion: Optional[date] = None
 
 
 class CantidadesOficinaTipoOut(BaseModel):
     """Cantidades de equipos por tipo y oficina"""
 
     oficina_clave: str
-    tipo: str
+    inv_equipo_tipo: str
     cantidad: int

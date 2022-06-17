@@ -51,24 +51,6 @@ async def listado_inv_equipos(
     return paginate(listado)
 
 
-@inv_equipos.get("/{inv_equipo_id}", response_model=InvEquipoOut)
-async def detalle_inv_equipo(
-    inv_equipo_id: int,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Detalle de una inventarios a partir de su id"""
-    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        inv_equipo = get_inv_equipo(db, inv_equipo_id=inv_equipo_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return InvEquipoOut.from_orm(inv_equipo)
-
-
 @inv_equipos.get("/matriz", response_model=List[MatrizOut])
 async def matriz(
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -101,3 +83,21 @@ async def cantidades_oficina_tipo(
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return consulta.all()
+
+
+@inv_equipos.get("/{inv_equipo_id}", response_model=InvEquipoOut)
+async def detalle_inv_equipo(
+    inv_equipo_id: int,
+    current_user: UsuarioInDB = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Detalle de una inventarios a partir de su id"""
+    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    try:
+        inv_equipo = get_inv_equipo(db, inv_equipo_id=inv_equipo_id)
+    except IndexError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return InvEquipoOut.from_orm(inv_equipo)
