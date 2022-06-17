@@ -4,6 +4,7 @@ fastapi-pagination[sqlalchemy]
 gunicorn
 hashids
 httptools
+pandas
 passlib[bcrypt]
 psycopg2-binary
 pydantic
