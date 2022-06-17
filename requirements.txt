@@ -17,6 +17,7 @@ python-multipart
 requests
 SQLAlchemy
 SQLAlchemy-Utils
+tabulate
 Unidecode
 uvicorn
 uvloop

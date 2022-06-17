@@ -13,6 +13,7 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 import requests
+from tabulate import tabulate
 
 load_dotenv()
 
@@ -58,12 +59,12 @@ def get_cantidades_oficina_tipo(authorization_header):
     dataframe = pd.json_normalize(data_json)
     dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
     dataframe.inv_equipo_tipo = dataframe.inv_equipo_tipo.astype("category")
-    # reporte = dataframe.pivot_table(
-    #     index=["oficina_clave"],
-    #     columns=["inv_equipo_tipo"],
-    #     values="cantidad",
-    # )
-    return dataframe
+    reporte = dataframe.pivot_table(
+        index=["oficina_clave"],
+        columns=["inv_equipo_tipo"],
+        values="cantidad",
+    )
+    return reporte, ["OFICINA"] + list(dataframe.inv_equipo_tipo)
 
 
 def main():
@@ -71,10 +72,8 @@ def main():
     try:
         token = authenticate()
         authorization_header = {"Authorization": "Bearer " + token}
-        # matriz = get_matriz(authorization_header)
-        # print(matriz)
-        cantidades_oficina_tipo = get_cantidades_oficina_tipo(authorization_header)
-        print(str(cantidades_oficina_tipo))
+        cantidades_oficina_tipo, columns = get_cantidades_oficina_tipo(authorization_header)
+        print(tabulate(cantidades_oficina_tipo, headers=columns))
     except requests.HTTPError as error:
         print("Error de comunicacion " + str(error))
     except Exception as error:
