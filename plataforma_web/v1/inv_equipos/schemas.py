@@ -34,8 +34,24 @@ class InvEquipoOut(BaseModel):
         orm_mode = True
 
 
-class InvEquipoOficinaCantidadOut(BaseModel):
+class MatrizOut(BaseModel):
+    """Matriz"""
 
-    tipo: str
     oficina_clave: str
+    usuario_email: str
+    inv_custodia_id: int
+    inv_custodia_nombre_completo: str
+    inv_equipo_id: int
+    inv_equipo_tipo: str
+    inv_marca_nombre: str
+    inv_modelo_descripcion: str
+    inv_equipo_descripcion: str
+    inv_equipo_fecha_fabricacion: date
+
+
+class CantidadesOficinaTipoOut(BaseModel):
+    """Cantidades de equipos por tipo y oficina"""
+
+    oficina_clave: str
+    tipo: str
     cantidad: int

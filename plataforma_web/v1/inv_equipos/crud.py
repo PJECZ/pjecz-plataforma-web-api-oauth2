@@ -4,9 +4,18 @@ Inventarios Equipos v1, CRUD (create, read, update, and delete)
 from datetime import date
 from typing import Any
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from lib.safe_string import safe_string
+
 from .models import InvEquipo
+from ..inv_custodias.models import InvCustodia
+from ..inv_equipos.models import InvEquipo
+from ..inv_marcas.models import InvMarca
+from ..inv_modelos.models import InvModelo
+from ..oficinas.models import Oficina
+from ..usuarios.models import Usuario
+
 from ..inv_custodias.crud import get_inv_custodia
 from ..inv_modelos.crud import get_inv_modelo
 from ..inv_redes.crud import get_inv_red
@@ -52,7 +61,45 @@ def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:
     return inv_equipo
 
 
-def get_cantidad_by_oficina_and_tipo(
-    db: Session,
-) -> Any:
-    """Consultar cantidades de equipos por oficina y por tipo"""
+def get_matriz(db: Session) -> Any:
+    """Matriz con oficinas, usuarios, custodias, equipos, tipos, modelos y marcas"""
+    return (
+        db.query(
+            Oficina.clave,
+            Usuario.email,
+            InvCustodia.id.label("inv_custodia_id"),
+            InvCustodia.nombre_completo.label("inv_custodia_nombre_completo"),
+            InvEquipo.id.label("inv_equipo_id"),
+            InvEquipo.tipo,
+            InvMarca.nombre.label("inv_marca_nombre"),
+            InvModelo.descripcion.label("inv_modelo_descripcion"),
+            InvEquipo.descripcion.label("inv_equipo_descripcion"),
+            InvEquipo.fecha_fabricacion,
+        )
+        .select_from(Oficina)
+        .join(Usuario, InvCustodia, InvEquipo, InvModelo, InvMarca)
+        .filter(Oficina.estatus == "A")
+        .filter(Usuario.estatus == "A")
+        .filter(InvCustodia.estatus == "A")
+        .filter(InvEquipo.estatus == "A")
+        .order_by(InvCustodia.id, InvEquipo.id)
+    )
+
+
+def get_cantidades_oficina_tipo(db: Session) -> Any:
+    """Obtener las cantidades de equipos por oficina y por tipo"""
+    return (
+        db.query(
+            Oficina.clave,
+            InvEquipo.tipo,
+            func.count("*").label("cantidad"),
+        )
+        .select_from(Oficina)
+        .join(Usuario, InvCustodia, InvEquipo)
+        .filter(Oficina.estatus == "A")
+        .filter(Usuario.estatus == "A")
+        .filter(InvCustodia.estatus == "A")
+        .filter(InvEquipo.estatus == "A")
+        .order_by(InvEquipo.tipo)
+        .group_by(Oficina.clave, InvEquipo.tipo)
+    )
