@@ -18,6 +18,6 @@ username={{username}}&password={{password}}
 GET {{baseUrl}}/inv_equipos/matriz
 Authorization: Bearer {{auth.response.body.access_token}}
 
-### Reporte
+### Reporte cantidades de equipos por oficina y tipo
 GET {{baseUrl}}/inv_equipos/cantidades_oficina_tipo
 Authorization: Bearer {{auth.response.body.access_token}}
