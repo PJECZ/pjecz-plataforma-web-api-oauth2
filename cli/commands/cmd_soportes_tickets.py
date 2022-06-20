@@ -1,29 +1,21 @@
 """
-Soportes Tickets
-
-Prueba de llamado a la API OAuth2
-
-Escriba un archivo .env con las variables de entorno:
-
-    BASE_URL=http://127.0.0.1:8002
-    USERNAME=nombre.apellido@pjecz.gob.mx
-    PASSWORD=UnaContrasenaMuyDificil
-
+Soportes tickets
 """
+import click
 import pandas as pd
 import requests
 from tabulate import tabulate
 
-from tests.authenticate import BASE_URL, authenticate
+from cli.commands.autentificar import autentificar, BASE_URL
 
 
-def get_cantidades_distrito_categoria(authorization_header, creado_desde):
+def get_cantidades_distrito_categoria(authorization_header, estado, creado_desde, creado_hasta):
     """Obtener el reporte de soportes tickets"""
     try:
         response = requests.get(
             f"{BASE_URL}/v1/soportes_tickets/cantidades_distrito_categoria",
             headers=authorization_header,
-            params={"estado": "terminado", "creado_desde": creado_desde},
+            params={"estado": estado, "creado_desde": creado_desde, "creado_hasta": creado_hasta},
             timeout=12,
         )
     except requests.exceptions.RequestException as error:
@@ -44,21 +36,52 @@ def get_cantidades_distrito_categoria(authorization_header, creado_desde):
     return None, None
 
 
-def main():
-    """Main function"""
+@click.group()
+@click.option("--creado-desde", default="", type=str, help="Fecha desde")
+@click.option("--creado-hasta", default="", type=str, help="Fecha hasta")
+@click.option("--estado", default="terminado", type=str, help="Estado")
+@click.pass_context
+def cli(ctx, creado_desde, creado_hasta, estado):
+    """Soportes tickets"""
+    ctx.obj = {}
+    ctx.obj["creado_desde"] = creado_desde
+    ctx.obj["creado_hasta"] = creado_hasta
+    ctx.obj["estado"] = estado
+
+
+@click.command()
+@click.pass_context
+def enviar(ctx):
+    """Enviar mensaje"""
+
+
+@click.command()
+@click.option("--output", default="inv_equipos.csv", type=str, help="Archivo CSV a escribir")
+@click.pass_context
+def guardar(ctx, output):
+    """Enviar mensaje"""
+
+
+@click.command()
+@click.pass_context
+def ver(ctx):
+    """Ver reporte de tickets en la terminal"""
     try:
-        token = authenticate()
+        token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        cantidades_distrito_categoria, columns = get_cantidades_distrito_categoria(authorization_header, "2022-06-15")
+        cantidades_distrito_categoria, columns = get_cantidades_distrito_categoria(
+            authorization_header,
+            creado_desde=ctx.obj["creado_desde"],
+            creado_hasta=ctx.obj["creado_hasta"],
+            estado=ctx.obj["estado"],
+        )
         if cantidades_distrito_categoria is None:
             print("No hay soportes tickets")
         else:
             print(tabulate(cantidades_distrito_categoria, headers=columns))
     except requests.HTTPError as error:
         print("Error de comunicacion " + str(error))
-    except Exception as error:
-        print(str(error))
 
 
-if __name__ == "__main__":
-    main()
+cli.add_command(enviar)
+cli.add_command(ver)
