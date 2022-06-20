@@ -69,7 +69,7 @@ async def matriz(
 
 
 @inv_equipos.get("/cantidades_oficina_tipo", response_model=List[CantidadesOficinaTipoOut])
-async def cantidades_oficina_tipo(
+async def listado_cantidades_oficina_tipo(
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):

@@ -1,6 +1,8 @@
 """
 Inventarios
 
+Prueba de llamado a la API OAuth2
+
 Escriba un archivo .env con las variables de entorno:
 
     BASE_URL=http://127.0.0.1:8002

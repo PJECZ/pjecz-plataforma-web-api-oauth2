@@ -2,12 +2,14 @@
 Soportes Tickets v1, rutas (paths)
 """
 from datetime import date
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.fastapi_pagination import LimitOffsetPage, Page
+from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket, get_total_by_oficina_and_categoria
@@ -55,8 +57,8 @@ async def listado_soportes_tickets(
     return paginate(listado)
 
 
-@soportes_tickets.get("/totales", response_model=Page[SoporteTicketTotalOut])
-async def listado_totales_soportes_tickets(
+@soportes_tickets.get("/cantidades_distrito_categoria", response_model=List[SoporteTicketTotalOut])
+async def listado_cantidades_distrito_categoria(
     estado: str = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -67,7 +69,7 @@ async def listado_totales_soportes_tickets(
     if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_total_by_oficina_and_categoria(
+        consulta = get_total_by_oficina_and_categoria(
             db,
             estado=estado,
             creado_desde=creado_desde,
@@ -77,7 +79,7 @@ async def listado_totales_soportes_tickets(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)
+    return consulta.all()
 
 
 @soportes_tickets.get("/{soporte_ticket_id}", response_model=SoporteTicketOut)
