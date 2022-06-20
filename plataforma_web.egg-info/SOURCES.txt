@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+plataforma_web/__init__.py
+plataforma_web/app.py
+plataforma_web.egg-info/PKG-INFO
+plataforma_web.egg-info/SOURCES.txt
+plataforma_web.egg-info/dependency_links.txt
+plataforma_web.egg-info/entry_points.txt
+plataforma_web.egg-info/requires.txt
+plataforma_web.egg-info/top_level.txt
