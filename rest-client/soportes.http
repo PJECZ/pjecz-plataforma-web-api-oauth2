@@ -58,9 +58,7 @@ GET {{baseUrl}}/soportes_tickets
 Authorization: Bearer {{auth.response.body.access_token}}
 
 ### Totales de tickets CERRADOS por oficina y por categoria
-GET {{baseUrl}}/soportes_tickets/totales
-    ?estado=cerrado
-    &creado_desde=2022-02-14
-    &creado_hasta=2022-02-18
-    &size=100
+GET {{baseUrl}}/soportes_tickets/cantidades_distrito_categoria
+    ?estado=terminado
+    &creado_desde=2022-06-17
 Authorization: Bearer {{auth.response.body.access_token}}

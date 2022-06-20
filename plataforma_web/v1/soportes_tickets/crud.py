@@ -77,7 +77,7 @@ def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:
     return soporte_ticket
 
 
-def get_total_by_oficina_and_categoria(
+def get_cantidades_distrito_categoria(
     db: Session,
     estado: str = None,
     creado_desde: date = None,

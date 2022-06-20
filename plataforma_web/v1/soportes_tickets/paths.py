@@ -12,7 +12,7 @@ from lib.database import get_db
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket, get_total_by_oficina_and_categoria
+from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket, get_cantidades_distrito_categoria
 from plataforma_web.v1.soportes_tickets.schemas import SoporteTicketOut, SoporteTicketTotalOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
@@ -69,7 +69,7 @@ async def listado_cantidades_distrito_categoria(
     if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_total_by_oficina_and_categoria(
+        consulta = get_cantidades_distrito_categoria(
             db,
             estado=estado,
             creado_desde=creado_desde,
