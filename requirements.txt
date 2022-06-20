@@ -4,6 +4,7 @@ fastapi-pagination[sqlalchemy]
 gunicorn
 hashids
 httptools
+pandas
 passlib[bcrypt]
 psycopg2-binary
 pydantic
@@ -16,6 +17,7 @@ python-multipart
 requests
 SQLAlchemy
 SQLAlchemy-Utils
+tabulate
 Unidecode
 uvicorn
 uvloop
