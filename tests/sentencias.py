@@ -45,9 +45,10 @@ def main():
         token = authenticate()
         authorization_header = {"Authorization": "Bearer " + token}
         sentencias_df, columns = get_sentencias(authorization_header, "2022-06-17")
-        if sentencias_df is not None:
+        if sentencias_df is None:
             print("No hay sentencias")
-        print(tabulate(sentencias_df, headers=columns))
+        else:
+            print(tabulate(sentencias_df, headers=columns))
     except requests.HTTPError as error:
         print("Error de comunicacion " + str(error))
     except Exception as error:

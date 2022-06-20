@@ -46,16 +46,18 @@ def get_cantidades_oficina_tipo(authorization_header):
         raise error
     if response.status_code != 200:
         raise requests.HTTPError(response.status_code)
-    data_json = response.json()
+    data_json = response.json()  # Listado con inv_equipo_tipo, oficina_clave y cantidad
     dataframe = pd.json_normalize(data_json)
-    dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
-    dataframe.inv_equipo_tipo = dataframe.inv_equipo_tipo.astype("category")
-    reporte = dataframe.pivot_table(
-        index=["oficina_clave"],
-        columns=["inv_equipo_tipo"],
-        values="cantidad",
-    )
-    return reporte, ["OFICINA"] + list(dataframe.inv_equipo_tipo)
+    if dataframe.size > 0:
+        dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
+        dataframe.inv_equipo_tipo = dataframe.inv_equipo_tipo.astype("category")
+        reporte = dataframe.pivot_table(
+            index=["oficina_clave"],
+            columns=["inv_equipo_tipo"],
+            values="cantidad",
+        )
+        return reporte, ["OFICINA"] + list(dataframe.inv_equipo_tipo)
+    return None, None
 
 
 def main():
@@ -64,7 +66,10 @@ def main():
         token = authenticate()
         authorization_header = {"Authorization": "Bearer " + token}
         cantidades_oficina_tipo, columns = get_cantidades_oficina_tipo(authorization_header)
-        print(tabulate(cantidades_oficina_tipo, headers=columns))
+        if cantidades_oficina_tipo is None:
+            print("No hay equipos")
+        else:
+            print(tabulate(cantidades_oficina_tipo, headers=columns))
     except requests.HTTPError as error:
         print("Error de comunicacion " + str(error))
     except Exception as error:
