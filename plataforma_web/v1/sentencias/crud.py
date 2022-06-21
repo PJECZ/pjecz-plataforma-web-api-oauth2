@@ -4,19 +4,26 @@ Sentencias v1, CRUD (create, read, update, and delete)
 from datetime import date
 from typing import Any
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from plataforma_web.v1.autoridades.crud import get_autoridad
 from plataforma_web.v1.materias_tipos_juicios.crud import get_materia_tipo_juicio
 from plataforma_web.v1.sentencias.models import Sentencia
 
+HOY = date.today()
+ANTIGUA_FECHA = date(year=2000, month=1, day=1)
+
 
 def get_sentencias(
     db: Session,
     autoridad_id: int = None,
-    materia_tipo_juicio_id: int = None,
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    materia_tipo_juicio_id: int = None,
 ) -> Any:
     """Consultar los sentencias activas"""
     consulta = db.query(Sentencia)
@@ -26,6 +33,19 @@ def get_sentencias(
     if materia_tipo_juicio_id:
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id)
         consulta = consulta.filter(Sentencia.materia_tipo_juicio == materia_tipo_juicio)
+    if creado:
+        if not ANTIGUA_FECHA <= creado <= HOY:
+            raise ValueError("Creado fuera de rango")
+        consulta = consulta.filter(func.date(Sentencia.creado) == creado)
+    else:
+        if creado_desde:
+            if not ANTIGUA_FECHA <= creado_desde <= HOY:
+                raise ValueError("Creado fuera de rango")
+            consulta = consulta.filter(Sentencia.creado >= creado_desde)
+        if creado_hasta:
+            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
+                raise ValueError("Creado fuera de rango")
+            consulta = consulta.filter(Sentencia.creado <= creado_hasta)
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
             raise ValueError("Fecha fuera de rango")

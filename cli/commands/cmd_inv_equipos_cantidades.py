@@ -29,8 +29,8 @@ SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL")
 SENDGRID_TO_EMAIL = os.getenv("SENDGRID_TO_EMAIL")
 
 
-def get_inv_equipos(authorization_header, creado=None, creado_desde=None, creado_hasta=None):
-    """Consultar equipos"""
+def get_cantidades_oficina_tipo(authorization_header, creado=None, creado_desde=None, creado_hasta=None):
+    """Consultar las cantidades de equipos por oficina y por tipo"""
     params = {"limit": 1000}
     if creado is not None and creado != "":
         params["creado"] = creado
@@ -40,7 +40,7 @@ def get_inv_equipos(authorization_header, creado=None, creado_desde=None, creado
         params["creado_hasta"] = creado_hasta
     try:
         response = requests.get(
-            f"{BASE_URL}/v1/inv_equipos",
+            f"{BASE_URL}/v1/inv_equipos/cantidades_oficina_tipo",
             headers=authorization_header,
             params=params,
             timeout=12,
@@ -49,15 +49,18 @@ def get_inv_equipos(authorization_header, creado=None, creado_desde=None, creado
         raise error
     if response.status_code != 200:
         raise requests.HTTPError(response.status_code)
-    data_json = response.json()  # Items, total, limit, offset
-    if "items" not in data_json or "total" not in data_json:
-        raise ValueError("Error porque la respuesta de la API no es correcta")
-    total = data_json["total"]
+    data_json = response.json()  # Listado con inv_equipo_tipo, oficina_clave y cantidad
+    dataframe = pd.json_normalize(data_json)
+    total = dataframe.size
     if total > 0:
-        dataframe = pd.json_normalize(data_json["items"])
-        columns = ["id", "inv_custodia_nombre_completo", "inv_marca_nombre", "inv_modelo_descripcion", "fecha_fabricacion", "numero_serie", "numero_inventario", "descripcion", "tipo"]
-        dataframe = dataframe[columns]
-        return dataframe, columns, total
+        dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
+        dataframe.inv_equipo_tipo = dataframe.inv_equipo_tipo.astype("category")
+        reporte = dataframe.pivot_table(
+            index=["oficina_clave"],
+            columns=["inv_equipo_tipo"],
+            values="cantidad",
+        )
+        return reporte, ["OFICINA"] + list(dataframe.inv_equipo_tipo), total
     return None, None, total
 
 
@@ -67,7 +70,7 @@ def get_inv_equipos(authorization_header, creado=None, creado_desde=None, creado
 @click.option("--creado-hasta", default="", type=str, help="Fecha hasta")
 @click.pass_context
 def cli(ctx, creado, creado_desde, creado_hasta):
-    """Inventarios Equipos"""
+    """Cantidades de Equipos en Inventarios"""
     ctx.obj = {}
     ctx.obj["creado"] = creado
     ctx.obj["creado_desde"] = creado_desde
@@ -92,7 +95,7 @@ def enviar(ctx):
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        inv_equipos, columns, total = get_inv_equipos(
+        cantidades_oficina_tipo, columns, total = get_cantidades_oficina_tipo(
             authorization_header,
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
@@ -108,13 +111,13 @@ def enviar(ctx):
     # Archivo XLSX
     hoy_str = datetime.now().strftime("%Y-%m-%d")
     random_hex = "%030x" % random.randrange(16**30)
-    archivo_nombre = f"inv-equipos-{hoy_str}-{random_hex}.xlsx"
+    archivo_nombre = f"inv-equipos-cantidades-{hoy_str}-{random_hex}.xlsx"
     archivo_ruta = Path(f"/tmp/{archivo_nombre}")
-    inv_equipos.to_excel(archivo_ruta)
+    cantidades_oficina_tipo.to_excel(archivo_ruta)
 
     # Asunto
     momento_str = datetime.now().strftime("%d/%B/%Y %I:%M%p")
-    subject = "Equipos en inventarios"
+    subject = "Cantidades de equipos en inventarios por oficina y tipo"
 
     # Contenidos
     contenidos = [
@@ -156,7 +159,7 @@ def guardar(ctx, output):
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        inv_equipos, columns, total = get_inv_equipos(
+        cantidades_oficina_tipo, columns, total = get_cantidades_oficina_tipo(
             authorization_header,
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
@@ -168,7 +171,7 @@ def guardar(ctx, output):
     if total == 0:
         click.echo("No hay equipos")
         return
-    inv_equipos.to_excel(output)
+    cantidades_oficina_tipo.to_excel(output)
     click.echo(f"Listo el archivo {output}")
 
 
@@ -180,7 +183,7 @@ def ver(ctx):
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        inv_equipos, columns, total = get_inv_equipos(
+        cantidades_oficina_tipo, columns, total = get_cantidades_oficina_tipo(
             authorization_header,
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
@@ -192,7 +195,7 @@ def ver(ctx):
     if total == 0:
         click.echo("No hay equipos")
         return
-    click.echo(tabulate(inv_equipos, headers=columns))
+    click.echo(tabulate(cantidades_oficina_tipo, headers=columns))
 
 
 cli.add_command(enviar)
