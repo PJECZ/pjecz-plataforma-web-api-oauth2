@@ -97,9 +97,11 @@ def get_cantidades_distrito_categoria(
     )
     estado = safe_string(estado)
     if estado:
-        if estado not in SoporteTicket.ESTADOS:
-            raise ValueError("Estado incorrecto")
-        consulta = consulta.filter(SoporteTicket.estado == estado)
+        estado = safe_string(estado)
+        if estado != "":
+            if estado not in SoporteTicket.ESTADOS:
+                raise ValueError("Estado incorrecto")
+            consulta = consulta.filter(SoporteTicket.estado == estado)
     if creado_desde:
         if not date(year=2000, month=1, day=1) <= creado_desde <= date.today():
             raise ValueError("Fecha fuera de rango")

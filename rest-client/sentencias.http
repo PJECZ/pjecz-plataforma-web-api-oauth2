@@ -15,5 +15,5 @@ username={{username}}&password={{password}}
 
 ### Sentencias
 GET {{baseUrl}}/sentencias
-    ?fecha_desde=2022-06-17
+    ?fecha_desde=2022-06-21
 Authorization: Bearer {{auth.response.body.access_token}}

@@ -10,7 +10,7 @@ from cli.commands.autentificar import autentificar, BASE_URL
 
 
 def get_cantidades_oficina_tipo(authorization_header):
-    """Obtener las cantidades de equipos por oficina y por tipo"""
+    """Consultar las cantidades de equipos por oficina y por tipo"""
     try:
         response = requests.get(
             f"{BASE_URL}/v1/inv_equipos/cantidades_oficina_tipo",
@@ -23,7 +23,8 @@ def get_cantidades_oficina_tipo(authorization_header):
         raise requests.HTTPError(response.status_code)
     data_json = response.json()  # Listado con inv_equipo_tipo, oficina_clave y cantidad
     dataframe = pd.json_normalize(data_json)
-    if dataframe.size > 0:
+    total = dataframe.size
+    if total > 0:
         dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
         dataframe.inv_equipo_tipo = dataframe.inv_equipo_tipo.astype("category")
         reporte = dataframe.pivot_table(
@@ -31,8 +32,8 @@ def get_cantidades_oficina_tipo(authorization_header):
             columns=["inv_equipo_tipo"],
             values="cantidad",
         )
-        return reporte, ["OFICINA"] + list(dataframe.inv_equipo_tipo)
-    return None, None
+        return reporte, ["OFICINA"] + list(dataframe.inv_equipo_tipo), total
+    return None, None, total
 
 
 @click.group()
@@ -42,13 +43,13 @@ def cli():
 
 @click.command()
 def enviar():
-    """Enviar mensaje"""
+    """Enviar"""
 
 
 @click.command()
 @click.option("--output", default="inv_equipos.csv", type=str, help="Archivo CSV a escribir")
 def guardar(output):
-    """Enviar mensaje"""
+    """Guardar"""
 
 
 @click.command()
@@ -57,8 +58,8 @@ def ver():
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        cantidades_oficina_tipo, columns = get_cantidades_oficina_tipo(authorization_header)
-        if cantidades_oficina_tipo is None:
+        cantidades_oficina_tipo, columns, total = get_cantidades_oficina_tipo(authorization_header)
+        if total == 0:
             print("No hay equipos")
         else:
             print(tabulate(cantidades_oficina_tipo, headers=columns))
@@ -67,4 +68,5 @@ def ver():
 
 
 cli.add_command(enviar)
+cli.add_command(guardar)
 cli.add_command(ver)
