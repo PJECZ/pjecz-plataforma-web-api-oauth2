@@ -2,6 +2,7 @@
 Inventarios Equipos
 """
 import click
+import openpyxl
 import pandas as pd
 import requests
 from tabulate import tabulate
@@ -61,16 +62,11 @@ def enviar(ctx):
 
 
 @click.command()
-@click.option("--output", default="inv_equipos.csv", type=str, help="Archivo CSV a escribir")
+@click.argument("output", type=str)
 @click.pass_context
 def guardar(ctx, output):
     """Guardar"""
-
-
-@click.command()
-@click.pass_context
-def ver(ctx):
-    """Ver inventario de equipos en la terminal"""
+    total = 0
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
@@ -80,12 +76,35 @@ def ver(ctx):
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
         )
-        if total == 0:
-            print("No hay equipos")
-        else:
-            print(tabulate(cantidades_oficina_tipo, headers=columns))
     except requests.HTTPError as error:
-        print("ERROR de comunicacion " + str(error))
+        click.echo("Error de comunicacion " + str(error))
+    if total == 0:
+        click.echo("No hay equipos")
+    else:
+        cantidades_oficina_tipo.to_excel(output)
+        click.echo(f"Listo el archivo {output}")
+
+
+@click.command()
+@click.pass_context
+def ver(ctx):
+    """Ver inventario de equipos en la terminal"""
+    total = 0
+    try:
+        token = autentificar()
+        authorization_header = {"Authorization": "Bearer " + token}
+        cantidades_oficina_tipo, columns, total = get_inv_equipos(
+            authorization_header,
+            creado=ctx.obj["creado"],
+            creado_desde=ctx.obj["creado_desde"],
+            creado_hasta=ctx.obj["creado_hasta"],
+        )
+    except requests.HTTPError as error:
+        click.echo("Error de comunicacion " + str(error))
+    if total == 0:
+        click.echo("No hay equipos")
+    else:
+        click.echo(tabulate(cantidades_oficina_tipo, headers=columns))
 
 
 cli.add_command(enviar)
