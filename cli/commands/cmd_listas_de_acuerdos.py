@@ -11,7 +11,7 @@ from cli.commands.autentificar import autentificar, BASE_URL
 
 def get_listas_de_acuerdos(authorization_header, creado=None, creado_desde=None, creado_hasta=None, fecha=None):
     """Consultar listas de acuerdos"""
-    params = { "limit": 1000 }
+    params = {"limit": 1000}
     if creado is not None and creado != "":
         params["creado"] = creado
     if creado_desde is not None and creado_desde != "":
