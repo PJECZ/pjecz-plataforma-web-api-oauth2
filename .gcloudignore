@@ -10,8 +10,11 @@
 *.sqlite3
 *.xlsx
 __pycache__/
+/cli
 /instance/settings.py
 /notebooks
 /rest-client
-/sql
+/tests
 /venv
+/pyproject.toml
+/setup.py
