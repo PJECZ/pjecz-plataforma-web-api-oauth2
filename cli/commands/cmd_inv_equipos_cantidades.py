@@ -133,14 +133,11 @@ def enviar(ctx):
     to_email = To(SENDGRID_TO_EMAIL)
     content = Content("text/html", "<br>".join(contenidos))
     mail = Mail(from_email, to_email, subject, content)
-    with open(archivo_ruta, "r", encoding="utf8") as puntero:
-        datos = puntero.read()
-        puntero.close()
-    encoded_file = base64.b64encode(bytes(datos, "utf8")).decode("utf8")
     attachment = Attachment()
     attachment.content_id = ContentId(archivo_nombre)
     attachment.disposition = Disposition("attachment")
-    attachment.file_content = FileContent(encoded_file)
+    with open(archivo_ruta, "rb") as puntero:
+        attachment.file_content = FileContent(base64.b64encode(puntero.read()))
     attachment.file_name = FileName(archivo_nombre)
     attachment.file_type = FileType("application/vnd.ms-excel")
     mail.attachment = attachment

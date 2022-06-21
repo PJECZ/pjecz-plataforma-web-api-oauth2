@@ -1,5 +1,0 @@
-click
-pandas
-requests
-sendgrid
-tabulate

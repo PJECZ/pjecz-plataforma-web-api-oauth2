@@ -9,4 +9,5 @@ __pycache__/
 .ipynb_checkpoints/
 /app.yaml
 /instance/settings.py
+/plataforma_web.egg-info
 /venv/

@@ -3,6 +3,7 @@
 .env
 .gcloudignore
 .git
+.github
 .gitignore
 .vscode
 .DS_Store
@@ -10,8 +11,12 @@
 *.sqlite3
 *.xlsx
 __pycache__/
+/cli
 /instance/settings.py
+/plataforma_web.egg-info
 /notebooks
 /rest-client
-/sql
+/tests
 /venv
+/pyproject.toml
+/setup.py
