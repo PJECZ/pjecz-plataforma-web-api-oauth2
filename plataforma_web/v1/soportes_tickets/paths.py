@@ -22,15 +22,16 @@ soportes_tickets = APIRouter(prefix="/v1/soportes_tickets", tags=["soportes"])
 
 @soportes_tickets.get("", response_model=LimitOffsetPage[SoporteTicketOut])
 async def listado_soportes_tickets(
-    soporte_categoria_id: int = None,
-    usuario_id: int = None,
-    usuario_email: str = None,
-    usuario_oficina_id: int = None,
-    usuario_oficina_clave: str = None,
-    estado: str = None,
+    creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
     descripcion: str = None,
+    estado: str = None,
+    soporte_categoria_id: int = None,
+    oficina_id: int = None,
+    oficina_clave: str = None,
+    usuario_id: int = None,
+    usuario_email: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -40,15 +41,16 @@ async def listado_soportes_tickets(
     try:
         listado = get_soportes_tickets(
             db,
-            soporte_categoria_id=soporte_categoria_id,
-            usuario_id=usuario_id,
-            usuario_email=usuario_email,
-            oficina_id=usuario_oficina_id,
-            oficina_clave=usuario_oficina_clave,
-            estado=estado,
+            creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
             descripcion=descripcion,
+            estado=estado,
+            soporte_categoria_id=soporte_categoria_id,
+            oficina_id=oficina_id,
+            oficina_clave=oficina_clave,
+            usuario_id=usuario_id,
+            usuario_email=usuario_email,
         )
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error

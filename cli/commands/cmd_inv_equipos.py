@@ -1,5 +1,5 @@
 """
-Inventarios
+Inventarios Equipos
 """
 import click
 import pandas as pd
@@ -9,9 +9,9 @@ from tabulate import tabulate
 from cli.commands.autentificar import autentificar, BASE_URL
 
 
-def get_cantidades_oficina_tipo(authorization_header, creado=None, creado_desde=None, creado_hasta=None):
-    """Consultar las cantidades de equipos por oficina y por tipo"""
-    params = {}
+def get_inv_equipos(authorization_header, creado=None, creado_desde=None, creado_hasta=None):
+    """Consultar equipos"""
+    params = { "limit": 1000 }
     if creado is not None and creado != "":
         params["creado"] = creado
     if creado_desde is not None and creado_desde != "":
@@ -20,7 +20,7 @@ def get_cantidades_oficina_tipo(authorization_header, creado=None, creado_desde=
         params["creado_hasta"] = creado_hasta
     try:
         response = requests.get(
-            f"{BASE_URL}/v1/inv_equipos/cantidades_oficina_tipo",
+            f"{BASE_URL}/v1/inv_equipos",
             headers=authorization_header,
             params=params,
             timeout=12,
@@ -29,18 +29,15 @@ def get_cantidades_oficina_tipo(authorization_header, creado=None, creado_desde=
         raise error
     if response.status_code != 200:
         raise requests.HTTPError(response.status_code)
-    data_json = response.json()  # Listado con inv_equipo_tipo, oficina_clave y cantidad
-    dataframe = pd.json_normalize(data_json)
-    total = dataframe.size
+    data_json = response.json()  # Items, total, limit, offset
+    if "items" not in data_json or "total" not in data_json:
+        raise ValueError("Error porque la respuesta de la API no es correcta")
+    total = data_json["total"]
     if total > 0:
-        dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
-        dataframe.inv_equipo_tipo = dataframe.inv_equipo_tipo.astype("category")
-        reporte = dataframe.pivot_table(
-            index=["oficina_clave"],
-            columns=["inv_equipo_tipo"],
-            values="cantidad",
-        )
-        return reporte, ["OFICINA"] + list(dataframe.inv_equipo_tipo), total
+        dataframe = pd.json_normalize(data_json["items"])
+        columns = ["id", "inv_custodia_nombre_completo", "inv_marca_nombre", "inv_modelo_descripcion", "fecha_fabricacion", "numero_serie", "numero_inventario", "descripcion", "tipo"]
+        dataframe = dataframe[columns]
+        return dataframe, columns, total
     return None, None, total
 
 
@@ -77,7 +74,7 @@ def ver(ctx):
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        cantidades_oficina_tipo, columns, total = get_cantidades_oficina_tipo(
+        cantidades_oficina_tipo, columns, total = get_inv_equipos(
             authorization_header,
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],

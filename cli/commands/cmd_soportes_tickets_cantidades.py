@@ -1,5 +1,5 @@
 """
-Sentencias
+Soportes tickets
 """
 import click
 import pandas as pd
@@ -9,8 +9,8 @@ from tabulate import tabulate
 from cli.commands.autentificar import autentificar, BASE_URL
 
 
-def get_sentencias(authorization_header, creado=None, creado_desde=None, creado_hasta=None, fecha=None):
-    """Consultar sentencias"""
+def get_cantidades_distrito_categoria(authorization_header, creado=None, creado_desde=None, creado_hasta=None, estado=None):
+    """Consultar las cantidades de tickets por distrito y por categoria"""
     params = { "limit": 1000 }
     if creado is not None and creado != "":
         params["creado"] = creado
@@ -18,11 +18,11 @@ def get_sentencias(authorization_header, creado=None, creado_desde=None, creado_
         params["creado_desde"] = creado_desde
     if creado_hasta is not None and creado_hasta != "":
         params["creado_hasta"] = creado_hasta
-    if fecha is not None and fecha != "":
-        params["fecha"] = fecha
+    if estado is not None and estado != "":
+        params["estado"] = estado
     try:
         response = requests.get(
-            f"{BASE_URL}/v1/sentencias",
+            f"{BASE_URL}/v1/soportes_tickets/cantidades_distrito_categoria",
             headers=authorization_header,
             params=params,
             timeout=12,
@@ -31,15 +31,18 @@ def get_sentencias(authorization_header, creado=None, creado_desde=None, creado_
         raise error
     if response.status_code != 200:
         raise requests.HTTPError(response.status_code)
-    data_json = response.json()  # Items, total, limit, offset
-    if "items" not in data_json or "total" not in data_json:
-        raise ValueError("Error porque la respuesta de la API no es correcta")
-    total = data_json["total"]
+    data_json = response.json()  # Listado con distrito_clave, soporte_categoria_nombre y cantidad
+    dataframe = pd.json_normalize(data_json)
+    total = dataframe.size
     if total > 0:
-        dataframe = pd.json_normalize(data_json["items"])
-        columns = ["id", "autoridad_clave", "materia_tipo_juicio_descripcion", "sentencia", "sentencia_fecha", "fecha", "expediente", "es_perspectiva_genero"]
-        dataframe = dataframe[columns]
-        return dataframe, columns, total
+        dataframe.distrito_clave = dataframe.distrito_clave.astype("category")
+        dataframe.soporte_categoria_nombre = dataframe.soporte_categoria_nombre.astype("category")
+        reporte = dataframe.pivot_table(
+            index=["soporte_categoria_nombre"],
+            columns=["distrito_clave"],
+            values="cantidad",
+        )
+        return reporte, ["CATEGORIA"] + list(dataframe["distrito_clave"].cat.categories), total
     return None, None, total
 
 
@@ -47,15 +50,15 @@ def get_sentencias(authorization_header, creado=None, creado_desde=None, creado_
 @click.option("--creado", default="", type=str, help="Fecha de creacion")
 @click.option("--creado-desde", default="", type=str, help="Fecha desde")
 @click.option("--creado-hasta", default="", type=str, help="Fecha hasta")
-@click.option("--fecha", default="", type=str, help="Fecha a consultar")
+@click.option("--estado", default="terminado", type=str, help="Estado")
 @click.pass_context
-def cli(ctx, creado, creado_desde, creado_hasta, fecha):
-    """Sentencias"""
+def cli(ctx, creado, creado_desde, creado_hasta, estado):
+    """Cantidades de Tickets de Soportes"""
     ctx.obj = {}
     ctx.obj["creado"] = creado
     ctx.obj["creado_desde"] = creado_desde
     ctx.obj["creado_hasta"] = creado_hasta
-    ctx.obj["fecha"] = fecha
+    ctx.obj["estado"] = estado
 
 
 @click.command()
@@ -74,21 +77,21 @@ def guardar(ctx, output):
 @click.command()
 @click.pass_context
 def ver(ctx):
-    """Ver sentencias en la terminal"""
+    """Ver tickets en la terminal"""
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        sentencias, columns, total = get_sentencias(
+        cantidades_distrito_categoria, columns, total = get_cantidades_distrito_categoria(
             authorization_header,
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
-            fecha=ctx.obj["fecha"],
+            estado=ctx.obj["estado"],
         )
         if total == 0:
-            print("No hay sentencias")
+            print("No hay tickets")
         else:
-            print(tabulate(sentencias, headers=columns))
+            print(tabulate(cantidades_distrito_categoria, headers=columns))
     except requests.HTTPError as error:
         print("Error de comunicacion " + str(error))
 

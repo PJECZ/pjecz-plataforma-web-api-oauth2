@@ -10,8 +10,8 @@ from cli.commands.autentificar import autentificar, BASE_URL
 
 
 def get_listas_de_acuerdos(authorization_header, creado=None, creado_desde=None, creado_hasta=None, fecha=None):
-    """Consultar las listas de acuerdos"""
-    params = {}
+    """Consultar listas de acuerdos"""
+    params = { "limit": 1000 }
     if creado is not None and creado != "":
         params["creado"] = creado
     if creado_desde is not None and creado_desde != "":
@@ -37,7 +37,7 @@ def get_listas_de_acuerdos(authorization_header, creado=None, creado_desde=None,
     total = data_json["total"]
     if total > 0:
         dataframe = pd.json_normalize(data_json["items"])
-        columns = ["distrito_nombre_corto", "autoridad_clave", "fecha", "descripcion", "archivo"]
+        columns = ["id", "autoridad_clave", "fecha", "descripcion", "archivo"]
         dataframe = dataframe[columns]
         return dataframe, columns, total
     return None, None, total

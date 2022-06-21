@@ -26,6 +26,9 @@ ANTIGUA_FECHA = date(year=2000, month=1, day=1)
 
 def get_inv_equipos(
     db: Session,
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
     fecha_fabricacion_desde: date = None,
     fecha_fabricacion_hasta: date = None,
     inv_custodia_id: int = None,
@@ -35,6 +38,19 @@ def get_inv_equipos(
 ) -> Any:
     """Consultar los equipos activos"""
     consulta = db.query(InvEquipo)
+    if creado:
+        if not ANTIGUA_FECHA <= creado <= HOY:
+            raise ValueError("Creado fuera de rango")
+        consulta = consulta.filter(func.date(InvEquipo.creado) == creado)
+    else:
+        if creado_desde:
+            if not ANTIGUA_FECHA <= creado_desde <= HOY:
+                raise ValueError("Creado fuera de rango")
+            consulta = consulta.filter(InvEquipo.creado >= creado_desde)
+        if creado_hasta:
+            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
+                raise ValueError("Creado fuera de rango")
+            consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
     if inv_custodia_id:
         inv_custodia = get_inv_custodia(db, inv_custodia_id=inv_custodia_id)
         consulta = consulta.filter(InvEquipo.inv_custodia == inv_custodia)
@@ -62,31 +78,6 @@ def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:
     if inv_equipo.estatus != "A":
         raise ValueError("No es activo ese equipo, está eliminado")
     return inv_equipo
-
-
-def get_matriz(db: Session) -> Any:
-    """Matriz con oficinas, usuarios, custodias, equipos, tipos, modelos y marcas"""
-    return (
-        db.query(
-            Oficina.clave.label("oficina_clave"),
-            Usuario.email.label("usuario_email"),
-            InvCustodia.id.label("inv_custodia_id"),
-            InvCustodia.nombre_completo.label("inv_custodia_nombre_completo"),
-            InvEquipo.id.label("inv_equipo_id"),
-            InvEquipo.tipo.label("inv_equipo_tipo"),
-            InvMarca.nombre.label("inv_marca_nombre"),
-            InvModelo.descripcion.label("inv_modelo_descripcion"),
-            InvEquipo.descripcion.label("inv_equipo_descripcion"),
-            InvEquipo.fecha_fabricacion.label("inv_equipo_fecha_fabricacion"),
-        )
-        .select_from(Oficina)
-        .join(Usuario, InvCustodia, InvEquipo, InvModelo, InvMarca)
-        .filter(Oficina.estatus == "A")
-        .filter(Usuario.estatus == "A")
-        .filter(InvCustodia.estatus == "A")
-        .filter(InvEquipo.estatus == "A")
-        .order_by(InvCustodia.id, InvEquipo.id)
-    )
 
 
 def get_cantidades_oficina_tipo(
