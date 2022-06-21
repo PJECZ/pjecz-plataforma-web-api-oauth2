@@ -9,12 +9,20 @@ from tabulate import tabulate
 from cli.commands.autentificar import autentificar, BASE_URL
 
 
-def get_cantidades_oficina_tipo(authorization_header):
+def get_cantidades_oficina_tipo(authorization_header, creado=None, creado_desde=None, creado_hasta=None):
     """Consultar las cantidades de equipos por oficina y por tipo"""
+    params = {}
+    if creado is not None and creado != "":
+        params["creado"] = creado
+    if creado_desde is not None and creado_desde != "":
+        params["creado_desde"] = creado_desde
+    if creado_hasta is not None and creado_hasta != "":
+        params["creado_hasta"] = creado_hasta
     try:
         response = requests.get(
             f"{BASE_URL}/v1/inv_equipos/cantidades_oficina_tipo",
             headers=authorization_header,
+            params=params,
             timeout=12,
         )
     except requests.exceptions.RequestException as error:
@@ -37,28 +45,44 @@ def get_cantidades_oficina_tipo(authorization_header):
 
 
 @click.group()
-def cli():
+@click.option("--creado", default="", type=str, help="Fecha de creacion")
+@click.option("--creado-desde", default="", type=str, help="Fecha desde")
+@click.option("--creado-hasta", default="", type=str, help="Fecha hasta")
+@click.pass_context
+def cli(ctx, creado, creado_desde, creado_hasta):
     """Inventarios Equipos"""
+    ctx.obj = {}
+    ctx.obj["creado"] = creado
+    ctx.obj["creado_desde"] = creado_desde
+    ctx.obj["creado_hasta"] = creado_hasta
 
 
 @click.command()
-def enviar():
+@click.pass_context
+def enviar(ctx):
     """Enviar"""
 
 
 @click.command()
 @click.option("--output", default="inv_equipos.csv", type=str, help="Archivo CSV a escribir")
-def guardar(output):
+@click.pass_context
+def guardar(ctx, output):
     """Guardar"""
 
 
 @click.command()
-def ver():
+@click.pass_context
+def ver(ctx):
     """Ver inventario de equipos en la terminal"""
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        cantidades_oficina_tipo, columns, total = get_cantidades_oficina_tipo(authorization_header)
+        cantidades_oficina_tipo, columns, total = get_cantidades_oficina_tipo(
+            authorization_header,
+            creado=ctx.obj["creado"],
+            creado_desde=ctx.obj["creado_desde"],
+            creado_hasta=ctx.obj["creado_hasta"],
+        )
         if total == 0:
             print("No hay equipos")
         else:

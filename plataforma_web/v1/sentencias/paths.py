@@ -21,6 +21,9 @@ sentencias = APIRouter(prefix="/v1/sentencias", tags=["sentencias"])
 @sentencias.get("", response_model=LimitOffsetPage[SentenciaOut])
 async def listado_sentencias(
     autoridad_id: int = None,
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
     materia_tipo_juicio_id: int = None,
     fecha: date = None,
     fecha_desde: date = None,
@@ -35,6 +38,9 @@ async def listado_sentencias(
         listado = get_sentencias(
             db,
             autoridad_id=autoridad_id,
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
             materia_tipo_juicio_id=materia_tipo_juicio_id,
             fecha=fecha,
             fecha_desde=fecha_desde,

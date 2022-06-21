@@ -9,15 +9,17 @@ from tabulate import tabulate
 from cli.commands.autentificar import autentificar, BASE_URL
 
 
-def get_cantidades_distrito_categoria(authorization_header, estado=None, creado_desde=None, creado_hasta=None):
+def get_cantidades_distrito_categoria(authorization_header, creado=None, creado_desde=None, creado_hasta=None, estado=None):
     """Consultar las cantidades de tickets por distrito y por categoria"""
     params = {}
-    if estado is not None and estado != "":
-        params["estado"] = estado
+    if creado is not None and creado != "":
+        params["creado"] = creado
     if creado_desde is not None and creado_desde != "":
         params["creado_desde"] = creado_desde
     if creado_hasta is not None and creado_hasta != "":
         params["creado_hasta"] = creado_hasta
+    if estado is not None and estado != "":
+        params["estado"] = estado
     try:
         response = requests.get(
             f"{BASE_URL}/v1/soportes_tickets/cantidades_distrito_categoria",
@@ -45,13 +47,15 @@ def get_cantidades_distrito_categoria(authorization_header, estado=None, creado_
 
 
 @click.group()
+@click.option("--creado", default="", type=str, help="Fecha de creacion")
 @click.option("--creado-desde", default="", type=str, help="Fecha desde")
 @click.option("--creado-hasta", default="", type=str, help="Fecha hasta")
 @click.option("--estado", default="terminado", type=str, help="Estado")
 @click.pass_context
-def cli(ctx, creado_desde, creado_hasta, estado):
+def cli(ctx, creado, creado_desde, creado_hasta, estado):
     """Soportes tickets"""
     ctx.obj = {}
+    ctx.obj["creado"] = creado
     ctx.obj["creado_desde"] = creado_desde
     ctx.obj["creado_hasta"] = creado_hasta
     ctx.obj["estado"] = estado
@@ -79,6 +83,7 @@ def ver(ctx):
         authorization_header = {"Authorization": "Bearer " + token}
         cantidades_distrito_categoria, columns, total = get_cantidades_distrito_categoria(
             authorization_header,
+            creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
             estado=ctx.obj["estado"],

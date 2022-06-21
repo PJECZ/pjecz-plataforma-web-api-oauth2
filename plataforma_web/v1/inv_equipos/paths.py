@@ -70,6 +70,9 @@ async def matriz(
 
 @inv_equipos.get("/cantidades_oficina_tipo", response_model=List[CantidadesOficinaTipoOut])
 async def listado_cantidades_oficina_tipo(
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -77,7 +80,12 @@ async def listado_cantidades_oficina_tipo(
     if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_cantidades_oficina_tipo(db)
+        consulta = get_cantidades_oficina_tipo(
+            db,
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
+        )
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:

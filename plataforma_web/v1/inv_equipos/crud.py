@@ -20,15 +20,18 @@ from ..inv_custodias.crud import get_inv_custodia
 from ..inv_modelos.crud import get_inv_modelo
 from ..inv_redes.crud import get_inv_red
 
+HOY = date.today()
+ANTIGUA_FECHA = date(year=2000, month=1, day=1)
+
 
 def get_inv_equipos(
     db: Session,
+    fecha_fabricacion_desde: date = None,
+    fecha_fabricacion_hasta: date = None,
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,
     tipo: str = None,
-    fecha_fabricacion_desde: date = None,
-    fecha_fabricacion_hasta: date = None,
 ) -> Any:
     """Consultar los equipos activos"""
     consulta = db.query(InvEquipo)
@@ -86,20 +89,38 @@ def get_matriz(db: Session) -> Any:
     )
 
 
-def get_cantidades_oficina_tipo(db: Session) -> Any:
+def get_cantidades_oficina_tipo(
+    db: Session,
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
+) -> Any:
     """Obtener las cantidades de equipos por oficina y por tipo"""
-    return (
+    consulta = (
         db.query(
             Oficina.clave.label("oficina_clave"),
             InvEquipo.tipo.label("inv_equipo_tipo"),
             func.count("*").label("cantidad"),
         )
-        .select_from(Oficina)
-        .join(Usuario, InvCustodia, InvEquipo)
-        .filter(Oficina.estatus == "A")
-        .filter(Usuario.estatus == "A")
-        .filter(InvCustodia.estatus == "A")
-        .filter(InvEquipo.estatus == "A")
-        .order_by(InvEquipo.tipo)
-        .group_by(Oficina.clave, InvEquipo.tipo)
+        .select_from(InvEquipo)
+        .join(InvCustodia, Usuario, Oficina)
     )
+    if creado:
+        if not ANTIGUA_FECHA <= creado <= HOY:
+            raise ValueError("Creado fuera de rango")
+        consulta = consulta.filter(func.date(InvEquipo.creado) == creado)
+    else:
+        if creado_desde:
+            if not ANTIGUA_FECHA <= creado_desde <= HOY:
+                raise ValueError("Creado fuera de rango")
+            consulta = consulta.filter(InvEquipo.creado >= creado_desde)
+        if creado_hasta:
+            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
+                raise ValueError("Creado fuera de rango")
+            consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
+    consulta = consulta.filter(Oficina.estatus == "A")
+    consulta = consulta.filter(Usuario.estatus == "A")
+    consulta = consulta.filter(InvCustodia.estatus == "A")
+    consulta = consulta.filter(InvEquipo.estatus == "A")
+    consulta = consulta.order_by(InvEquipo.tipo).group_by(Oficina.clave, InvEquipo.tipo)
+    return consulta

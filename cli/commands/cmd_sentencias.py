@@ -9,9 +9,15 @@ from tabulate import tabulate
 from cli.commands.autentificar import autentificar, BASE_URL
 
 
-def get_sentencias(authorization_header, fecha=None):
+def get_sentencias(authorization_header, creado=None, creado_desde=None, creado_hasta=None, fecha=None):
     """Consultar las sentencias"""
     params = {}
+    if creado is not None and creado != "":
+        params["creado"] = creado
+    if creado_desde is not None and creado_desde != "":
+        params["creado_desde"] = creado_desde
+    if creado_hasta is not None and creado_hasta != "":
+        params["creado_hasta"] = creado_hasta
     if fecha is not None and fecha != "":
         params["fecha"] = fecha
     try:
@@ -38,11 +44,17 @@ def get_sentencias(authorization_header, fecha=None):
 
 
 @click.group()
+@click.option("--creado", default="", type=str, help="Fecha de creacion")
+@click.option("--creado-desde", default="", type=str, help="Fecha desde")
+@click.option("--creado-hasta", default="", type=str, help="Fecha hasta")
 @click.option("--fecha", default="", type=str, help="Fecha a consultar")
 @click.pass_context
-def cli(ctx, fecha):
+def cli(ctx, creado, creado_desde, creado_hasta, fecha):
     """Sentencias"""
     ctx.obj = {}
+    ctx.obj["creado"] = creado
+    ctx.obj["creado_desde"] = creado_desde
+    ctx.obj["creado_hasta"] = creado_hasta
     ctx.obj["fecha"] = fecha
 
 
@@ -68,6 +80,9 @@ def ver(ctx):
         authorization_header = {"Authorization": "Bearer " + token}
         sentencias, columns, total = get_sentencias(
             authorization_header,
+            creado=ctx.obj["creado"],
+            creado_desde=ctx.obj["creado_desde"],
+            creado_hasta=ctx.obj["creado_hasta"],
             fecha=ctx.obj["fecha"],
         )
         if total == 0:

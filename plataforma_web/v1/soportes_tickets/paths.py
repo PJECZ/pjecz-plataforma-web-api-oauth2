@@ -59,9 +59,10 @@ async def listado_soportes_tickets(
 
 @soportes_tickets.get("/cantidades_distrito_categoria", response_model=List[SoporteTicketTotalOut])
 async def listado_cantidades_distrito_categoria(
-    estado: str = None,
+    creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    estado: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -71,9 +72,10 @@ async def listado_cantidades_distrito_categoria(
     try:
         consulta = get_cantidades_distrito_categoria(
             db,
-            estado=estado,
+            creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
+            estado=estado,
         )
     except IndexError as error:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
