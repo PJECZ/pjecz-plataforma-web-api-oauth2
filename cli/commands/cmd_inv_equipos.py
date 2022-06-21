@@ -1,13 +1,32 @@
 """
 Inventarios Equipos
 """
+import base64
+from datetime import datetime
+import locale
+import os
+from pathlib import Path
+import random
+
 import click
+from dotenv import load_dotenv
 import openpyxl
 import pandas as pd
 import requests
+import sendgrid
+from sendgrid.helpers.mail import Attachment, ContentId, Disposition, Email, FileContent, FileName, FileType, To, Content, Mail
 from tabulate import tabulate
 
 from cli.commands.autentificar import autentificar, BASE_URL
+
+# Regionalizacion del tiempo
+locale.setlocale(locale.LC_TIME, "es_MX.utf8")
+
+# Variables de entorno
+load_dotenv()
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL")
+SENDGRID_TO_EMAIL = os.getenv("SENDGRID_TO_EMAIL")
 
 
 def get_inv_equipos(authorization_header, creado=None, creado_desde=None, creado_hasta=None):
@@ -59,6 +78,73 @@ def cli(ctx, creado, creado_desde, creado_hasta):
 @click.pass_context
 def enviar(ctx):
     """Enviar"""
+
+    # Validar configuracion
+    if SENDGRID_API_KEY is None or SENDGRID_API_KEY == "":
+        raise Exception("Error de configuracion: Falta SENDGRID_API_KEY")
+    if SENDGRID_FROM_EMAIL is None or SENDGRID_FROM_EMAIL == "":
+        raise Exception("Error de configuracion: Falta SENDGRID_FROM_EMAIL")
+    if SENDGRID_TO_EMAIL is None or SENDGRID_TO_EMAIL == "":
+        raise Exception("Error de configuracion: Falta SENDGRID_TO_EMAIL")
+
+    # Consultar
+    total = 0
+    try:
+        token = autentificar()
+        authorization_header = {"Authorization": "Bearer " + token}
+        inv_equipos, columns, total = get_inv_equipos(
+            authorization_header,
+            creado=ctx.obj["creado"],
+            creado_desde=ctx.obj["creado_desde"],
+            creado_hasta=ctx.obj["creado_hasta"],
+        )
+    except requests.HTTPError as error:
+        click.echo("Error de comunicacion " + str(error))
+        return
+    if total == 0:
+        click.echo("No hay equipos")
+        return
+
+    # Archivo XLSX
+    hoy_str = datetime.now().strftime("%Y-%m-%d")
+    random_hex = "%030x" % random.randrange(16**30)
+    archivo_nombre = f"inv-equipos-{hoy_str}-{random_hex}.xlsx"
+    archivo_ruta = Path(f"/tmp/{archivo_nombre}")
+    inv_equipos.to_excel(archivo_ruta)
+
+    # Asunto
+    momento_str = datetime.now().strftime("%d/%B/%Y %I:%M%p")
+    subject = "Equipos en inventarios"
+
+    # Contenidos
+    contenidos = [
+        "<h1>PJECZ Plataforma Web</h1>",
+        f"<h2>{subject}</h2>",
+        f"<p>Fecha de elaboración: {momento_str}.<br>",
+        "ESTE MENSAJE ES ELABORADO POR UN PROGRAMA. FAVOR DE NO RESPONDER.</p>",
+    ]
+
+    # Enviar el mensaje con el archivo adjunto via SendGrid
+    sendgrid_client = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+    from_email = Email(SENDGRID_FROM_EMAIL)
+    to_email = To(SENDGRID_TO_EMAIL)
+    content = Content("text/html", "<br>".join(contenidos))
+    mail = Mail(from_email, to_email, subject, content)
+    with open(archivo_ruta, "r", encoding="utf8") as puntero:
+        datos = puntero.read()
+        puntero.close()
+    encoded_file = base64.b64encode(bytes(datos, "utf8")).decode("utf8")
+    attachment = Attachment()
+    attachment.content_id = ContentId(archivo_nombre)
+    attachment.disposition = Disposition("attachment")
+    attachment.file_content = FileContent(encoded_file)
+    attachment.file_name = FileName(archivo_nombre)
+    attachment.file_type = FileType("application/vnd.ms-excel")
+    mail.attachment = attachment
+    sendgrid_client.client.mail.send.post(request_body=mail.get())
+
+    # Eliminar el archivo
+    archivo_ruta.unlink(missing_ok=True)
 
 
 @click.command()

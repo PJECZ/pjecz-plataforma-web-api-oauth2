@@ -22,11 +22,11 @@ PASSWORD = os.getenv("PASSWORD")
 
 def autentificar():
     """Autentificarse y obtener el token"""
-    if BASE_URL is None:
+    if BASE_URL is None or BASE_URL == "":
         raise Exception("Error de configuracion: Falta BASE_URL")
-    if USERNAME is None:
+    if USERNAME is None or USERNAME == "":
         raise Exception("Error de configuracion: Falta USERNAME")
-    if PASSWORD is None:
+    if PASSWORD is None or PASSWORD == "":
         raise Exception("Error de configuracion: Falta PASSWORD")
     data = {"username": USERNAME, "password": PASSWORD}
     headers = {"content-type": "application/x-www-form-urlencoded"}
