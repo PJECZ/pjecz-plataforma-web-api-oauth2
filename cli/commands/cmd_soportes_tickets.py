@@ -9,13 +9,20 @@ from tabulate import tabulate
 from cli.commands.autentificar import autentificar, BASE_URL
 
 
-def get_cantidades_distrito_categoria(authorization_header, estado, creado_desde, creado_hasta):
-    """Obtener el reporte de soportes tickets"""
+def get_cantidades_distrito_categoria(authorization_header, estado=None, creado_desde=None, creado_hasta=None):
+    """Consultar las cantidades de tickets por distrito y por categoria"""
+    params = {}
+    if estado is not None and estado != "":
+        params["estado"] = estado
+    if creado_desde is not None and creado_desde != "":
+        params["creado_desde"] = creado_desde
+    if creado_hasta is not None and creado_hasta != "":
+        params["creado_hasta"] = creado_hasta
     try:
         response = requests.get(
             f"{BASE_URL}/v1/soportes_tickets/cantidades_distrito_categoria",
             headers=authorization_header,
-            params={"estado": estado, "creado_desde": creado_desde, "creado_hasta": creado_hasta},
+            params=params,
             timeout=12,
         )
     except requests.exceptions.RequestException as error:
@@ -24,7 +31,8 @@ def get_cantidades_distrito_categoria(authorization_header, estado, creado_desde
         raise requests.HTTPError(response.status_code)
     data_json = response.json()  # Listado con distrito_clave, soporte_categoria_nombre y cantidad
     dataframe = pd.json_normalize(data_json)
-    if dataframe.size > 0:
+    total = dataframe.size
+    if total > 0:
         dataframe.distrito_clave = dataframe.distrito_clave.astype("category")
         dataframe.soporte_categoria_nombre = dataframe.soporte_categoria_nombre.astype("category")
         reporte = dataframe.pivot_table(
@@ -32,8 +40,8 @@ def get_cantidades_distrito_categoria(authorization_header, estado, creado_desde
             columns=["distrito_clave"],
             values="cantidad",
         )
-        return reporte, ["CATEGORIA"] + list(dataframe["distrito_clave"].cat.categories)
-    return None, None
+        return reporte, ["CATEGORIA"] + list(dataframe["distrito_clave"].cat.categories), total
+    return None, None, total
 
 
 @click.group()
@@ -52,31 +60,31 @@ def cli(ctx, creado_desde, creado_hasta, estado):
 @click.command()
 @click.pass_context
 def enviar(ctx):
-    """Enviar mensaje"""
+    """Enviar"""
 
 
 @click.command()
 @click.option("--output", default="inv_equipos.csv", type=str, help="Archivo CSV a escribir")
 @click.pass_context
 def guardar(ctx, output):
-    """Enviar mensaje"""
+    """Guardar"""
 
 
 @click.command()
 @click.pass_context
 def ver(ctx):
-    """Ver reporte de tickets en la terminal"""
+    """Ver tickets en la terminal"""
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        cantidades_distrito_categoria, columns = get_cantidades_distrito_categoria(
+        cantidades_distrito_categoria, columns, total = get_cantidades_distrito_categoria(
             authorization_header,
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
             estado=ctx.obj["estado"],
         )
-        if cantidades_distrito_categoria is None:
-            print("No hay soportes tickets")
+        if total == 0:
+            print("No hay tickets")
         else:
             print(tabulate(cantidades_distrito_categoria, headers=columns))
     except requests.HTTPError as error:
@@ -84,4 +92,5 @@ def ver(ctx):
 
 
 cli.add_command(enviar)
+cli.add_command(guardar)
 cli.add_command(ver)
