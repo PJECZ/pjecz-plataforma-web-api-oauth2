@@ -3,6 +3,7 @@
 .env
 .gcloudignore
 .git
+.github
 .gitignore
 .vscode
 .DS_Store
@@ -12,6 +13,7 @@
 __pycache__/
 /cli
 /instance/settings.py
+/plataforma_web.egg-info
 /notebooks
 /rest-client
 /tests
