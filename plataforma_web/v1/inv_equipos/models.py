@@ -62,6 +62,11 @@ class InvEquipo(Base, UniversalMixin):
         return self.inv_custodia.nombre_completo
 
     @property
+    def inv_marca_id(self):
+        """ID de la marca"""
+        return self.inv_modelo.inv_marca_id
+
+    @property
     def inv_marca_nombre(self):
         """Nombre de la marca"""
         return self.inv_modelo.inv_marca.nombre
