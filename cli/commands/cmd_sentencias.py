@@ -69,12 +69,7 @@ def enviar(ctx):
 @click.pass_context
 def guardar(ctx, output):
     """Guardar"""
-
-
-@click.command()
-@click.pass_context
-def ver(ctx):
-    """Ver sentencias en la terminal"""
+    total = 0
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
@@ -85,12 +80,38 @@ def ver(ctx):
             creado_hasta=ctx.obj["creado_hasta"],
             fecha=ctx.obj["fecha"],
         )
-        if total == 0:
-            print("No hay sentencias")
-        else:
-            print(tabulate(sentencias, headers=columns))
     except requests.HTTPError as error:
-        print("Error de comunicacion " + str(error))
+        click.echo("Error de comunicacion " + str(error))
+        return
+    if total == 0:
+        click.echo("No hay sentencias")
+        return
+    sentencias.to_excel(output)
+    click.echo(f"Listo el archivo {output}")
+
+
+@click.command()
+@click.pass_context
+def ver(ctx):
+    """Ver sentencias en la terminal"""
+    total = 0
+    try:
+        token = autentificar()
+        authorization_header = {"Authorization": "Bearer " + token}
+        sentencias, columns, total = get_sentencias(
+            authorization_header,
+            creado=ctx.obj["creado"],
+            creado_desde=ctx.obj["creado_desde"],
+            creado_hasta=ctx.obj["creado_hasta"],
+            fecha=ctx.obj["fecha"],
+        )
+    except requests.HTTPError as error:
+        click.echo("Error de comunicacion " + str(error))
+        return
+    if total == 0:
+        click.echo("No hay sentencias")
+        return
+    click.echo(tabulate(sentencias, headers=columns))
 
 
 cli.add_command(enviar)

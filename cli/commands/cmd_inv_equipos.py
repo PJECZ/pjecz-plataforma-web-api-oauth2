@@ -70,7 +70,7 @@ def guardar(ctx, output):
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        cantidades_oficina_tipo, columns, total = get_inv_equipos(
+        inv_equipos, columns, total = get_inv_equipos(
             authorization_header,
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
@@ -78,11 +78,12 @@ def guardar(ctx, output):
         )
     except requests.HTTPError as error:
         click.echo("Error de comunicacion " + str(error))
+        return
     if total == 0:
         click.echo("No hay equipos")
-    else:
-        cantidades_oficina_tipo.to_excel(output)
-        click.echo(f"Listo el archivo {output}")
+        return
+    inv_equipos.to_excel(output)
+    click.echo(f"Listo el archivo {output}")
 
 
 @click.command()
@@ -93,7 +94,7 @@ def ver(ctx):
     try:
         token = autentificar()
         authorization_header = {"Authorization": "Bearer " + token}
-        cantidades_oficina_tipo, columns, total = get_inv_equipos(
+        inv_equipos, columns, total = get_inv_equipos(
             authorization_header,
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
@@ -101,10 +102,11 @@ def ver(ctx):
         )
     except requests.HTTPError as error:
         click.echo("Error de comunicacion " + str(error))
+        return
     if total == 0:
         click.echo("No hay equipos")
-    else:
-        click.echo(tabulate(cantidades_oficina_tipo, headers=columns))
+        return
+    click.echo(tabulate(inv_equipos, headers=columns))
 
 
 cli.add_command(enviar)

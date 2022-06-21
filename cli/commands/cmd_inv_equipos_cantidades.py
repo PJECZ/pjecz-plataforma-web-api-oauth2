@@ -81,11 +81,12 @@ def guardar(ctx, output):
         )
     except requests.HTTPError as error:
         click.echo("Error de comunicacion " + str(error))
+        return
     if total == 0:
         click.echo("No hay equipos")
-    else:
-        cantidades_oficina_tipo.to_excel(output)
-        click.echo(f"Listo el archivo {output}")
+        return
+    cantidades_oficina_tipo.to_excel(output)
+    click.echo(f"Listo el archivo {output}")
 
 
 @click.command()
@@ -104,10 +105,11 @@ def ver(ctx):
         )
     except requests.HTTPError as error:
         click.echo("Error de comunicacion " + str(error))
+        return
     if total == 0:
         click.echo("No hay equipos")
-    else:
-        click.echo(tabulate(cantidades_oficina_tipo, headers=columns))
+        return
+    click.echo(tabulate(cantidades_oficina_tipo, headers=columns))
 
 
 cli.add_command(enviar)
