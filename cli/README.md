@@ -7,5 +7,5 @@ Para enviar periodicamente mensajes con reportes a destinatarios de correo elect
 
 Requiere que manualemente instale los siguientes paquetes
 
-    pip install click pandas requests sendgrid tabulate
+    pip install click openpyxl pandas requests sendgrid tabulate
     pip install --editable .

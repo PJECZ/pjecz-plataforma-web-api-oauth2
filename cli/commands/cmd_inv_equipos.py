@@ -134,7 +134,7 @@ def enviar(ctx):
     attachment.content_id = ContentId(archivo_nombre)
     attachment.disposition = Disposition("attachment")
     with open(archivo_ruta, "rb") as puntero:
-        attachment.file_content = FileContent(base64.b64encode(puntero.read()))
+        attachment.file_content = FileContent(base64.b64encode(puntero.read()).decode())
     attachment.file_name = FileName(archivo_nombre)
     attachment.file_type = FileType("application/vnd.ms-excel")
     mail.attachment = attachment
