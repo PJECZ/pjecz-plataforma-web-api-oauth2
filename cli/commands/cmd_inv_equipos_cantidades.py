@@ -118,11 +118,11 @@ def enviar(ctx):
     # Asunto
     momento_str = datetime.now().strftime("%d/%B/%Y %I:%M%p")
     subject = "Cantidades de equipos en inventarios por oficina y tipo"
-    if ctx.obj["creado"] is not None or ctx.obj["creado"] != "":
+    if ctx.obj["creado"] is not None and ctx.obj["creado"] != "":
         subject += f" creados en {ctx.obj['creado']}"
-    if ctx.obj["creado_desde"] is not None or ctx.obj["creado_desde"] != "":
+    if ctx.obj["creado_desde"] is not None and ctx.obj["creado_desde"] != "":
         subject += f" creados desde {ctx.obj['creado']}"
-    if ctx.obj["creado_hasta"] is not None or ctx.obj["creado_hasta"] != "":
+    if ctx.obj["creado_hasta"] is not None and ctx.obj["creado_hasta"] != "":
         subject += f" creados hasta {ctx.obj['creado']}"
 
     # Contenidos
