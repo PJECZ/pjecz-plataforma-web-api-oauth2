@@ -90,10 +90,8 @@ def enviar(ctx):
     # Consultar
     total = 0
     try:
-        token = autentificar()
-        authorization_header = {"Authorization": "Bearer " + token}
         inv_equipos, columns, total = get_inv_equipos(
-            authorization_header,
+            autentificar(),
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
@@ -105,7 +103,7 @@ def enviar(ctx):
         click.echo("No hay equipos")
         return
 
-    # Archivo XLSX
+    # Crear archivo XLSX
     hoy_str = datetime.now().strftime("%Y-%m-%d")
     random_hex = "%030x" % random.randrange(16**30)
     archivo_nombre = f"inv-equipos-{hoy_str}-{random_hex}.xlsx"
@@ -113,7 +111,6 @@ def enviar(ctx):
     inv_equipos.to_excel(archivo_ruta)
 
     # Asunto
-    momento_str = datetime.now().strftime("%d/%B/%Y %I:%M%p")
     subject = "Equipos en inventarios"
     if ctx.obj["creado"] is not None and ctx.obj["creado"] != "":
         subject += f" creados en {ctx.obj['creado']}"
@@ -123,10 +120,11 @@ def enviar(ctx):
         subject += f" creados hasta {ctx.obj['creado']}"
 
     # Contenidos
+    elaboracion_fecha_hora_str = datetime.now().strftime("%d/%B/%Y %I:%M%p")
     contenidos = []
     contenidos.append("<h1>PJECZ Plataforma Web</h1>")
     contenidos.append(f"<h2>{subject}</h2>")
-    contenidos.append(f"<p>Fecha de elaboración: <b>{momento_str}.</b></p>")
+    contenidos.append(f"<p>Fecha de elaboración: <b>{elaboracion_fecha_hora_str}.</b></p>")
     contenidos.append(inv_equipos.to_html())
     contenidos.append("<p>ESTE MENSAJE ES ELABORADO POR UN PROGRAMA. FAVOR DE NO RESPONDER.</p>")
 
@@ -157,10 +155,8 @@ def guardar(ctx, output):
     """Guardar"""
     total = 0
     try:
-        token = autentificar()
-        authorization_header = {"Authorization": "Bearer " + token}
         inv_equipos, columns, total = get_inv_equipos(
-            authorization_header,
+            autentificar(),
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
@@ -181,10 +177,8 @@ def ver(ctx):
     """Ver inventario de equipos en la terminal"""
     total = 0
     try:
-        token = autentificar()
-        authorization_header = {"Authorization": "Bearer " + token}
         inv_equipos, columns, total = get_inv_equipos(
-            authorization_header,
+            autentificar(),
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],

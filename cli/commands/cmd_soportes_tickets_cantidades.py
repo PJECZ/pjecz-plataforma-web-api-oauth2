@@ -74,10 +74,8 @@ def guardar(ctx, output):
     """Guardar"""
     total = 0
     try:
-        token = autentificar()
-        authorization_header = {"Authorization": "Bearer " + token}
         cantidades_distrito_categoria, columns, total = get_cantidades_distrito_categoria(
-            authorization_header,
+            autentificar(),
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
@@ -99,10 +97,8 @@ def ver(ctx):
     """Ver tickets en la terminal"""
     total = 0
     try:
-        token = autentificar()
-        authorization_header = {"Authorization": "Bearer " + token}
         cantidades_distrito_categoria, columns, total = get_cantidades_distrito_categoria(
-            authorization_header,
+            autentificar(),
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],

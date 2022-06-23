@@ -21,7 +21,7 @@ PASSWORD = os.getenv("PASSWORD")
 
 
 def autentificar():
-    """Autentificarse y obtener el token"""
+    """Autentificarse y entregar la cabecera de autentificacion"""
     if BASE_URL is None or BASE_URL == "":
         raise Exception("Error de configuracion: Falta BASE_URL")
     if USERNAME is None or USERNAME == "":
@@ -33,4 +33,6 @@ def autentificar():
     response = requests.post(f"{BASE_URL}/token", data=data, headers=headers)
     if response.status_code != 200:
         raise requests.HTTPError(response.status_code)
-    return response.json()["access_token"]
+    token = response.json()["access_token"]
+    authorization_header = {"Authorization": "Bearer " + token}
+    return authorization_header
