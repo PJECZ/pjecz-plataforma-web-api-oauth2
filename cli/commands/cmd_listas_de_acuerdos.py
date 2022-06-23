@@ -71,10 +71,8 @@ def guardar(ctx, output):
     """Guardar"""
     total = 0
     try:
-        token = autentificar()
-        authorization_header = {"Authorization": "Bearer " + token}
         listas_de_acuerdos, columns, total = get_listas_de_acuerdos(
-            authorization_header,
+            autentificar(),
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
@@ -96,10 +94,8 @@ def ver(ctx):
     """Ver listas de acuerdos en la terminal"""
     total = 0
     try:
-        token = autentificar()
-        authorization_header = {"Authorization": "Bearer " + token}
         listas_de_acuerdos, columns, total = get_listas_de_acuerdos(
-            authorization_header,
+            autentificar(),
             creado=ctx.obj["creado"],
             creado_desde=ctx.obj["creado_desde"],
             creado_hasta=ctx.obj["creado_hasta"],
