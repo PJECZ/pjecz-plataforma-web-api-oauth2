@@ -16,6 +16,6 @@ Si quiere ejecutar Jupyter Notebooks en el navegador
 
 Debe tener una archivo `.env` donde guarde de forma segura su USERNAME y PASSWORD.
 
-    PYTHONPATH=/home/tu_usuario/Documentos/GitHub/tu_usuario/pjecz-plataforma-web-api-oauth2
-    USERNAME=guillermo.valdes@pjecz.gob.mx
-    PASSWORD=Gato62Negro
+    PYTHONPATH=/home/tu_usuario/Documentos/GitHub/tu_github/pjecz-plataforma-web-api-oauth2
+    USERNAME=nombre.apellido@pjecz.gob.mx
+    PASSWORD=****************
