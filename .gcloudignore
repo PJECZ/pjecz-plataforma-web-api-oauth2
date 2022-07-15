@@ -2,24 +2,24 @@
 .directory
 .env
 .gcloudignore
-.git
 .github
 .gitignore
-.vscode
 .DS_Store
 
+*.egg-info/
 *.py[cod]
 *.sqlite3
-*.xlsx
+*.sqlite3-journal
+*.session.sql
 
 __pycache__/
-/instance/settings.py
-/pyproject.toml
-/tests
-/venv
-
+/.git
+/.vscode
 /cli
+/instance/settings.py
 /notebooks
-/plataforma_web.egg-info
+/pyproject.toml
 /rest-client
 /setup.py
+/tests
+/venv
