@@ -18,7 +18,7 @@ def get_domicilio(db: Session, domicilio_id: int) -> Domicilio:
     """Consultar un domicilio por su id"""
     domicilio = db.query(Domicilio).get(domicilio_id)
     if domicilio is None:
-        raise IndexError("No existe ese domicilio")
+        raise NotExistsException("No existe ese domicilio")
     if domicilio.estatus != "A":
-        raise ValueError("No es activo ese domicilio, está eliminado")
+        raise IsDeletedException("No es activo ese domicilio, está eliminado")
     return domicilio

@@ -26,7 +26,7 @@ def get_inv_modelo(db: Session, inv_modelo_id: int) -> InvModelo:
     """Consultar un modelo por su id"""
     inv_modelo = db.query(InvModelo).get(inv_modelo_id)
     if inv_modelo is None:
-        raise IndexError("No existe ese modelo")
+        raise NotExistsException("No existe ese modelo")
     if inv_modelo.estatus != "A":
-        raise ValueError("No es activo ese modelo, está eliminado")
+        raise IsDeletedException("No es activo ese modelo, está eliminado")
     return inv_modelo

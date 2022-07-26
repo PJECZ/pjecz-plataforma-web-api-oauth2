@@ -41,9 +41,9 @@ def get_usuario(db: Session, usuario_id: int) -> Usuario:
     """Consultar un usuario por su id"""
     usuario = db.query(Usuario).get(usuario_id)
     if usuario is None:
-        raise IndexError("No existe ese usuario")
+        raise NotExistsException("No existe ese usuario")
     if usuario.estatus != "A":
-        raise ValueError("No es activo el usuario, está eliminado")
+        raise IsDeletedException("No es activo el usuario, está eliminado")
     return usuario
 
 
@@ -53,7 +53,7 @@ def get_usuario_from_email(db: Session, email: str) -> Usuario:
         raise ValueError("El e-mail es incorrecto")
     usuario = db.query(Usuario).filter_by(email=email).first()
     if usuario is None:
-        raise IndexError("No existe ese usuario")
+        raise NotExistsException("No existe ese usuario")
     if usuario.estatus != "A":
-        raise ValueError("No es activo el usuario, está eliminado")
+        raise IsDeletedException("No es activo el usuario, está eliminado")
     return usuario

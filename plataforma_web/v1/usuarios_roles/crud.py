@@ -29,7 +29,7 @@ def get_usuario_rol(db: Session, usuario_rol_id: int) -> UsuarioRol:
     """Consultar un usuario_rol por su id"""
     usuario_rol = db.query(UsuarioRol).get(usuario_rol_id)
     if usuario_rol is None:
-        raise IndexError("No existe ese usuario-rol")
+        raise NotExistsException("No existe ese usuario-rol")
     if usuario_rol.estatus != "A":
-        raise ValueError("No es activo ese usuario-rol, está eliminado")
+        raise IsDeletedException("No es activo ese usuario-rol, está eliminado")
     return usuario_rol

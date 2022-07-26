@@ -18,7 +18,7 @@ def get_inv_categoria(db: Session, inv_categoria_id: int) -> InvCategoria:
     """Consultar una categoria por su id"""
     inv_categoria = db.query(InvCategoria).get(inv_categoria_id)
     if inv_categoria is None:
-        raise IndexError("No existe ese categoria")
+        raise NotExistsException("No existe ese categoria")
     if inv_categoria.estatus != "A":
-        raise ValueError("No es activo ese categoria, está eliminado")
+        raise IsDeletedException("No es activo ese categoria, está eliminado")
     return inv_categoria

@@ -32,9 +32,9 @@ def get_centro_trabajo(db: Session, centro_trabajo_id: int) -> CentroTrabajo:
     """Consultar un centro de trabajo por su id"""
     centro_trabajo = db.query(CentroTrabajo).get(centro_trabajo_id)
     if centro_trabajo is None:
-        raise IndexError("No existe ese centro de trabajo")
+        raise NotExistsException("No existe ese centro de trabajo")
     if centro_trabajo.estatus != "A":
-        raise ValueError("No es activo ese centro de trabajo, está eliminado")
+        raise IsDeletedException("No es activo ese centro de trabajo, está eliminado")
     return centro_trabajo
 
 
@@ -43,7 +43,7 @@ def get_centro_trabajo_from_clave(db: Session, centro_trabajo_clave: str) -> Cen
     clave = safe_clave(centro_trabajo_clave)  # Si no es correcta causa ValueError
     centro_trabajo = db.query(CentroTrabajo).filter_by(clave=clave).first()
     if centro_trabajo is None:
-        raise IndexError("No existe ese centro de trabajo")
+        raise NotExistsException("No existe ese centro de trabajo")
     if centro_trabajo.estatus != "A":
-        raise ValueError("No es activo ese centro de trabajo, está eliminado")
+        raise IsDeletedException("No es activo ese centro de trabajo, está eliminado")
     return centro_trabajo

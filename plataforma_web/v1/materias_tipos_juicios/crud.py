@@ -21,7 +21,7 @@ def get_materia_tipo_juicio(db: Session, materia_tipo_juicio_id: int) -> Materia
     """Consultar un tipo de juicio por su id"""
     materia_tipo_juicio = db.query(MateriaTipoJuicio).get(materia_tipo_juicio_id)
     if materia_tipo_juicio is None:
-        raise IndexError("No existe ese tipo de juicio")
+        raise NotExistsException("No existe ese tipo de juicio")
     if materia_tipo_juicio.estatus != "A":
-        raise ValueError("No es activa ese tipo de juicio, está eliminado")
+        raise IsDeletedException("No es activa ese tipo de juicio, está eliminado")
     return materia_tipo_juicio

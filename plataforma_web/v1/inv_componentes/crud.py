@@ -36,7 +36,7 @@ def get_inv_componente(db: Session, inv_componente_id: int) -> InvComponente:
     """Consultar un componente por su id"""
     inv_componente = db.query(InvComponente).get(inv_componente_id)
     if inv_componente is None:
-        raise IndexError("No existe ese componente")
+        raise NotExistsException("No existe ese componente")
     if inv_componente.estatus != "A":
-        raise ValueError("No es activo ese componente, está eliminado")
+        raise IsDeletedException("No es activo ese componente, está eliminado")
     return inv_componente

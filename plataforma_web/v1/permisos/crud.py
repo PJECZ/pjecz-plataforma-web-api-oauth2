@@ -31,7 +31,7 @@ def get_permiso(db: Session, permiso_id: int) -> Permiso:
     """Consultar un permiso por su id"""
     permiso = db.query(Permiso).get(permiso_id)
     if permiso is None:
-        raise IndexError("No existe ese permiso")
+        raise NotExistsException("No existe ese permiso")
     if permiso.estatus != "A":
-        raise ValueError("No es activo ese permiso, está eliminado")
+        raise IsDeletedException("No es activo ese permiso, está eliminado")
     return permiso

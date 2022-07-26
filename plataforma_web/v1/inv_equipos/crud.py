@@ -75,9 +75,9 @@ def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:
     """Consultar un equipo por su id"""
     inv_equipo = db.query(InvEquipo).get(inv_equipo_id)
     if inv_equipo is None:
-        raise IndexError("No existe ese equipo")
+        raise NotExistsException("No existe ese equipo")
     if inv_equipo.estatus != "A":
-        raise ValueError("No es activo ese equipo, está eliminado")
+        raise IsDeletedException("No es activo ese equipo, está eliminado")
     return inv_equipo
 
 

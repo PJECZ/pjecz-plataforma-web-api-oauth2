@@ -40,7 +40,7 @@ def get_abogado(db: Session, abogado_id: int) -> Abogado:
     """Consultar un abogado por su id"""
     abogado = db.query(Abogado).get(abogado_id)
     if abogado is None:
-        raise IndexError("No existe ese abogado")
+        raise NotExistsException("No existe ese abogado")
     if abogado.estatus != "A":
-        raise ValueError("No es activo ese abogado, está eliminado")
+        raise IsDeletedException("No es activo ese abogado, está eliminado")
     return abogado

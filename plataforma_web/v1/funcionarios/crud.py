@@ -29,9 +29,9 @@ def get_funcionario(db: Session, funcionario_id: int) -> Funcionario:
     """Consultar un funcionario por su id"""
     funcionario = db.query(Funcionario).get(funcionario_id)
     if funcionario is None:
-        raise IndexError("No existe ese funcionario")
+        raise NotExistsException("No existe ese funcionario")
     if funcionario.estatus != "A":
-        raise ValueError("No es activo ese funcionario, está eliminado")
+        raise IsDeletedException("No es activo ese funcionario, está eliminado")
     return funcionario
 
 
@@ -41,7 +41,7 @@ def get_funcionario_with_curp(db: Session, curp: str) -> Funcionario:
         raise ValueError("El CURP es incorrecto")
     funcionario = db.query(Funcionario).filter_by(curp=curp).first()
     if funcionario is None:
-        raise IndexError("No existe ese funcionario")
+        raise NotExistsException("No existe ese funcionario")
     if funcionario.estatus != "A":
-        raise ValueError("No es activo ese funcionario, está eliminado")
+        raise IsDeletedException("No es activo ese funcionario, está eliminado")
     return funcionario

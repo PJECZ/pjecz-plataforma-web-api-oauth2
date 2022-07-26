@@ -18,7 +18,7 @@ def get_soporte_categoria(db: Session, soporte_categoria_id: int) -> SoporteCate
     """Consultar un soporte_categoria por su id"""
     soporte_categoria = db.query(SoporteCategoria).get(soporte_categoria_id)
     if soporte_categoria is None:
-        raise IndexError("No existe esa categoria")
+        raise NotExistsException("No existe esa categoria")
     if soporte_categoria.estatus != "A":
-        raise ValueError("No es activa esa categoria, está eliminado")
+        raise IsDeletedException("No es activa esa categoria, está eliminado")
     return soporte_categoria

@@ -68,7 +68,7 @@ def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int) -> ListaDeAcuerd
     if lista_de_acuerdo is None:
         raise IndexError("No exite esa lista de acuerdos")
     if lista_de_acuerdo.estatus != "A":
-        raise ValueError("No es activa la lista de acuerdos, fue eliminada")
+        raise IsDeletedException("No es activa la lista de acuerdos, fue eliminada")
     return lista_de_acuerdo
 
 

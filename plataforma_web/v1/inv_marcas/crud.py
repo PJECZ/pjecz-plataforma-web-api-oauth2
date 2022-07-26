@@ -18,7 +18,7 @@ def get_inv_marca(db: Session, inv_marca_id: int) -> InvMarca:
     """Consultar una marca por su id"""
     inv_marca = db.query(InvMarca).get(inv_marca_id)
     if inv_marca is None:
-        raise IndexError("No existe ese marca")
+        raise NotExistsException("No existe ese marca")
     if inv_marca.estatus != "A":
-        raise ValueError("No es activo ese marca, está eliminado")
+        raise IsDeletedException("No es activo ese marca, está eliminado")
     return inv_marca

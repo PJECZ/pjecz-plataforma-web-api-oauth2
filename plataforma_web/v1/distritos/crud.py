@@ -18,7 +18,7 @@ def get_distrito(db: Session, distrito_id: int) -> Distrito:
     """Consultar un distrito por su id"""
     distrito = db.query(Distrito).get(distrito_id)
     if distrito is None:
-        raise IndexError("No existe ese distrito")
+        raise NotExistsException("No existe ese distrito")
     if distrito.estatus != "A":
-        raise ValueError("No es activo el distrito, está eliminado")
+        raise IsDeletedException("No es activo el distrito, está eliminado")
     return distrito

@@ -41,9 +41,9 @@ def get_autoridad(db: Session, autoridad_id: int) -> Autoridad:
     """Consultar una autoridad por su id"""
     autoridad = db.query(Autoridad).get(autoridad_id)
     if autoridad is None:
-        raise IndexError("No existe esa autoridad")
+        raise NotExistsException("No existe esa autoridad")
     if autoridad.estatus != "A":
-        raise ValueError("No es activa la autoridad, está eliminada")
+        raise IsDeletedException("No es activa la autoridad, está eliminada")
     return autoridad
 
 
@@ -52,7 +52,7 @@ def get_autoridad_from_clave(db: Session, autoridad_clave: str) -> Autoridad:
     clave = safe_clave(autoridad_clave)  # Si no es correcta causa ValueError
     autoridad = db.query(Autoridad).filter_by(clave=clave).first()
     if autoridad is None:
-        raise IndexError("No existe esa autoridad")
+        raise NotExistsException("No existe esa autoridad")
     if autoridad.estatus != "A":
-        raise ValueError("No es activa la autoridad, está eliminada")
+        raise IsDeletedException("No es activa la autoridad, está eliminada")
     return autoridad

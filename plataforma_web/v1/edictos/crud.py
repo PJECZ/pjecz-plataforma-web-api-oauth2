@@ -43,7 +43,7 @@ def get_edicto(db: Session, edicto_id: int) -> Edicto:
     """Consultar un edicto por su id"""
     edicto = db.query(Edicto).get(edicto_id)
     if edicto is None:
-        raise IndexError("No existe ese edicto")
+        raise NotExistsException("No existe ese edicto")
     if edicto.estatus != "A":
-        raise ValueError("No es activo ese edicto, está eliminado")
+        raise IsDeletedException("No es activo ese edicto, está eliminado")
     return edicto
