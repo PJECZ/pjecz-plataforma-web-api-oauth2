@@ -13,3 +13,11 @@ class IsDeletedException(Exception):
 
 class NotExistsException(Exception):
     """Excepción no existe"""
+
+
+class NotValidException(Exception):
+    """Excepción porque un parámetro es inválido"""
+
+
+class OutOfRangeException(Exception):
+    """Excepción porque un parámetro esta fuera de rango"""

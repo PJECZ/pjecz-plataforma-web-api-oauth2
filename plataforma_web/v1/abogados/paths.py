@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.abogados.crud import get_abogados, get_abogado
@@ -35,9 +36,7 @@ async def listado_abogados(
             anio_hasta=anio_hasta,
             nombre=nombre,
         )
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException, OutOfRangeException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -52,9 +51,10 @@ async def detalle_abogado(
     if "ABOGADOS" not in current_user.permissions or current_user.permissions["ABOGADOS"] < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        abogado = get_abogado(db, abogado_id=abogado_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        abogado = get_abogado(
+            db,
+            abogado_id=abogado_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return AbogadoOut.from_orm(abogado)

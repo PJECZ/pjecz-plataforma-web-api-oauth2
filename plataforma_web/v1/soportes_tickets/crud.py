@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import IsDeletedException, NotExistsException, NotValidException, OutOfRangeException
 from lib.safe_string import safe_string
 
 from .models import SoporteTicket
@@ -46,16 +46,16 @@ def get_soportes_tickets(
         consulta = db.query(SoporteTicket)
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
-            raise ValueError("Creado fuera de rango")
+            raise OutOfRangeException("Creado fuera de rango")
         consulta = consulta.filter(func.date(SoporteTicket.creado) == creado)
     else:
         if creado_desde:
             if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise ValueError("Creado fuera de rango")
+                raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(SoporteTicket.creado >= creado_desde)
         if creado_hasta:
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise ValueError("Creado fuera de rango")
+                raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
     if soporte_categoria_id:
         soporte_categoria = get_soporte_categoria(db, soporte_categoria_id)
@@ -69,7 +69,7 @@ def get_soportes_tickets(
     estado = safe_string(estado)
     if estado:
         if estado not in SoporteTicket.ESTADOS:
-            raise ValueError("Estado incorrecto")
+            raise NotValidException("Estado incorrecto")
         consulta = consulta.filter(SoporteTicket.estado == estado)
     descripcion = safe_string(descripcion)
     if descripcion:
@@ -108,22 +108,22 @@ def get_cantidades_distrito_categoria(
     )
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
-            raise ValueError("Creado fuera de rango")
+            raise OutOfRangeException("Creado fuera de rango")
         consulta = consulta.filter(func.date(SoporteTicket.creado) == creado)
     else:
         if creado_desde:
             if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise ValueError("Creado fuera de rango")
+                raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(SoporteTicket.creado >= creado_desde)
         if creado_hasta:
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise ValueError("Creado fuera de rango")
+                raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
     estado = safe_string(estado)
     if estado:
         estado = safe_string(estado)
         if estado != "":
             if estado not in SoporteTicket.ESTADOS:
-                raise ValueError("Estado incorrecto")
+                raise NotValidException("Estado incorrecto")
             consulta = consulta.filter(SoporteTicket.estado == estado)
     return consulta.order_by("distrito_clave", "soporte_categoria_nombre").group_by("distrito_clave", "soporte_categoria_nombre")

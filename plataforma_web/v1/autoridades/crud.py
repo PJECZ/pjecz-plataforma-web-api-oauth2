@@ -4,7 +4,7 @@ Autoridades v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
 from lib.safe_string import safe_clave, safe_string
 
 from .models import Autoridad
@@ -49,7 +49,10 @@ def get_autoridad(db: Session, autoridad_id: int) -> Autoridad:
 
 def get_autoridad_from_clave(db: Session, autoridad_clave: str) -> Autoridad:
     """Consultar una autoridad por su clave"""
-    clave = safe_clave(autoridad_clave)  # Si no es correcta causa ValueError
+    try:
+        clave = safe_clave(autoridad_clave)
+    except ValueError as error:
+        raise NotValidException("No es válida la clave") from error
     autoridad = db.query(Autoridad).filter_by(clave=clave).first()
     if autoridad is None:
         raise NotExistsException("No existe esa autoridad")

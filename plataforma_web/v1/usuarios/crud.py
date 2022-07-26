@@ -5,7 +5,7 @@ import re
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
 from lib.safe_string import EMAIL_REGEXP
 
 from .models import Usuario
@@ -50,7 +50,7 @@ def get_usuario(db: Session, usuario_id: int) -> Usuario:
 def get_usuario_from_email(db: Session, email: str) -> Usuario:
     """Consultar un usuario por su email"""
     if re.match(EMAIL_REGEXP, email) is None:
-        raise ValueError("El e-mail es incorrecto")
+        raise NotValidException("El e-mail es incorrecto")
     usuario = db.query(Usuario).filter_by(email=email).first()
     if usuario is None:
         raise NotExistsException("No existe ese usuario")

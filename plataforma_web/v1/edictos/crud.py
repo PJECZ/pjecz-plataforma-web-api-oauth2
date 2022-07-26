@@ -5,7 +5,7 @@ from datetime import date
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
 
 from .models import Edicto
 from ..autoridades.crud import get_autoridad
@@ -25,16 +25,16 @@ def get_edictos(
         consulta = consulta.filter(Edicto.autoridad == autoridad)
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
-            raise ValueError("Fecha fuera de rango")
+            raise OutOfRangeException("Fecha fuera de rango")
         consulta = consulta.filter_by(fecha=fecha)
     else:
         if fecha_desde:
             if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
-                raise ValueError("Fecha fuera de rango")
+                raise OutOfRangeException("Fecha fuera de rango")
             consulta = consulta.filter(Edicto.fecha >= fecha_desde)
         if fecha_hasta:
             if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
-                raise ValueError("Fecha fuera de rango")
+                raise OutOfRangeException("Fecha fuera de rango")
             consulta = consulta.filter(Edicto.fecha <= fecha_hasta)
     return consulta.filter_by(estatus="A").order_by(Edicto.id)
 
