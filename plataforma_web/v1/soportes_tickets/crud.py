@@ -6,15 +6,16 @@ from typing import Any
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
 
-from plataforma_web.v1.oficinas.crud import get_oficina, get_oficina_from_clave
-from plataforma_web.v1.oficinas.models import Oficina
-from plataforma_web.v1.soportes_categorias.crud import get_soporte_categoria
-from plataforma_web.v1.soportes_categorias.models import SoporteCategoria
-from plataforma_web.v1.soportes_tickets.models import SoporteTicket
-from plataforma_web.v1.usuarios.crud import get_usuario, get_usuario_from_email
-from plataforma_web.v1.usuarios.models import Usuario
+from .models import SoporteTicket
+from ..oficinas.crud import get_oficina, get_oficina_from_clave
+from ..oficinas.models import Oficina
+from ..soportes_categorias.crud import get_soporte_categoria
+from ..soportes_categorias.models import SoporteCategoria
+from ..usuarios.crud import get_usuario, get_usuario_from_email
+from ..usuarios.models import Usuario
 
 HOY = date.today()
 ANTIGUA_FECHA = date(year=2000, month=1, day=1)

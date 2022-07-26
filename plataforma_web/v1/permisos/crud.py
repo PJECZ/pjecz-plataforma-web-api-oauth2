@@ -4,9 +4,11 @@ Permisos v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.modulos.crud import get_modulo
-from plataforma_web.v1.roles.crud import get_rol
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import Permiso
+from ..modulos.crud import get_modulo
+from ..roles.crud import get_rol
 
 
 def get_permisos(

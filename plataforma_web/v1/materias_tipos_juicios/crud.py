@@ -4,8 +4,10 @@ Materias Tipos Juicios v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.materias.crud import get_materia
-from plataforma_web.v1.materias_tipos_juicios.models import MateriaTipoJuicio
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import MateriaTipoJuicio
+from ..materias.crud import get_materia
 
 
 def get_materias_tipos_juicios(db: Session, materia_id: int) -> Any:

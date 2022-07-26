@@ -6,9 +6,11 @@ from typing import Any
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from plataforma_web.v1.autoridades.crud import get_autoridad
-from plataforma_web.v1.materias_tipos_juicios.crud import get_materia_tipo_juicio
-from plataforma_web.v1.sentencias.models import Sentencia
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import Sentencia
+from ..autoridades.crud import get_autoridad
+from ..materias_tipos_juicios.crud import get_materia_tipo_juicio
 
 HOY = date.today()
 ANTIGUA_FECHA = date(year=2000, month=1, day=1)

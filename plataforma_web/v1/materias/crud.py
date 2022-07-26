@@ -4,7 +4,9 @@ Materias v1.0, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.materias.models import Materia
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import Materia
 
 
 def get_materias(db: Session) -> Any:

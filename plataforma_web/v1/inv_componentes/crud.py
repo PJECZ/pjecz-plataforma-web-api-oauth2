@@ -4,7 +4,9 @@ Inventarios Componentes v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
+
 from .models import InvComponente
 from ..inv_categorias.crud import get_inv_categoria
 from ..inv_equipos.crud import get_inv_equipo

@@ -4,8 +4,9 @@ Listas de Acuerdos, Acuerdos v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import AlredyExistsError
+from lib.exceptions import AlredyExistsException, IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
+
 from plataforma_web.v1.listas_de_acuerdos.crud import get_lista_de_acuerdo
 from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.models import ListaDeAcuerdoAcuerdo
@@ -36,7 +37,7 @@ def insert_acuerdo(db: Session, acuerdo: ListaDeAcuerdoAcuerdoIn) -> ListaDeAcue
     # Evitar la duplicidad, en la misma autoridad no deben repetirse las referencias
     existe_acuerdos = db.query(ListaDeAcuerdoAcuerdo, ListaDeAcuerdo).join(ListaDeAcuerdo).filter(ListaDeAcuerdo.autoridad_id == lista_de_acuerdo.autoridad_id).filter(ListaDeAcuerdoAcuerdo.referencia == acuerdo.referencia).filter_by(estatus="A").first()
     if existe_acuerdos is not None:
-        raise AlredyExistsError("No se permite insertar el acuerdo porque la autoridad ya tiene uno con esa referencia")
+        raise AlredyExistsException("No se permite insertar el acuerdo porque la autoridad ya tiene uno con esa referencia")
     # Insertar
     resultado = ListaDeAcuerdoAcuerdo(
         lista_de_acuerdo=lista_de_acuerdo,

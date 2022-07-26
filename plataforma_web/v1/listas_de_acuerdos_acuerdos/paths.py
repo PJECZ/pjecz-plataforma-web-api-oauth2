@@ -6,7 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import AlredyExistsError
+from lib.exceptions import AlredyExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.crud import get_acuerdos, get_acuerdo, insert_acuerdo
@@ -51,7 +51,7 @@ async def nuevo_acuerdo(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    except AlredyExistsError as error:
+    except AlredyExistsException as error:
         raise HTTPException(status_code=409, detail=f"Conflict: {str(error)}") from error
     return ListaDeAcuerdoAcuerdoOut.from_orm(listado)
 

@@ -6,6 +6,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
 
 from .models import InvEquipo

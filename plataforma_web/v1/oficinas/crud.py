@@ -4,11 +4,12 @@ Oficinas v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
 
-from plataforma_web.v1.distritos.crud import get_distrito
-from plataforma_web.v1.domicilios.crud import get_domicilio
-from plataforma_web.v1.oficinas.models import Oficina
+from .models import Oficina
+from ..distritos.crud import get_distrito
+from ..domicilios.crud import get_domicilio
 
 
 def get_oficinas(

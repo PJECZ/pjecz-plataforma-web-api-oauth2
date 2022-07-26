@@ -4,7 +4,9 @@ Roles v1.0, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.roles.models import Rol
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import Rol
 
 
 def get_roles(db: Session) -> Any:

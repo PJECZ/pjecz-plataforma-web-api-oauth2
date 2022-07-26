@@ -2,47 +2,47 @@
 Plataforma Web API OAuth2
 """
 from datetime import timedelta
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-
 from fastapi_pagination import add_pagination
+from sqlalchemy.orm import Session
 
 from config.settings import ACCESS_TOKEN_EXPIRE_MINUTES
 from lib.database import get_db
 
-from plataforma_web.v1.abogados.paths import abogados
-from plataforma_web.v1.autoridades.paths import autoridades
-from plataforma_web.v1.centros_trabajos.paths import centros_trabajos
-from plataforma_web.v1.distritos.paths import distritos
-from plataforma_web.v1.domicilios.paths import domicilios
-from plataforma_web.v1.edictos.paths import edictos
-from plataforma_web.v1.funcionarios.paths import funcionarios
-from plataforma_web.v1.inv_categorias.paths import inv_categorias
-from plataforma_web.v1.inv_componentes.paths import inv_componentes
-from plataforma_web.v1.inv_custodias.paths import inv_custodias
-from plataforma_web.v1.inv_equipos.paths import inv_equipos
-from plataforma_web.v1.inv_marcas.paths import inv_marcas
-from plataforma_web.v1.inv_modelos.paths import inv_modelos
-from plataforma_web.v1.inv_redes.paths import inv_redes
-from plataforma_web.v1.listas_de_acuerdos.paths import listas_de_acuerdos
-from plataforma_web.v1.listas_de_acuerdos_acuerdos.paths import listas_de_acuerdos_acuerdos
-from plataforma_web.v1.materias.paths import materias
-from plataforma_web.v1.materias_tipos_juicios.paths import materias_tipos_juicios
-from plataforma_web.v1.modulos.paths import modulos
-from plataforma_web.v1.oficinas.paths import oficinas
-from plataforma_web.v1.permisos.paths import permisos
-from plataforma_web.v1.redams.paths import redams
-from plataforma_web.v1.roles.paths import roles
-from plataforma_web.v1.sentencias.paths import sentencias
-from plataforma_web.v1.soportes_categorias.paths import soportes_categorias
-from plataforma_web.v1.soportes_tickets.paths import soportes_tickets
-from plataforma_web.v1.usuarios.paths import usuarios
-from plataforma_web.v1.usuarios_roles.paths import usuarios_roles
+from .v1.abogados.paths import abogados
+from .v1.autoridades.paths import autoridades
+from .v1.centros_trabajos.paths import centros_trabajos
+from .v1.distritos.paths import distritos
+from .v1.domicilios.paths import domicilios
+from .v1.edictos.paths import edictos
+from .v1.funcionarios.paths import funcionarios
+from .v1.inv_categorias.paths import inv_categorias
+from .v1.inv_componentes.paths import inv_componentes
+from .v1.inv_custodias.paths import inv_custodias
+from .v1.inv_equipos.paths import inv_equipos
+from .v1.inv_marcas.paths import inv_marcas
+from .v1.inv_modelos.paths import inv_modelos
+from .v1.inv_redes.paths import inv_redes
+from .v1.listas_de_acuerdos.paths import listas_de_acuerdos
+from .v1.listas_de_acuerdos_acuerdos.paths import listas_de_acuerdos_acuerdos
+from .v1.materias.paths import materias
+from .v1.materias_tipos_juicios.paths import materias_tipos_juicios
+from .v1.modulos.paths import modulos
+from .v1.oficinas.paths import oficinas
+from .v1.permisos.paths import permisos
+from .v1.redams.paths import redams
+from .v1.roles.paths import roles
+from .v1.sentencias.paths import sentencias
+from .v1.soportes_categorias.paths import soportes_categorias
+from .v1.soportes_tickets.paths import soportes_tickets
+from .v1.usuarios.paths import usuarios
+from .v1.usuarios_roles.paths import usuarios_roles
 
-from plataforma_web.v1.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user
-from plataforma_web.v1.usuarios.schemas import Token, UsuarioInDB
+from .v1.usuarios.authentications import authenticate_user, create_access_token, get_current_active_user
+from .v1.usuarios.schemas import Token, UsuarioInDB
 
 try:
     from instance.settings import ORIGINS
@@ -105,7 +105,6 @@ async def root():
 
 
 @app.post("/token", response_model=Token)
-@app.post("/v1/token", response_model=Token)
 async def ingresar_para_solicitar_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Entregar el token como un JSON"""
     usuario = authenticate_user(form_data.username, form_data.password, db)
@@ -125,7 +124,6 @@ async def ingresar_para_solicitar_token(form_data: OAuth2PasswordRequestForm = D
 
 
 @app.get("/profile", response_model=UsuarioInDB)
-@app.get("/v1/profile", response_model=UsuarioInDB)
 async def mi_perfil(current_user: UsuarioInDB = Depends(get_current_active_user)):
     """Mostrar el perfil del usuario"""
     return current_user

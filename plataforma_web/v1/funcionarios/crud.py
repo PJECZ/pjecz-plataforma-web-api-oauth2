@@ -5,9 +5,10 @@ import re
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import CURP_REGEXP
 
-from plataforma_web.v1.funcionarios.models import Funcionario
+from .models import Funcionario
 
 
 def get_funcionarios(

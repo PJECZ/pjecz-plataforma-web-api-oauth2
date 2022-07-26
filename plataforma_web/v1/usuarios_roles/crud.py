@@ -4,9 +4,9 @@ Usuarios Roles v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.usuarios_roles.models import UsuarioRol
-from plataforma_web.v1.roles.crud import get_rol
-from plataforma_web.v1.usuarios.crud import get_usuario
+from .models import UsuarioRol
+from ..roles.crud import get_rol
+from ..usuarios.crud import get_usuario
 
 
 def get_usuarios_roles(

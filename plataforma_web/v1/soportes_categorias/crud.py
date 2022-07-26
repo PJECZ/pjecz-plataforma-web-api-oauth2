@@ -4,7 +4,9 @@ Soportes Categorias v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.soportes_categorias.models import SoporteCategoria
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import SoporteCategoria
 
 
 def get_soportes_categorias(db: Session) -> Any:

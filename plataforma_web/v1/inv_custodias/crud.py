@@ -5,6 +5,8 @@ from datetime import date
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
+
 from .models import InvCustodia
 from ..usuarios.crud import get_usuario
 

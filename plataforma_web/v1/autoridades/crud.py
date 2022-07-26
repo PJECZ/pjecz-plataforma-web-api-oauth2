@@ -4,10 +4,12 @@ Autoridades v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import safe_clave, safe_string
-from plataforma_web.v1.autoridades.models import Autoridad
-from plataforma_web.v1.distritos.crud import get_distrito
-from plataforma_web.v1.materias.crud import get_materia
+
+from .models import Autoridad
+from ..distritos.crud import get_distrito
+from ..materias.crud import get_materia
 
 
 def get_autoridades(

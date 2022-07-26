@@ -5,7 +5,9 @@ from datetime import date, datetime
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
+
 from .models import Abogado
 
 

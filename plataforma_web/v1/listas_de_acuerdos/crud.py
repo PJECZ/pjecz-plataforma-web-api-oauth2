@@ -6,11 +6,12 @@ from typing import Any
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from lib.exceptions import AlredyExistsError
+from lib.exceptions import AlredyExistsException, IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
-from plataforma_web.v1.autoridades.crud import get_autoridad
-from plataforma_web.v1.listas_de_acuerdos.models import ListaDeAcuerdo
-from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoIn
+
+from .models import ListaDeAcuerdo
+from .schemas import ListaDeAcuerdoIn
+from ..autoridades.crud import get_autoridad
 
 LIMITE_DIAS = 7
 HOY = date.today()
@@ -91,7 +92,7 @@ def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> 
     # Si ya existe una lista de acuerdos con esa fecha, se aborta
     existe_esa_lista = db.query(ListaDeAcuerdo).filter_by(autoridad_id=autoridad.id).filter_by(fecha=fecha).filter_by(estatus="A").first()
     if existe_esa_lista:
-        raise AlredyExistsError("No se permite otra lista de acuerdos para la autoridad y fechas dadas")
+        raise AlredyExistsException("No se permite otra lista de acuerdos para la autoridad y fechas dadas")
     # Validar descripcion
     if lista_de_acuerdo.descripcion == "":
         descripcion = "LISTA DE ACUERDOS"
