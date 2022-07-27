@@ -26,7 +26,7 @@ async def listado_materias(
     db: Session = Depends(get_db),
 ):
     """Listado de materias"""
-    if "MATERIAS" not in current_user.permissions or current_user.permissions["MATERIAS"] < Permiso.VER:
+    if current_user.permissions.get("MATERIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_materias(db)
@@ -42,7 +42,7 @@ async def detalle_materia(
     db: Session = Depends(get_db),
 ):
     """Detalle de una materia a partir de su id"""
-    if "MATERIAS" not in current_user.permissions or current_user.permissions["MATERIAS"] < Permiso.VER:
+    if current_user.permissions.get("MATERIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         materia = get_materia(
@@ -61,7 +61,7 @@ async def listado_autoridades_de_materia(
     db: Session = Depends(get_db),
 ):
     """Listado de autoridades de una materia"""
-    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
+    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_autoridades(

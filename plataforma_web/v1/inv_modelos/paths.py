@@ -25,7 +25,7 @@ async def listado_inv_modelos(
     db: Session = Depends(get_db),
 ):
     """Listado de modelos"""
-    if "INV MODELOS" not in current_user.permissions or current_user.permissions["INV MODELOS"] < Permiso.VER:
+    if current_user.permissions.get("INV MODELOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_modelos(
@@ -44,7 +44,7 @@ async def detalle_inv_modelo(
     db: Session = Depends(get_db),
 ):
     """Detalle de una modelos a partir de su id"""
-    if "INV MODELOS" not in current_user.permissions or current_user.permissions["INV MODELOS"] < Permiso.VER:
+    if current_user.permissions.get("INV MODELOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_modelo = get_inv_modelo(

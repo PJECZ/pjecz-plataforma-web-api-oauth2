@@ -28,7 +28,7 @@ async def listado_inv_custodias(
     db: Session = Depends(get_db),
 ):
     """Listado de custodias"""
-    if "INV CUSTODIAS" not in current_user.permissions or current_user.permissions["INV CUSTODIAS"] < Permiso.VER:
+    if current_user.permissions.get("INV CUSTODIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_custodias(
@@ -49,7 +49,7 @@ async def detalle_inv_custodia(
     db: Session = Depends(get_db),
 ):
     """Detalle de una custodias a partir de su id"""
-    if "INV CUSTODIAS" not in current_user.permissions or current_user.permissions["INV CUSTODIAS"] < Permiso.VER:
+    if current_user.permissions.get("INV CUSTODIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_custodia = get_inv_custodia(

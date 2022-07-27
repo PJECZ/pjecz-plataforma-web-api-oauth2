@@ -24,7 +24,7 @@ async def listado_modulos(
     db: Session = Depends(get_db),
 ):
     """Listado de modulos"""
-    if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
+    if current_user.permissions.get("MODULOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_modulos(db)
@@ -40,7 +40,7 @@ async def detalle_modulo(
     db: Session = Depends(get_db),
 ):
     """Detalle de una modulo a partir de su id"""
-    if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
+    if current_user.permissions.get("MODULOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         modulo = get_modulo(

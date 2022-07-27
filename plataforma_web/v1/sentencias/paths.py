@@ -33,7 +33,7 @@ async def listado_sentencias(
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias"""
-    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
+    if current_user.permissions.get("SENTENCIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_sentencias(
@@ -59,10 +59,13 @@ async def detalle_sentencia(
     db: Session = Depends(get_db),
 ):
     """Detalle de una sentencia a partir de su id"""
-    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
+    if current_user.permissions.get("SENTENCIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        sentencia = get_sentencia(db, sentencia_id=sentencia_id)
+        sentencia = get_sentencia(
+            db,
+            sentencia_id=sentencia_id,
+        )
     except (IsDeletedException, NotExistsException, OutOfRangeException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return SentenciaOut.from_orm(sentencia)

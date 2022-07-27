@@ -24,7 +24,7 @@ async def listado_permisos(
     db: Session = Depends(get_db),
 ):
     """Listado de permisos"""
-    if "PERMISOS" not in current_user.permissions or current_user.permissions["PERMISOS"] < Permiso.VER:
+    if current_user.permissions.get("PERMISOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_permisos(db)
@@ -40,7 +40,7 @@ async def detalle_permiso(
     db: Session = Depends(get_db),
 ):
     """Detalle de una permiso a partir de su id"""
-    if "PERMISOS" not in current_user.permissions or current_user.permissions["PERMISOS"] < Permiso.VER:
+    if current_user.permissions.get("PERMISOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         permiso = get_permiso(db, permiso_id=permiso_id)

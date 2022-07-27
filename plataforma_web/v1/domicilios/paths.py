@@ -24,7 +24,7 @@ async def listado_domicilios(
     db: Session = Depends(get_db),
 ):
     """Listado de domicilios"""
-    if "DOMICILIOS" not in current_user.permissions or current_user.permissions["DOMICILIOS"] < Permiso.VER:
+    if current_user.permissions.get("DOMICILIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_domicilios(db)
@@ -40,7 +40,7 @@ async def detalle_domicilio(
     db: Session = Depends(get_db),
 ):
     """Detalle de una domicilio a partir de su id"""
-    if "DOMICILIOS" not in current_user.permissions or current_user.permissions["DOMICILIOS"] < Permiso.VER:
+    if current_user.permissions.get("DOMICILIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         domicilio = get_domicilio(

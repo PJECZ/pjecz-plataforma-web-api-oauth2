@@ -24,7 +24,7 @@ async def listado_soportes_categorias(
     db: Session = Depends(get_db),
 ):
     """Listado de categorias"""
-    if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_soportes_categorias(db)
@@ -40,7 +40,7 @@ async def detalle_soporte_categoria(
     db: Session = Depends(get_db),
 ):
     """Detalle de una categoria a partir de su id"""
-    if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         soporte_categoria = get_soporte_categoria(

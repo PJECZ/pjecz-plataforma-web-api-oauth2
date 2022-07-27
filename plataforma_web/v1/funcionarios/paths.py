@@ -26,7 +26,7 @@ async def listado_funcionarios(
     db: Session = Depends(get_db),
 ):
     """Listado de funcionarios"""
-    if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
+    if current_user.permissions.get("FUNCIONARIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_funcionarios(
@@ -46,7 +46,7 @@ async def detalle_funcionario(
     db: Session = Depends(get_db),
 ):
     """Detalle de una funcionario a partir de su id"""
-    if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
+    if current_user.permissions.get("FUNCIONARIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         funcionario = get_funcionario(

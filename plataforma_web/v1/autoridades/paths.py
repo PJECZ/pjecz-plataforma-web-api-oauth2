@@ -11,14 +11,9 @@ from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.autoridades.crud import get_autoridad, get_autoridades
 from plataforma_web.v1.autoridades.schemas import AutoridadOut
-from plataforma_web.v1.listas_de_acuerdos.crud import get_listas_de_acuerdos
-from plataforma_web.v1.listas_de_acuerdos.schemas import ListaDeAcuerdoOut
 from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.sentencias.crud import get_sentencias
-from plataforma_web.v1.sentencias.schemas import SentenciaOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.crud import get_usuarios
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB, UsuarioOut
+from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
 autoridades = APIRouter(prefix="/v1/autoridades", tags=["autoridades"])
 
@@ -31,7 +26,7 @@ async def listado_autoridades(
     db: Session = Depends(get_db),
 ):
     """Listado de autoridades"""
-    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
+    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_autoridades(
@@ -51,7 +46,7 @@ async def detalle_autoridad(
     db: Session = Depends(get_db),
 ):
     """Detalle de una autoridad a partir de su clave"""
-    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
+    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         autoridad = get_autoridad(
@@ -61,60 +56,3 @@ async def detalle_autoridad(
     except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return AutoridadOut.from_orm(autoridad)
-
-
-@autoridades.get("/{autoridad_id}/listas_de_acuerdos", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
-async def listado_listas_de_acuerdos_de_autoridad(
-    autoridad_id: int,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Listado de listas de acuerdos de una autoridad"""
-    if "LISTAS DE ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS"] < Permiso.VER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        listado = get_listas_de_acuerdos(
-            db,
-            autoridad_id=autoridad_id,
-        )
-    except (IsDeletedException, NotExistsException) as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)
-
-
-@autoridades.get("/{autoridad_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut])
-async def listado_sentencias_de_autoridad(
-    autoridad_id: str,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Listado de sentencias de una autoridad"""
-    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        listado = get_sentencias(
-            db,
-            autoridad_id=autoridad_id,
-        )
-    except (IsDeletedException, NotExistsException) as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)
-
-
-@autoridades.get("/{autoridad_id}/usuarios", response_model=LimitOffsetPage[UsuarioOut])
-async def listado_usuarios_de_autoridad(
-    autoridad_id: str,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Listado de usuarios de una autoridad"""
-    if "USUARIOS" not in current_user.permissions or current_user.permissions["USUARIOS"] < Permiso.VER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        listado = get_usuarios(
-            db,
-            autoridad_id=autoridad_id,
-        )
-    except (IsDeletedException, NotExistsException) as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)

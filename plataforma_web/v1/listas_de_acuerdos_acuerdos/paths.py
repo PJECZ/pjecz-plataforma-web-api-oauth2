@@ -25,7 +25,7 @@ async def listado_acuerdos(
     db: Session = Depends(get_db),
 ):
     """Listado de Acuerdos de una Lista de Acuerdos"""
-    if "LISTAS DE ACUERDOS ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS ACUERDOS"] < Permiso.VER:
+    if current_user.permissions.get("LISTAS DE ACUERDOS ACUERDOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_acuerdos(
@@ -44,7 +44,7 @@ async def nuevo_acuerdo(
     db: Session = Depends(get_db),
 ):
     """Insertar un acuerdo"""
-    if "LISTAS DE ACUERDOS ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS ACUERDOS"] < Permiso.CREAR:
+    if current_user.permissions.get("LISTAS DE ACUERDOS ACUERDOS", 0) < Permiso.CREAR:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = insert_acuerdo(
@@ -65,7 +65,7 @@ async def detalle_acuerdo(
     db: Session = Depends(get_db),
 ):
     """Detalle de una acuerdo a partir de su id"""
-    if "LISTAS DE ACUERDOS ACUERDOS" not in current_user.permissions or current_user.permissions["LISTAS DE ACUERDOS ACUERDOS"] < Permiso.VER:
+    if current_user.permissions.get("LISTAS DE ACUERDOS ACUERDOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         acuerdo = get_acuerdo(

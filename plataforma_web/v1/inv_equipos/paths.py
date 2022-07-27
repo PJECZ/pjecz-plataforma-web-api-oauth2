@@ -36,7 +36,7 @@ async def listado_inv_equipos(
     db: Session = Depends(get_db),
 ):
     """Listado de inventarios"""
-    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
+    if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_equipos(
@@ -65,7 +65,7 @@ async def listado_cantidades_oficina_tipo(
     db: Session = Depends(get_db),
 ):
     """Cantidades de equipos por oficina y tipo"""
-    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
+    if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         consulta = get_cantidades_oficina_tipo(
@@ -86,7 +86,7 @@ async def detalle_inv_equipo(
     db: Session = Depends(get_db),
 ):
     """Detalle de una inventarios a partir de su id"""
-    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
+    if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_equipo = get_inv_equipo(

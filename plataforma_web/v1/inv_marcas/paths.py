@@ -24,7 +24,7 @@ async def listado_inv_marcas(
     db: Session = Depends(get_db),
 ):
     """Listado de marcas"""
-    if "INV MARCAS" not in current_user.permissions or current_user.permissions["INV MARCAS"] < Permiso.VER:
+    if current_user.permissions.get("INV MARCAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_marcas(db)
@@ -40,7 +40,7 @@ async def detalle_inv_marca(
     db: Session = Depends(get_db),
 ):
     """Detalle de una marcas a partir de su id"""
-    if "INV MARCAS" not in current_user.permissions or current_user.permissions["INV MARCAS"] < Permiso.VER:
+    if current_user.permissions.get("INV MARCAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_marca = get_inv_marca(

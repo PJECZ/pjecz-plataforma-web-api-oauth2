@@ -27,7 +27,7 @@ async def listado_materias_tipos_juicios(
     db: Session = Depends(get_db),
 ):
     """Listado de tipos de juicios de una materia"""
-    if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
+    if current_user.permissions.get("MATERIAS TIPOS JUICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_materias_tipos_juicios(
@@ -47,7 +47,7 @@ async def detalle_materia_tipo_juicio(
     db: Session = Depends(get_db),
 ):
     """Detalle de una materia_tipo_juicio a partir de su id"""
-    if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
+    if current_user.permissions.get("MATERIAS TIPOS JUICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(
@@ -69,7 +69,7 @@ async def listado_materias_tipos_juicios_sentencias(
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias de un tipo de juicio"""
-    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
+    if current_user.permissions.get("SENTENCIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(

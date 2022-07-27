@@ -24,7 +24,7 @@ async def listado_inv_categorias(
     db: Session = Depends(get_db),
 ):
     """Listado de categorias"""
-    if "INV CATEGORIAS" not in current_user.permissions or current_user.permissions["INV CATEGORIAS"] < Permiso.VER:
+    if current_user.permissions.get("INV CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_categorias(db)
@@ -40,7 +40,7 @@ async def detalle_inv_categoria(
     db: Session = Depends(get_db),
 ):
     """Detalle de una categorias a partir de su id"""
-    if "INV CATEGORIAS" not in current_user.permissions or current_user.permissions["INV CATEGORIAS"] < Permiso.VER:
+    if current_user.permissions.get("INV CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_categoria = get_inv_categoria(

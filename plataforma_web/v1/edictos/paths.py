@@ -29,7 +29,7 @@ async def listado_edictos(
     db: Session = Depends(get_db),
 ):
     """Listado de edictos"""
-    if "EDICTOS" not in current_user.permissions or current_user.permissions["EDICTOS"] < Permiso.VER:
+    if current_user.permissions.get("EDICTOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_edictos(
@@ -51,7 +51,7 @@ async def detalle_edicto(
     db: Session = Depends(get_db),
 ):
     """Detalle de una edictos a partir de su id"""
-    if "EDICTOS" not in current_user.permissions or current_user.permissions["EDICTOS"] < Permiso.VER:
+    if current_user.permissions.get("EDICTOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         edicto = get_edicto(db, edicto_id=edicto_id)

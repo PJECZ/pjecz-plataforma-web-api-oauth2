@@ -26,7 +26,7 @@ async def listado_distritos(
     db: Session = Depends(get_db),
 ):
     """Listado de distritos"""
-    if "DISTRITOS" not in current_user.permissions or current_user.permissions["DISTRITOS"] < Permiso.VER:
+    if current_user.permissions.get("DISTRITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_distritos(db)
@@ -42,7 +42,7 @@ async def detalle_distrito(
     db: Session = Depends(get_db),
 ):
     """Detalle de un distrito"""
-    if "DISTRITOS" not in current_user.permissions or current_user.permissions["DISTRITOS"] < Permiso.VER:
+    if current_user.permissions.get("DISTRITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         distrito = get_distrito(
@@ -62,7 +62,7 @@ async def listado_autoridades_del_distrito(
     db: Session = Depends(get_db),
 ):
     """Listado de autoridades del distrito"""
-    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
+    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_autoridades(
@@ -83,7 +83,7 @@ async def listado_notarias_del_distrito(
     db: Session = Depends(get_db),
 ):
     """Listado de notarias del distrito"""
-    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
+    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_autoridades(

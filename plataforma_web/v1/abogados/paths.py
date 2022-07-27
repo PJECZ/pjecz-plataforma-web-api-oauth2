@@ -27,7 +27,7 @@ async def listado_abogados(
     db: Session = Depends(get_db),
 ):
     """Listado de abogados"""
-    if "ABOGADOS" not in current_user.permissions or current_user.permissions["ABOGADOS"] < Permiso.VER:
+    if current_user.permissions.get("ABOGADOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_abogados(
@@ -48,7 +48,7 @@ async def detalle_abogado(
     db: Session = Depends(get_db),
 ):
     """Detalle de una abogados a partir de su id"""
-    if "ABOGADOS" not in current_user.permissions or current_user.permissions["ABOGADOS"] < Permiso.VER:
+    if current_user.permissions.get("ABOGADOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         abogado = get_abogado(

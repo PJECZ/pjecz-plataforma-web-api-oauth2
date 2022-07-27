@@ -37,7 +37,7 @@ async def listado_soportes_tickets(
     db: Session = Depends(get_db),
 ):
     """Listado de tickets de soporte"""
-    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_soportes_tickets(
@@ -68,7 +68,7 @@ async def listado_cantidades_distrito_categoria(
     db: Session = Depends(get_db),
 ):
     """Listado de totales de tickets por oficina y por categoria"""
-    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         consulta = get_cantidades_distrito_categoria(
@@ -90,7 +90,7 @@ async def detalle_soporte_ticket(
     db: Session = Depends(get_db),
 ):
     """Detalle de una ticket a partir de su id"""
-    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         soporte_ticket = get_soporte_ticket(
