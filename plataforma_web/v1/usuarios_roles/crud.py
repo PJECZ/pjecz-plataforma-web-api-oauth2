@@ -4,6 +4,8 @@ Usuarios Roles v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
+
 from .models import UsuarioRol
 from ..roles.crud import get_rol
 from ..usuarios.crud import get_usuario
@@ -22,7 +24,7 @@ def get_usuarios_roles(
     if usuario_id:
         usuario = get_usuario(db, usuario_id)
         consulta = consulta.filter_by(UsuarioRol.usuario == usuario)
-    return consulta.filter_by(estatus="A").order_by(UsuarioRol.id.desc())
+    return consulta.filter_by(estatus="A").order_by(UsuarioRol.id)
 
 
 def get_usuario_rol(db: Session, usuario_rol_id: int) -> UsuarioRol:

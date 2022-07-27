@@ -24,7 +24,7 @@ def get_permisos(
     if modulo_id:
         modulo = get_modulo(db, modulo_id)
         consulta = consulta.filter(Permiso.modulo == modulo)
-    return consulta.filter_by(estatus="A").order_by(Permiso.id.desc())
+    return consulta.filter_by(estatus="A").order_by(Permiso.id)
 
 
 def get_permiso(db: Session, permiso_id: int) -> Permiso:

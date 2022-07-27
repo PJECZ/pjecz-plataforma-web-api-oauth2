@@ -15,7 +15,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-oficinas = APIRouter(prefix="/v1/oficinas", tags=["oficinas"])
+oficinas = APIRouter(prefix="/v1/oficinas", tags=["catalogos"])
 
 
 @oficinas.get("", response_model=LimitOffsetPage[OficinaOut])

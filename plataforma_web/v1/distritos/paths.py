@@ -17,7 +17,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-distritos = APIRouter(prefix="/v1/distritos", tags=["distritos"])
+distritos = APIRouter(prefix="/v1/distritos", tags=["catalogos"])
 
 
 @distritos.get("", response_model=LimitOffsetPage[DistritoOut])

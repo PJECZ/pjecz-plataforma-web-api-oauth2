@@ -17,7 +17,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-materias = APIRouter(prefix="/v1/materias", tags=["materias"])
+materias = APIRouter(prefix="/v1/materias", tags=["catalogos"])
 
 
 @materias.get("", response_model=LimitOffsetPage[MateriaOut])
@@ -52,22 +52,3 @@ async def detalle_materia(
     except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return MateriaOut.from_orm(materia)
-
-
-@materias.get("/{materia_id}/autoridades", response_model=LimitOffsetPage[AutoridadOut])
-async def listado_autoridades_de_materia(
-    materia_id: int,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Listado de autoridades de una materia"""
-    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        listado = get_autoridades(
-            db,
-            materia_id=materia_id,
-        )
-    except (IsDeletedException, NotExistsException) as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)

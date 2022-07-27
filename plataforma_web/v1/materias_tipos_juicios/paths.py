@@ -17,7 +17,7 @@ from plataforma_web.v1.sentencias.schemas import SentenciaOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["materias"])
+materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["catalogos"])
 
 
 @materias_tipos_juicios.get("/{materia_id}/tipos_juicios", response_model=LimitOffsetPage[MateriaTipoJuicioOut])
