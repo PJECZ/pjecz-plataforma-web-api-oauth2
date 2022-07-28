@@ -68,7 +68,7 @@ def get_inv_equipos(
         consulta = consulta.filter(InvEquipo.fecha_fabricacion >= fecha_fabricacion_desde)
     if fecha_fabricacion_hasta:
         consulta = consulta.filter(InvEquipo.fecha_fabricacion <= fecha_fabricacion_hasta)
-    return consulta.filter_by(estatus="A").order_by(InvEquipo.id)
+    return consulta.filter_by(estatus="A").order_by(InvEquipo.id.desc())
 
 
 def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:

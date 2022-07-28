@@ -11,7 +11,7 @@ from .models import InvMarca
 
 def get_inv_marcas(db: Session) -> Any:
     """Consultar las marcas activas"""
-    return db.query(InvMarca).filter_by(estatus="A").order_by(InvMarca.id)
+    return db.query(InvMarca).filter_by(estatus="A").order_by(InvMarca.nombre)
 
 
 def get_inv_marca(db: Session, inv_marca_id: int) -> InvMarca:

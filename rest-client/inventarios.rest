@@ -1,0 +1,38 @@
+@root = http://{{$dotenv HOST}}:{{$dotenv PORT}}
+@baseUrl = {{root}}/v1
+@username = {{$dotenv USERNAME}}
+@password = {{$dotenv PASSWORD}}
+
+### Bienvenida
+GET {{root}}
+
+### Autorizacion
+# @name auth
+POST {{root}}/token
+Content-Type: application/x-www-form-urlencoded
+
+username={{username}}&password={{password}}
+
+### Marcas
+GET {{baseUrl}}/inv_marcas
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Modelos
+GET {{baseUrl}}/inv_modelos
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Categorias
+GET {{baseUrl}}/inv_categorias
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Redes
+GET {{baseUrl}}/inv_redes
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Equipos
+GET {{baseUrl}}/inv_equipos
+Authorization: Bearer {{auth.response.body.access_token}}
+
+### Custodias
+GET {{baseUrl}}/inv_custodias
+Authorization: Bearer {{auth.response.body.access_token}}
