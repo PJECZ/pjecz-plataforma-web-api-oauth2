@@ -5,7 +5,9 @@ from datetime import date, datetime
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
 from lib.safe_string import safe_string
+
 from .models import Abogado
 
 
@@ -21,12 +23,12 @@ def get_abogados(
         if 1925 <= anio_desde <= datetime.now().year:
             consulta = consulta.filter(Abogado.fecha >= date(year=anio_desde, month=1, day=1))
         else:
-            raise ValueError("Año fuera de rango.")
+            raise OutOfRangeException("Año fuera de rango.")
     if anio_hasta is not None:
         if 1925 <= anio_hasta <= datetime.now().year:
             consulta = consulta.filter(Abogado.fecha <= date(year=anio_hasta, month=12, day=31))
         else:
-            raise ValueError("Año fuera de rango.")
+            raise OutOfRangeException("Año fuera de rango.")
     if nombre is not None:
         nombre = safe_string(nombre)
         if nombre != "":
@@ -38,7 +40,7 @@ def get_abogado(db: Session, abogado_id: int) -> Abogado:
     """Consultar un abogado por su id"""
     abogado = db.query(Abogado).get(abogado_id)
     if abogado is None:
-        raise IndexError("No existe ese abogado")
+        raise NotExistsException("No existe ese abogado")
     if abogado.estatus != "A":
-        raise ValueError("No es activo ese abogado, está eliminado")
+        raise IsDeletedException("No es activo ese abogado, está eliminado")
     return abogado

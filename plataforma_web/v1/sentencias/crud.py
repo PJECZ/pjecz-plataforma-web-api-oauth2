@@ -6,9 +6,11 @@ from typing import Any
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from plataforma_web.v1.autoridades.crud import get_autoridad
-from plataforma_web.v1.materias_tipos_juicios.crud import get_materia_tipo_juicio
-from plataforma_web.v1.sentencias.models import Sentencia
+from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
+
+from .models import Sentencia
+from ..autoridades.crud import get_autoridad
+from ..materias_tipos_juicios.crud import get_materia_tipo_juicio
 
 HOY = date.today()
 ANTIGUA_FECHA = date(year=2000, month=1, day=1)
@@ -35,29 +37,29 @@ def get_sentencias(
         consulta = consulta.filter(Sentencia.materia_tipo_juicio == materia_tipo_juicio)
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
-            raise ValueError("Creado fuera de rango")
+            raise OutOfRangeException("Creado fuera de rango")
         consulta = consulta.filter(func.date(Sentencia.creado) == creado)
     else:
         if creado_desde:
             if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise ValueError("Creado fuera de rango")
+                raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(Sentencia.creado >= creado_desde)
         if creado_hasta:
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise ValueError("Creado fuera de rango")
+                raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(Sentencia.creado <= creado_hasta)
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
-            raise ValueError("Fecha fuera de rango")
+            raise OutOfRangeException("Fecha fuera de rango")
         consulta = consulta.filter_by(sentencia_fecha=fecha)
     else:
         if fecha_desde:
             if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
-                raise ValueError("Fecha fuera de rango")
+                raise OutOfRangeException("Fecha fuera de rango")
             consulta = consulta.filter(Sentencia.fecha >= fecha_desde)
         if fecha_hasta:
             if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
-                raise ValueError("Fecha fuera de rango")
+                raise OutOfRangeException("Fecha fuera de rango")
             consulta = consulta.filter(Sentencia.fecha <= fecha_hasta)
     return consulta.filter_by(estatus="A").order_by(Sentencia.id.desc())
 
@@ -66,7 +68,7 @@ def get_sentencia(db: Session, sentencia_id: int) -> Sentencia:
     """Consultar un sentencia por su id"""
     sentencia = db.query(Sentencia).get(sentencia_id)
     if sentencia is None:
-        raise IndexError("No existe esa sentencia")
+        raise NotExistsException("No existe esa sentencia")
     if sentencia.estatus != "A":
-        raise IndexError("No es activa esa sentencia, está eliminada")
+        raise IsDeletedException("No es activa esa sentencia, está eliminada")
     return sentencia

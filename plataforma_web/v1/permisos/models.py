@@ -29,10 +29,10 @@ class Permiso(Base, UniversalMixin):
     id = Column(Integer, primary_key=True)
 
     # Claves foráneas
-    rol_id = Column(Integer, ForeignKey("roles.id"), index=True, nullable=False)
-    rol = relationship("Rol", back_populates="permisos")
     modulo_id = Column(Integer, ForeignKey("modulos.id"), index=True, nullable=False)
     modulo = relationship("Modulo", back_populates="permisos")
+    rol_id = Column(Integer, ForeignKey("roles.id"), index=True, nullable=False)
+    rol = relationship("Rol", back_populates="permisos")
 
     # Columnas
     nombre = Column(String(256), nullable=False, unique=True)
@@ -45,8 +45,8 @@ class Permiso(Base, UniversalMixin):
 
     @property
     def modulo_nombre(self):
-        """Nombre del rol"""
-        return self.rol.nombre
+        """Nombre del modulo"""
+        return self.modulo.nombre
 
     def __repr__(self):
         """Representación"""

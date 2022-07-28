@@ -4,6 +4,8 @@ Inventarios Redes v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
+
 from .models import InvRed
 
 
@@ -16,7 +18,7 @@ def get_inv_red(db: Session, inv_red_id: int) -> InvRed:
     """Consultar una red por su id"""
     inv_red = db.query(InvRed).get(inv_red_id)
     if inv_red is None:
-        raise IndexError("No existe ese red")
+        raise NotExistsException("No existe ese red")
     if inv_red.estatus != "A":
-        raise ValueError("No es activo ese red, está eliminado")
+        raise IsDeletedException("No es activo ese red, está eliminado")
     return inv_red

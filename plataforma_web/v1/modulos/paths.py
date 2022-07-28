@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.modulos.crud import get_modulos, get_modulo
@@ -23,13 +24,11 @@ async def listado_modulos(
     db: Session = Depends(get_db),
 ):
     """Listado de modulos"""
-    if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
+    if current_user.permissions.get("MODULOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_modulos(db)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -41,12 +40,13 @@ async def detalle_modulo(
     db: Session = Depends(get_db),
 ):
     """Detalle de una modulo a partir de su id"""
-    if "MODULOS" not in current_user.permissions or current_user.permissions["MODULOS"] < Permiso.VER:
+    if current_user.permissions.get("MODULOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        modulo = get_modulo(db, modulo_id=modulo_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        modulo = get_modulo(
+            db,
+            modulo_id=modulo_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return ModuloOut.from_orm(modulo)

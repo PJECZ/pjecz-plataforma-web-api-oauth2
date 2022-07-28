@@ -13,26 +13,22 @@ Content-Type: application/x-www-form-urlencoded
 
 username={{username}}&password={{password}}
 
-### Marcas
-GET {{baseUrl}}/inv_marcas
+### Materias
+GET {{baseUrl}}/materias
 Authorization: Bearer {{auth.response.body.access_token}}
 
-### Modelos
-GET {{baseUrl}}/inv_modelos
+### Distritos
+GET {{baseUrl}}/distritos
 Authorization: Bearer {{auth.response.body.access_token}}
 
-### Categorias
-GET {{baseUrl}}/inv_categorias
+### Autoridades
+GET {{baseUrl}}/autoridades
 Authorization: Bearer {{auth.response.body.access_token}}
 
-### Redes
-GET {{baseUrl}}/inv_redes
+### Domicilios
+GET {{baseUrl}}/domicilios
 Authorization: Bearer {{auth.response.body.access_token}}
 
-### Equipos
-GET {{baseUrl}}/inv_equipos
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Custodias
-GET {{baseUrl}}/inv_custodias
+### Oficinas
+GET {{baseUrl}}/oficinas
 Authorization: Bearer {{auth.response.body.access_token}}

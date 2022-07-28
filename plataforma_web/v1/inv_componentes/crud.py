@@ -4,7 +4,9 @@ Inventarios Componentes v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.safe_string import safe_string
+
 from .models import InvComponente
 from ..inv_categorias.crud import get_inv_categoria
 from ..inv_equipos.crud import get_inv_equipo
@@ -34,7 +36,7 @@ def get_inv_componente(db: Session, inv_componente_id: int) -> InvComponente:
     """Consultar un componente por su id"""
     inv_componente = db.query(InvComponente).get(inv_componente_id)
     if inv_componente is None:
-        raise IndexError("No existe ese componente")
+        raise NotExistsException("No existe ese componente")
     if inv_componente.estatus != "A":
-        raise ValueError("No es activo ese componente, está eliminado")
+        raise IsDeletedException("No es activo ese componente, está eliminado")
     return inv_componente

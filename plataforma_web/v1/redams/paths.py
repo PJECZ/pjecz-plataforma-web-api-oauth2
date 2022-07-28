@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.redams.crud import get_redams, get_redam
@@ -25,13 +26,15 @@ async def listado_redams(
     db: Session = Depends(get_db),
 ):
     """Listado de deudores"""
-    if "REDAMS" not in current_user.permissions or current_user.permissions["REDAMS"] < Permiso.VER:
+    if current_user.permissions.get("REDAMS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_redams(db, autoridad_id=autoridad_id, distrito_id=distrito_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        listado = get_redams(
+            db,
+            autoridad_id=autoridad_id,
+            distrito_id=distrito_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -43,12 +46,13 @@ async def detalle_redam(
     db: Session = Depends(get_db),
 ):
     """Detalle de una deudores a partir de su id"""
-    if "REDAMS" not in current_user.permissions or current_user.permissions["REDAMS"] < Permiso.VER:
+    if current_user.permissions.get("REDAMS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        redam = get_redam(db, redam_id=redam_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        redam = get_redam(
+            db,
+            redam_id=redam_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return RedamOut.from_orm(redam)

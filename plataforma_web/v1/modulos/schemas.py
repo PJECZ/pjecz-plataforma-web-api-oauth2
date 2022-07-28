@@ -10,6 +10,9 @@ class ModuloOut(BaseModel):
     id: int
     nombre: str
     nombre_corto: str
+    icono: str
+    ruta: str
+    en_navegacion: bool
 
     class Config:
         """SQLAlchemy config"""

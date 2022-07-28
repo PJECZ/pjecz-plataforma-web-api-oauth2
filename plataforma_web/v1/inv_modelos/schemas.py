@@ -8,8 +8,8 @@ class InvModeloOut(BaseModel):
     """Esquema para entregar modelos"""
 
     id: int
-    marca_id: int
-    marca_nombre: str
+    inv_marca_id: int
+    inv_marca_nombre: str
     descripcion: str
 
     class Config:

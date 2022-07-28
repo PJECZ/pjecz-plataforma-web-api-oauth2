@@ -9,11 +9,9 @@ psycopg2-binary
 pydantic
 pylint
 pylint-sqlalchemy
-PyMySQL
 python-jose[cryptography]
 python-multipart
 SQLAlchemy
 SQLAlchemy-Utils
 Unidecode
-uvicorn
-uvloop
+uvicorn[gunicorn]

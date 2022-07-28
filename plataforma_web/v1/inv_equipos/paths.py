@@ -9,6 +9,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.inv_equipos.crud import get_inv_equipos, get_inv_equipo, get_cantidades_oficina_tipo
@@ -35,7 +36,7 @@ async def listado_inv_equipos(
     db: Session = Depends(get_db),
 ):
     """Listado de inventarios"""
-    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
+    if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_equipos(
@@ -50,9 +51,7 @@ async def listado_inv_equipos(
             inv_red_id=inv_red_id,
             tipo=tipo,
         )
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -66,7 +65,7 @@ async def listado_cantidades_oficina_tipo(
     db: Session = Depends(get_db),
 ):
     """Cantidades de equipos por oficina y tipo"""
-    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
+    if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         consulta = get_cantidades_oficina_tipo(
@@ -75,9 +74,7 @@ async def listado_cantidades_oficina_tipo(
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
         )
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return consulta.all()
 
@@ -89,12 +86,13 @@ async def detalle_inv_equipo(
     db: Session = Depends(get_db),
 ):
     """Detalle de una inventarios a partir de su id"""
-    if "INV EQUIPOS" not in current_user.permissions or current_user.permissions["INV EQUIPOS"] < Permiso.VER:
+    if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        inv_equipo = get_inv_equipo(db, inv_equipo_id=inv_equipo_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        inv_equipo = get_inv_equipo(
+            db,
+            inv_equipo_id=inv_equipo_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return InvEquipoOut.from_orm(inv_equipo)

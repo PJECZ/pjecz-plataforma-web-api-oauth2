@@ -9,6 +9,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.permisos.models import Permiso
@@ -36,7 +37,7 @@ async def listado_soportes_tickets(
     db: Session = Depends(get_db),
 ):
     """Listado de tickets de soporte"""
-    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_soportes_tickets(
@@ -52,9 +53,7 @@ async def listado_soportes_tickets(
             usuario_id=usuario_id,
             usuario_email=usuario_email,
         )
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -69,7 +68,7 @@ async def listado_cantidades_distrito_categoria(
     db: Session = Depends(get_db),
 ):
     """Listado de totales de tickets por oficina y por categoria"""
-    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         consulta = get_cantidades_distrito_categoria(
@@ -79,9 +78,7 @@ async def listado_cantidades_distrito_categoria(
             creado_hasta=creado_hasta,
             estado=estado,
         )
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return consulta.all()
 
@@ -93,12 +90,13 @@ async def detalle_soporte_ticket(
     db: Session = Depends(get_db),
 ):
     """Detalle de una ticket a partir de su id"""
-    if "SOPORTES TICKETS" not in current_user.permissions or current_user.permissions["SOPORTES TICKETS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        soporte_ticket = get_soporte_ticket(db, soporte_ticket_id=soporte_ticket_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        soporte_ticket = get_soporte_ticket(
+            db,
+            soporte_ticket_id=soporte_ticket_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return SoporteTicketOut.from_orm(soporte_ticket)

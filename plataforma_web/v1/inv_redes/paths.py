@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.inv_redes.crud import get_inv_redes, get_inv_red
@@ -23,13 +24,11 @@ async def listado_inv_redes(
     db: Session = Depends(get_db),
 ):
     """Listado de redes"""
-    if "INV RED" not in current_user.permissions or current_user.permissions["INV RED"] < Permiso.VER:
+    if current_user.permissions.get("INV REDES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_redes(db)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -41,12 +40,13 @@ async def detalle_inv_red(
     db: Session = Depends(get_db),
 ):
     """Detalle de una redes a partir de su id"""
-    if "INV RED" not in current_user.permissions or current_user.permissions["INV RED"] < Permiso.VER:
+    if current_user.permissions.get("INV REDES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        inv_red = get_inv_red(db, inv_red_id=inv_red_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        inv_red = get_inv_red(
+            db,
+            inv_red_id=inv_red_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return InvRedOut.from_orm(inv_red)

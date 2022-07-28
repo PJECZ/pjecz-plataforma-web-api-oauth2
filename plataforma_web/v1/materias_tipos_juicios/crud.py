@@ -4,8 +4,10 @@ Materias Tipos Juicios v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.materias.crud import get_materia
-from plataforma_web.v1.materias_tipos_juicios.models import MateriaTipoJuicio
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import MateriaTipoJuicio
+from ..materias.crud import get_materia
 
 
 def get_materias_tipos_juicios(db: Session, materia_id: int) -> Any:
@@ -19,7 +21,7 @@ def get_materia_tipo_juicio(db: Session, materia_tipo_juicio_id: int) -> Materia
     """Consultar un tipo de juicio por su id"""
     materia_tipo_juicio = db.query(MateriaTipoJuicio).get(materia_tipo_juicio_id)
     if materia_tipo_juicio is None:
-        raise IndexError("No existe ese tipo de juicio")
+        raise NotExistsException("No existe ese tipo de juicio")
     if materia_tipo_juicio.estatus != "A":
-        raise ValueError("No es activa ese tipo de juicio, está eliminado")
+        raise IsDeletedException("No es activa ese tipo de juicio, está eliminado")
     return materia_tipo_juicio

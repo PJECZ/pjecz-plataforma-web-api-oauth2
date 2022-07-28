@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.funcionarios.crud import get_funcionarios, get_funcionario
@@ -25,13 +26,15 @@ async def listado_funcionarios(
     db: Session = Depends(get_db),
 ):
     """Listado de funcionarios"""
-    if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
+    if current_user.permissions.get("FUNCIONARIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_funcionarios(db, en_funciones=en_funciones, en_soportes=en_soportes)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        listado = get_funcionarios(
+            db,
+            en_funciones=en_funciones,
+            en_soportes=en_soportes,
+        )
+    except (IsDeletedException, NotExistsException, NotValidException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -43,12 +46,13 @@ async def detalle_funcionario(
     db: Session = Depends(get_db),
 ):
     """Detalle de una funcionario a partir de su id"""
-    if "FUNCIONARIOS" not in current_user.permissions or current_user.permissions["FUNCIONARIOS"] < Permiso.VER:
+    if current_user.permissions.get("FUNCIONARIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        funcionario = get_funcionario(db, funcionario_id=funcionario_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        funcionario = get_funcionario(
+            db,
+            funcionario_id=funcionario_id,
+        )
+    except (IsDeletedException, NotExistsException, NotValidException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return FuncionarioOut.from_orm(funcionario)

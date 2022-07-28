@@ -2,6 +2,42 @@
 
 API de Plataforma Web con autentificación OAuth2
 
+## Mejores practicas
+
+Se va a mejorar con los consejos en [I've been abusing HTTP Status Codes in my APIs for years](https://blog.slimjim.xyz/posts/stop-using-http-codes/)
+
+### Escenario exitoso
+
+Status code: **200**
+
+Body
+
+    {
+        "result": true,
+        "payload": {
+            "id": 1,
+            "name": "slim",
+            "surname": "jim",
+            "email:" "james@slimjim.xyz",
+            "role": "chief doughnut"
+        }
+    }
+
+### Escenario fallido: registro no encontrado
+
+Status code: **200**
+
+Body
+
+    {
+        "result": false,
+        "errorMessage": "No employee found for ID 100"
+    }
+
+### Escenario fallido: ruta incorrecta
+
+Status code: **404**
+
 ## Configurar
 
 Genere el `SECRET_KEY` con este comando

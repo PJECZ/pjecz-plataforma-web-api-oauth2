@@ -4,7 +4,9 @@ Materias v1.0, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from plataforma_web.v1.materias.models import Materia
+from lib.exceptions import IsDeletedException, NotExistsException
+
+from .models import Materia
 
 
 def get_materias(db: Session) -> Any:
@@ -16,7 +18,7 @@ def get_materia(db: Session, materia_id: int) -> Materia:
     """Consultar un materia por su id"""
     materia = db.query(Materia).get(materia_id)
     if materia is None:
-        raise IndexError("No existe esa materia")
+        raise NotExistsException("No existe esa materia")
     if materia.estatus != "A":
-        raise ValueError("No es activa la materia, está eliminada")
+        raise IsDeletedException("No es activa la materia, está eliminada")
     return materia

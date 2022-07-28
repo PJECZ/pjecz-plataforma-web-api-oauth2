@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_juicios, get_materia_tipo_juicio
@@ -16,7 +17,7 @@ from plataforma_web.v1.sentencias.schemas import SentenciaOut
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["materias"])
+materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["catalogos"])
 
 
 @materias_tipos_juicios.get("/{materia_id}/tipos_juicios", response_model=LimitOffsetPage[MateriaTipoJuicioOut])
@@ -26,13 +27,14 @@ async def listado_materias_tipos_juicios(
     db: Session = Depends(get_db),
 ):
     """Listado de tipos de juicios de una materia"""
-    if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
+    if current_user.permissions.get("MATERIAS TIPOS JUICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_materias_tipos_juicios(db, materia_id=materia_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        listado = get_materias_tipos_juicios(
+            db,
+            materia_id=materia_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -45,15 +47,16 @@ async def detalle_materia_tipo_juicio(
     db: Session = Depends(get_db),
 ):
     """Detalle de una materia_tipo_juicio a partir de su id"""
-    if "MATERIAS TIPOS JUICIOS" not in current_user.permissions or current_user.permissions["MATERIAS TIPOS JUICIOS"] < Permiso.VER:
+    if current_user.permissions.get("MATERIAS TIPOS JUICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id=materia_tipo_juicio_id)
-        if materia_tipo_juicio.materia_id != materia_id:
-            raise ValueError("No corresponde la materia al tipo de juicio")
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        materia_tipo_juicio = get_materia_tipo_juicio(
+            db,
+            materia_tipo_juicio_id=materia_tipo_juicio_id,
+        )
+        # if materia_tipo_juicio.materia_id != materia_id:
+        #    raise ValueError("No corresponde la materia al tipo de juicio")
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return MateriaTipoJuicioOut.from_orm(materia_tipo_juicio)
 
@@ -66,15 +69,16 @@ async def listado_materias_tipos_juicios_sentencias(
     db: Session = Depends(get_db),
 ):
     """Listado de sentencias de un tipo de juicio"""
-    if "SENTENCIAS" not in current_user.permissions or current_user.permissions["SENTENCIAS"] < Permiso.VER:
+    if current_user.permissions.get("SENTENCIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id=materia_tipo_juicio_id)
-        if materia_tipo_juicio.materia_id != materia_id:
-            raise ValueError("No corresponde la materia al tipo de juicio")
+        materia_tipo_juicio = get_materia_tipo_juicio(
+            db,
+            materia_tipo_juicio_id=materia_tipo_juicio_id,
+        )
+        # if materia_tipo_juicio.materia_id != materia_id:
+        #    raise ValueError("No corresponde la materia al tipo de juicio")
         listado = get_sentencias(db, materia_tipo_juicio_id=materia_tipo_juicio_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)

@@ -4,10 +4,12 @@ Autoridades v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
 from lib.safe_string import safe_clave, safe_string
-from plataforma_web.v1.autoridades.models import Autoridad
-from plataforma_web.v1.distritos.crud import get_distrito
-from plataforma_web.v1.materias.crud import get_materia
+
+from .models import Autoridad
+from ..distritos.crud import get_distrito
+from ..materias.crud import get_materia
 
 
 def get_autoridades(
@@ -39,18 +41,21 @@ def get_autoridad(db: Session, autoridad_id: int) -> Autoridad:
     """Consultar una autoridad por su id"""
     autoridad = db.query(Autoridad).get(autoridad_id)
     if autoridad is None:
-        raise IndexError("No existe esa autoridad")
+        raise NotExistsException("No existe esa autoridad")
     if autoridad.estatus != "A":
-        raise ValueError("No es activa la autoridad, está eliminada")
+        raise IsDeletedException("No es activa la autoridad, está eliminada")
     return autoridad
 
 
 def get_autoridad_from_clave(db: Session, autoridad_clave: str) -> Autoridad:
     """Consultar una autoridad por su clave"""
-    clave = safe_clave(autoridad_clave)  # Si no es correcta causa ValueError
+    try:
+        clave = safe_clave(autoridad_clave)
+    except ValueError as error:
+        raise NotValidException("No es válida la clave") from error
     autoridad = db.query(Autoridad).filter_by(clave=clave).first()
     if autoridad is None:
-        raise IndexError("No existe esa autoridad")
+        raise NotExistsException("No existe esa autoridad")
     if autoridad.estatus != "A":
-        raise ValueError("No es activa la autoridad, está eliminada")
+        raise IsDeletedException("No es activa la autoridad, está eliminada")
     return autoridad

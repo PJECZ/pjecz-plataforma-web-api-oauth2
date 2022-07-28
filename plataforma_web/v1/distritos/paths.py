@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.autoridades.crud import get_autoridades
@@ -16,7 +17,7 @@ from plataforma_web.v1.permisos.models import Permiso
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
 from plataforma_web.v1.usuarios.schemas import UsuarioInDB
 
-distritos = APIRouter(prefix="/v1/distritos", tags=["distritos"])
+distritos = APIRouter(prefix="/v1/distritos", tags=["catalogos"])
 
 
 @distritos.get("", response_model=LimitOffsetPage[DistritoOut])
@@ -25,13 +26,11 @@ async def listado_distritos(
     db: Session = Depends(get_db),
 ):
     """Listado de distritos"""
-    if "DISTRITOS" not in current_user.permissions or current_user.permissions["DISTRITOS"] < Permiso.VER:
+    if current_user.permissions.get("DISTRITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_distritos(db)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -43,12 +42,15 @@ async def detalle_distrito(
     db: Session = Depends(get_db),
 ):
     """Detalle de un distrito"""
-    if "DISTRITOS" not in current_user.permissions or current_user.permissions["DISTRITOS"] < Permiso.VER:
+    if current_user.permissions.get("DISTRITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        distrito = get_distrito(db, distrito_id=distrito_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
+        distrito = get_distrito(
+            db,
+            distrito_id=distrito_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return DistritoOut.from_orm(distrito)
 
 
@@ -60,13 +62,16 @@ async def listado_autoridades_del_distrito(
     db: Session = Depends(get_db),
 ):
     """Listado de autoridades del distrito"""
-    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
+    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_autoridades(db, distrito_id=distrito_id, materia_id=materia_id, son_notarias=False)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        listado = get_autoridades(
+            db,
+            distrito_id=distrito_id,
+            materia_id=materia_id,
+            son_notarias=False,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -78,12 +83,14 @@ async def listado_notarias_del_distrito(
     db: Session = Depends(get_db),
 ):
     """Listado de notarias del distrito"""
-    if "AUTORIDADES" not in current_user.permissions or current_user.permissions["AUTORIDADES"] < Permiso.VER:
+    if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_autoridades(db, distrito_id=distrito_id, son_notarias=True)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        listado = get_autoridades(
+            db,
+            distrito_id=distrito_id,
+            son_notarias=True,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)

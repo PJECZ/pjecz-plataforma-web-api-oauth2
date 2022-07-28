@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.inv_marcas.crud import get_inv_marcas, get_inv_marca
@@ -23,13 +24,11 @@ async def listado_inv_marcas(
     db: Session = Depends(get_db),
 ):
     """Listado de marcas"""
-    if "INV MARCAS" not in current_user.permissions or current_user.permissions["INV MARCAS"] < Permiso.VER:
+    if current_user.permissions.get("INV MARCAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_marcas(db)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -41,12 +40,13 @@ async def detalle_inv_marca(
     db: Session = Depends(get_db),
 ):
     """Detalle de una marcas a partir de su id"""
-    if "INV MARCAS" not in current_user.permissions or current_user.permissions["INV MARCAS"] < Permiso.VER:
+    if current_user.permissions.get("INV MARCAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        inv_marca = get_inv_marca(db, inv_marca_id=inv_marca_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        inv_marca = get_inv_marca(
+            db,
+            inv_marca_id=inv_marca_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return InvMarcaOut.from_orm(inv_marca)

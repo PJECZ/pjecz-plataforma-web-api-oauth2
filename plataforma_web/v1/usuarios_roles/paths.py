@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.usuarios.authentications import get_current_active_user
@@ -23,13 +24,11 @@ async def listado_usuarios_roles(
     db: Session = Depends(get_db),
 ):
     """Listado de usuarios_roles"""
-    if "USUARIOS ROLES" not in current_user.permissions or current_user.permissions["USUARIOS ROLES"] < Permiso.VER:
+    if current_user.permissions.get("USUARIOS ROLES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_usuarios_roles(db)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -41,12 +40,13 @@ async def detalle_usuario_rol(
     db: Session = Depends(get_db),
 ):
     """Detalle de una usuario_rol a partir de su id"""
-    if not current_user.can_view("USUARIOS ROLES"):
+    if current_user.permissions.get("USUARIOS ROLES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        usuario_rol = get_usuario_rol(db, usuario_rol_id=usuario_rol_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        usuario_rol = get_usuario_rol(
+            db,
+            usuario_rol_id=usuario_rol_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return UsuarioRolOut.from_orm(usuario_rol)

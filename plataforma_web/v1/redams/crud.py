@@ -30,7 +30,7 @@ def get_redam(db: Session, redam_id: int) -> Redam:
     """Consultar un deudor por su id"""
     redam = db.query(Redam).get(redam_id)
     if redam is None:
-        raise IndexError("No existe ese deudor")
+        raise NotExistsException("No existe ese deudor")
     if redam.estatus != "A":
-        raise ValueError("No es activo ese deudor, está eliminado")
+        raise IsDeletedException("No es activo ese deudor, está eliminado")
     return redam

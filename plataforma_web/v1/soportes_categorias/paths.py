@@ -6,6 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
+from lib.exceptions import IsDeletedException, NotExistsException
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.permisos.models import Permiso
@@ -23,13 +24,11 @@ async def listado_soportes_categorias(
     db: Session = Depends(get_db),
 ):
     """Listado de categorias"""
-    if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_soportes_categorias(db)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -41,12 +40,13 @@ async def detalle_soporte_categoria(
     db: Session = Depends(get_db),
 ):
     """Detalle de una categoria a partir de su id"""
-    if "SOPORTES CATEGORIAS" not in current_user.permissions or current_user.permissions["SOPORTES CATEGORIAS"] < Permiso.VER:
+    if current_user.permissions.get("SOPORTES CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        soporte_categoria = get_soporte_categoria(db, soporte_categoria_id=soporte_categoria_id)
-    except IndexError as error:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Not found: {str(error)}") from error
-    except ValueError as error:
+        soporte_categoria = get_soporte_categoria(
+            db,
+            soporte_categoria_id=soporte_categoria_id,
+        )
+    except (IsDeletedException, NotExistsException) as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return SoporteCategoriaOut.from_orm(soporte_categoria)
