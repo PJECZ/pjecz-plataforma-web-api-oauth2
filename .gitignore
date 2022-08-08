@@ -12,4 +12,7 @@ __pycache__/
 
 /app.yaml
 /instance/settings.py
+/poetry.lock
+/requirements.txt
 /venv/
+/.venv/
