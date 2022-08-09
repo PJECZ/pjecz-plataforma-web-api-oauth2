@@ -38,9 +38,22 @@ Body
 
 Status code: **404**
 
+## Configure Poetry
+
+Por defecto, el entorno se guarda en un directorio unico en `~/.cache/pypoetry/virtualenvs`
+
+Modifique para que el entorno se guarde en el mismo directorio que el proyecto
+
+    poetry config --list
+    poetry config virtualenvs.in-project true
+
+Verifique que este en True
+
+    poetry config virtualenvs.in-project
+
 ## Configurar
 
-Genere el `SECRET_KEY` con este comando
+Genere el `SECRET_KEY`
 
     openssl rand -hex 32
 
@@ -57,54 +70,8 @@ Cree un archivo para las variables de entorno `.env`
     ALGORITHM=HS256
     SECRET_KEY=****************************************************************
 
-    # Comandos Click
-    BASE_URL=http://127.0.0.1:8002
-    USERNAME=nombre.apellido@pjecz.gob.mx
-    PASSWORD=****************
-
-
-Para Bash Shell cree un archivo `.bashrc` con este contenido
-
-    if [ -f ~/.bashrc ]; then
-        source ~/.bashrc
-    fi
-
-    source venv/bin/activate
-    if [ -f .env ]; then
-        export $(grep -v '^#' .env | xargs)
-    fi
-
-    figlet Plataforma Web API OAuth2
-    echo
-
-    echo "-- Database"
-    echo "   DB_HOST: ${DB_HOST}"
-    echo "   DB_NAME: ${DB_NAME}"
-    echo "   DB_PASS: ${DB_PASS}"
-    echo "   DB_USER: ${DB_USER}"
-    echo
-    echo "-- OAuth2"
-    echo "   ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}"
-    echo "   ALGORITHM:                   ${ALGORITHM}"
-    echo "   SECRET_KEY:                  ${SECRET_KEY}"
-    echo
-    echo "-- Jupyter notebooks"
-    echo "   PYTHONPATH: ${PYTHONPATH}"
-    echo
-
-    export PGDATABASE=${DB_NAME}
-    export PGPASSWORD=${DB_PASS}
-    export PGUSER=${DB_USER}
-    echo "-- PostgreSQL"
-    echo "   PGDATABASE: ${PGDATABASE}"
-    echo "   PGPASSWORD: ${PGPASSWORD}"
-    echo "   PGUSER:     ${PGUSER}"
-    echo
-
-    alias arrancar="uvicorn --port 8002 --reload plataforma_web.app:app"
-    echo "-- FastAPI"
-    echo "   arrancar"
-    echo
+    # Salt sirve para cifrar el ID con HashID, debe ser igual que en la app Flask
+    SALT=************************
 
 Cree el archivo `instance/settings.py` que cargue las variables de entorno
 
@@ -113,21 +80,14 @@ Cree el archivo `instance/settings.py` que cargue las variables de entorno
     """
     import os
 
-
     # Base de datos
     DB_USER = os.environ.get("DB_USER", "wronguser")
     DB_PASS = os.environ.get("DB_PASS", "badpassword")
     DB_NAME = os.environ.get("DB_NAME", "pjecz_plataforma_web")
     DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
 
-    # MariaDB o MySQL
-    # SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
-
     # PostgreSQL
     SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
-
-    # SQLite
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:///pjecz_plataforma_web.sqlite3'
 
     # CORS or "Cross-Origin Resource Sharing" refers to the situations when a frontend
     # running in a browser has JavaScript code that communicates with a backend,
@@ -140,46 +100,72 @@ Cree el archivo `instance/settings.py` que cargue las variables de entorno
         "http://127.0.0.1:3000",
     ]
 
-## Crear Entorno Virtual
+Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Konsole
 
-Crear el enorno virtual dentro de la copia local del repositorio, con
+    if [ -f ~/.bashrc ]; then
+        source ~/.bashrc
+    fi
 
-    python -m venv venv
+    source .venv/bin/activate
+    if [ -f .env ]; then
+        export $(grep -v '^#' .env | xargs)
+    fi
 
-O con virtualenv
+    figlet Plataforma Web API OAuth2
+    echo
 
-    virtualenv -p python3 venv
+    echo "== Variables de entorno"
+    export $(grep -v '^#' .env | xargs)
+    echo "   ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}"
+    echo "   DB_HOST: ${DB_HOST}"
+    echo "   DB_NAME: ${DB_NAME}"
+    echo "   DB_USER: ${DB_USER}"
+    echo "   DB_PASS: ${DB_PASS}"
+    echo "   SALT: ${SALT}"
+    echo "   SECRET_KEY: ${SECRET_KEY}"
+    echo
 
-Active el entorno virtual, en GNU/Linux con...
+    export PGHOST=$DB_HOST
+    export PGPORT=5432
+    export PGDATABASE=$DB_NAME
+    export PGUSER=$DB_USER
+    export PGPASSWORD=$DB_PASS
 
-    source venv/bin/activate
+    alias arrancar="uvicorn --port 8002 --reload plataforma_web.app:app"
+    echo "-- FastAPI"
+    echo "   arrancar"
+    echo
 
-O en Windows con
+## Instalacion
 
-    venv/Scripts/activate
+Clone el repositorio `pjecz-plataforma-web-api-oauth2`
 
-Verifique que haya el mínimo de paquetes con
+    cd ~/Documents/GitHub/PJECZ
+    git clone https://github.com/PJECZ/pjecz-plataforma-web-api-oauth2.git
+    cd pjecz-plataforma-web-api-oauth2
 
-    pip list
+Instale el entorno virtual y los paquetes necesarios
 
-Actualice el pip de ser necesario
-
-    pip install --upgrade pip
-
-Y luego instale los paquetes requeridos
-
-    pip install -r requirements.txt
-
-Verifique con
-
-    pip list
+    poetry install
 
 ## FastAPI
 
-Arrancar con uvicorn
+Ejecute el script `arrancar.py` que contiene el comando y parametros para arrancar el servicio
 
-    uvicorn --host=0.0.0.0 --port 8002 --reload plataforma_web.app:app
+    ./arrancar.py
 
-O arrancar con gunicorn
+O use el comando para arrancar con uvicorn
 
-    gunicorn -w 4 -k uvicorn.workers.UvicornWorker plataforma_web.app:app
+    uvicorn --host=127.0.0.1 --port 8002 --reload plataforma_web.app:app
+
+O use el comando para arrancar con gunicorn
+
+    gunicorn --workers=2 --bind 127.0.0.1:8002 plataforma_web.app:app
+
+## Command Line Interface
+
+Lea `cli/README.md` para saber como configurar el CLI
+
+Ejecute el script `cli/app.py`
+
+    cli/app.py --help
