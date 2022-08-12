@@ -1,11 +1,11 @@
-# Comandos Click
+# Command Line Interface
 
-Estos comandos estan pensados en operar dentro de un equipo 24 horas/365 días.
-Para enviar periodicamente mensajes con reportes a destinatarios de correo electrónico.
+Debe tener un archivo `.env` con las variables de entorno.
 
-## Instalacion
+    HOST=http://127.0.0.1:8006
+    USERNAME=nombre.apellido@pjecz.gob.mx
+    PASSWORD=C0nTr45en4
 
-Requiere que manualemente instale los siguientes paquetes
+Pruebe con la ayuda inicial con este comando
 
-    pip install click openpyxl pandas requests sendgrid tabulate
-    pip install --editable .
+    python cli/main.py --help
