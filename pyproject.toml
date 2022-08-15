@@ -27,6 +27,7 @@ rq = "^1.11.0"
 python-dotenv = "^0.20.0"
 tabulate = "^0.8.10"
 pandas = "^1.4.3"
+sendgrid = "^6.9.7"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.14.5"

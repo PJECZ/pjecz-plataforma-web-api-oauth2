@@ -5,19 +5,23 @@
 .github
 .gitignore
 .DS_Store
+.~lock.*
 
-*.egg-info/
 *.py[cod]
+*.egg-info/
+*.log
 *.sqlite3
 *.sqlite3-journal
 *.session.sql
 
 __pycache__/
 /.git
+/.venv
 /.vscode
 /cli
 /instance/settings.py
 /notebooks
+/poetry.lock
 /pyproject.toml
 /rest-client
 /setup.py
