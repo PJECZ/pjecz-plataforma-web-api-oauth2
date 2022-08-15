@@ -10,6 +10,7 @@ class DistritoOut(BaseModel):
     id: int
     nombre: str
     nombre_corto: str
+    es_distrito_judicial: bool
 
     class Config:
         """SQLAlchemy config"""

@@ -1,5 +1,5 @@
 """
-Materias Typer Commands
+Domicilios Typer Commands
 """
 import typer
 import rich
@@ -8,7 +8,7 @@ from config.settings import LIMIT
 from lib.authentication import authorization_header
 import lib.exceptions
 
-from .crud import get_materias
+from .crud import get_domicilios
 
 app = typer.Typer()
 
@@ -17,10 +17,10 @@ app = typer.Typer()
 def consultar(
     limit: int = LIMIT,
 ):
-    """Consultar materias"""
-    rich.print("Consultar materias...")
+    """Consultar domicilios"""
+    rich.print("Consultar domicilios...")
     try:
-        respuesta = get_materias(
+        respuesta = get_domicilios(
             authorization_header=authorization_header(),
             limit=limit,
         )
@@ -28,11 +28,17 @@ def consultar(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("ID", "Nombre")
+    table = rich.table.Table("ID", "Estado", "Municipio", "Calle", "No. Ext.", "No. Int.", "Colonia", "C.P.")
     for registro in respuesta["items"]:
         table.add_row(
             str(registro["id"]),
-            registro["nombre"],
+            registro["estado"],
+            registro["municipio"],
+            registro["calle"],
+            registro["num_ext"],
+            registro["num_int"],
+            registro["colonia"],
+            str(registro["cp"]),
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] materias")
+    rich.print(f"Total: [green]{respuesta['total']}[/green] domicilios")

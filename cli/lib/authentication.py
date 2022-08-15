@@ -1,21 +1,14 @@
 """
 CLI Connections
 """
-import os
-
-from dotenv import load_dotenv
 import requests
 
+from config.settings import HOST, USERNAME, PASSWORD
 import lib.exceptions
 
-load_dotenv()
-HOST = os.getenv("HOST", "")
-USERNAME = os.getenv("USERNAME", "")
-PASSWORD = os.getenv("PASSWORD", "")
 
-
-def authorization() -> dict:
-    """Autentificarse"""
+def authorization_header() -> dict:
+    """Definir la cabecera para autentificarse en cada solicitud a la API"""
     if HOST == "":
         raise lib.exceptions.CLIConfigurationError("No se ha definido el host")
     if USERNAME == "":
@@ -33,12 +26,4 @@ def authorization() -> dict:
     data_json = response.json()
     if not "access_token" in data_json:
         raise lib.exceptions.CLIAuthenticationError("No se recibio el access_token en la respuesta")
-    authorization_header = {"Authorization": "Bearer " + data_json["access_token"]}
-    return authorization_header
-
-
-def base_url() -> str:
-    """URL base de la API"""
-    if HOST == "":
-        raise lib.exceptions.CLIConfigurationError("No se ha definido el host")
-    return f"{HOST}/v2"
+    return {"Authorization": "Bearer " + data_json["access_token"]}
