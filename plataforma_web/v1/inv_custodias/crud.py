@@ -8,12 +8,13 @@ from sqlalchemy.orm import Session
 from lib.exceptions import IsDeletedException, NotExistsException
 
 from .models import InvCustodia
-from ..usuarios.crud import get_usuario
+from ..usuarios.crud import get_usuario, get_usuario_from_email
 
 
 def get_inv_custodias(
     db: Session,
     usuario_id: int = None,
+    usuario_email: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
 ) -> Any:
@@ -21,6 +22,9 @@ def get_inv_custodias(
     consulta = db.query(InvCustodia)
     if usuario_id:
         usuario = get_usuario(db, usuario_id=usuario_id)
+        consulta = consulta.filter(InvCustodia.usuario == usuario)
+    elif usuario_email:
+        usuario = get_usuario_from_email(db, email=usuario_email)
         consulta = consulta.filter(InvCustodia.usuario == usuario)
     if fecha_desde:
         consulta = consulta.filter(InvCustodia.fecha >= fecha_desde)

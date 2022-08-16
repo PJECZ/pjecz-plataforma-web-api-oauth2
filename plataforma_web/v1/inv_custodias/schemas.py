@@ -10,6 +10,7 @@ class InvCustodiaOut(BaseModel):
 
     id: int
     usuario_id: int
+    usuario_email: str
     usuario_nombre: str
     fecha: date
     curp: str

@@ -30,6 +30,11 @@ class InvCustodia(Base, UniversalMixin):
     inv_equipos = relationship("InvEquipo", back_populates="inv_custodia")
 
     @property
+    def usuario_email(self):
+        """Email del usuario"""
+        return self.usuario.email
+
+    @property
     def usuario_nombre(self):
         """Nombre del usuario"""
         return self.usuario.nombre
