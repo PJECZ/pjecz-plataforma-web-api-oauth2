@@ -1,7 +1,7 @@
 """
 Sentencias v1, esquemas de pydantic
 """
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -29,6 +29,7 @@ class SentenciaOut(BaseModel):
     es_perspectiva_genero: bool
     archivo: Optional[str] = ""
     url: Optional[str] = ""
+    creado: datetime
 
     class Config:
         """SQLAlchemy config"""
