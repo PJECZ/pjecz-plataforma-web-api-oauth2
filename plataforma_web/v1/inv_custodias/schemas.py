@@ -1,7 +1,7 @@
 """
 Inventarios Custodias v1, esquemas de pydantic
 """
-from datetime import date
+from datetime import date, datetime
 from pydantic import BaseModel
 
 
@@ -15,6 +15,7 @@ class InvCustodiaOut(BaseModel):
     fecha: date
     curp: str
     nombre_completo: str
+    creado: datetime
 
     class Config:
         """SQLAlchemy config"""
