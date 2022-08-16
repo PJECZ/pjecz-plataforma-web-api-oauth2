@@ -63,6 +63,11 @@ class Usuario(Base, UniversalMixin):
         return self.autoridad.distrito.nombre_corto
 
     @property
+    def autoridad_clave(self):
+        """Autoridad clave"""
+        return self.autoridad.clave
+
+    @property
     def autoridad_descripcion(self):
         """Autoridad descripcion"""
         return self.autoridad.descripcion
