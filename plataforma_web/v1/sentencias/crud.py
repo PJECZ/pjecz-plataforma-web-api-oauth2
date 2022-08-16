@@ -9,7 +9,7 @@ from sqlalchemy.sql import func
 from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
 
 from .models import Sentencia
-from ..autoridades.crud import get_autoridad
+from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 from ..materias_tipos_juicios.crud import get_materia_tipo_juicio
 
 HOY = date.today()
@@ -19,6 +19,7 @@ ANTIGUA_FECHA = date(year=2000, month=1, day=1)
 def get_sentencias(
     db: Session,
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -31,6 +32,9 @@ def get_sentencias(
     consulta = db.query(Sentencia)
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
+        consulta = consulta.filter(Sentencia.autoridad == autoridad)
+    elif autoridad_clave:
+        autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(Sentencia.autoridad == autoridad)
     if materia_tipo_juicio_id:
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id)

@@ -1,7 +1,7 @@
 """
 Inventario Equipos v1, esquemas de pydantic
 """
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -28,6 +28,7 @@ class InvEquipoOut(BaseModel):
     numero_nodo: Optional[int] = None
     numero_switch: Optional[int] = None
     numero_puerto: Optional[int] = None
+    creado: datetime
 
     class Config:
         """SQLAlchemy config"""

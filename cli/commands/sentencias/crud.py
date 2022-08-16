@@ -1,5 +1,5 @@
 """
-Listas de Acuerdos CRUD (create, read, update, and delete)
+Sentencias CRUD (create, read, update, and delete)
 """
 from datetime import date
 from typing import Any
@@ -10,7 +10,7 @@ from config.settings import BASE_URL, LIMIT, TIMEOUT
 import lib.exceptions
 
 
-def get_listas_de_acuerdos(
+def get_sentencias(
     authorization_header: dict,
     limit: int = LIMIT,
     autoridad_id: int = None,
@@ -18,11 +18,12 @@ def get_listas_de_acuerdos(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    materia_tipo_juicio_id: int = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
 ) -> Any:
-    """Solicitar listas de acuerdos"""
+    """Solicitar sentencias"""
     parametros = {"limit": limit}
     if autoridad_id is not None:
         parametros["autoridad_id"] = autoridad_id
@@ -34,6 +35,8 @@ def get_listas_de_acuerdos(
         parametros["creado_desde"] = creado_desde
     if creado_hasta is not None:
         parametros["creado_hasta"] = creado_hasta
+    if materia_tipo_juicio_id is not None:
+        parametros["materia_tipo_juicio_id"] = materia_tipo_juicio_id
     if fecha is not None:
         parametros["fecha"] = fecha
     if fecha_desde is not None:
@@ -42,16 +45,16 @@ def get_listas_de_acuerdos(
         parametros["fecha_hasta"] = fecha_hasta
     try:
         response = requests.get(
-            f"{BASE_URL}/listas_de_acuerdos",
+            f"{BASE_URL}/sentencias",
             headers=authorization_header,
             params=parametros,
             timeout=TIMEOUT,
         )
     except requests.exceptions.RequestException as error:
-        raise lib.exceptions.CLIConnectionError("No hay respuesta al solicitar listas de acuerdos") from error
+        raise lib.exceptions.CLIConnectionError("No hay respuesta al solicitar sentencias") from error
     if response.status_code != 200:
-        raise lib.exceptions.CLIStatusCodeError(f"No es lo esperado el status code: {response.status_code} al solicitar listas de acuerdos\nmensaje: {response.text}")
+        raise lib.exceptions.CLIStatusCodeError(f"No es lo esperado el status code: {response.status_code} al solicitar sentencias\nmensaje: {response.text}")
     data_json = response.json()
     if "items" not in data_json or "total" not in data_json:
-        raise lib.exceptions.CLIResponseError("No se recibio items o total en la respuesta al solicitar listas de acuerdos")
+        raise lib.exceptions.CLIResponseError("No se recibio items o total en la respuesta al solicitar sentencias")
     return data_json
