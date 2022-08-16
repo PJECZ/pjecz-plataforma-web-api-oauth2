@@ -1,7 +1,7 @@
 """
 Listas de Acuerdos v1, esquemas de pydantic
 """
-from datetime import date
+from datetime import datetime, date
 from typing import Optional
 from pydantic import BaseModel
 
@@ -26,6 +26,7 @@ class ListaDeAcuerdoOut(ListaDeAcuerdoIn):
     autoridad_clave: str
     archivo: Optional[str] = ""
     url: Optional[str] = ""
+    creado: datetime
 
     class Config:
         """SQLAlchemy config"""
