@@ -25,6 +25,7 @@ def get_inv_modelos(
             params=parametros,
             timeout=TIMEOUT,
         )
+        response.raise_for_status()
     except requests.exceptions.ConnectionError as error:
         raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar modelos") from error
     except requests.exceptions.HTTPError as error:

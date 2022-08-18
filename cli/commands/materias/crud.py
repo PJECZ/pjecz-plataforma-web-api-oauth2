@@ -22,6 +22,7 @@ def get_materias(
             params=parametros,
             timeout=TIMEOUT,
         )
+        response.raise_for_status()
     except requests.exceptions.ConnectionError as error:
         raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar materias") from error
     except requests.exceptions.HTTPError as error:

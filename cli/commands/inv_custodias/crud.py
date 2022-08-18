@@ -35,6 +35,7 @@ def get_inv_custodias(
             params=parametros,
             timeout=TIMEOUT,
         )
+        response.raise_for_status()
     except requests.exceptions.ConnectionError as error:
         raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar custodias") from error
     except requests.exceptions.HTTPError as error:

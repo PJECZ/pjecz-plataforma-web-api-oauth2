@@ -3,7 +3,7 @@ CLI Connections
 """
 import requests
 
-from config.settings import HOST, USERNAME, PASSWORD
+from config.settings import HOST, USERNAME, PASSWORD, TIMEOUT
 import lib.exceptions
 
 
@@ -18,7 +18,13 @@ def authorization_header() -> dict:
     data = {"username": USERNAME, "password": PASSWORD}
     headers = {"content-type": "application/x-www-form-urlencoded"}
     try:
-        response = requests.post(f"{HOST}/token", data=data, headers=headers)
+        response = requests.post(
+            f"{HOST}/token",
+            data=data,
+            headers=headers,
+            timeout=TIMEOUT,
+        )
+        response.raise_for_status()
     except requests.exceptions.ConnectionError as error:
         raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al tratar de autentificar") from error
     except requests.exceptions.HTTPError as error:
