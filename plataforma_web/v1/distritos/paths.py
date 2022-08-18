@@ -6,7 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.autoridades.crud import get_autoridades
@@ -30,7 +30,7 @@ async def listado_distritos(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_distritos(db)
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -49,7 +49,7 @@ async def detalle_distrito(
             db,
             distrito_id=distrito_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return DistritoOut.from_orm(distrito)
 
@@ -69,9 +69,9 @@ async def listado_autoridades_del_distrito(
             db,
             distrito_id=distrito_id,
             materia_id=materia_id,
-            son_notarias=False,
+            es_notaria=False,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -89,8 +89,8 @@ async def listado_notarias_del_distrito(
         listado = get_autoridades(
             db,
             distrito_id=distrito_id,
-            son_notarias=True,
+            es_notaria=True,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)

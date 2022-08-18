@@ -7,7 +7,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.inv_custodias.crud import get_inv_custodia, get_inv_custodias
@@ -39,7 +39,7 @@ async def listado_inv_custodias(
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -58,6 +58,6 @@ async def detalle_inv_custodia(
             db,
             inv_custodia_id=inv_custodia_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return InvCustodiaOut.from_orm(inv_custodia)

@@ -6,7 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.abogados.crud import get_abogados, get_abogado
@@ -36,7 +36,7 @@ async def listado_abogados(
             anio_hasta=anio_hasta,
             nombre=nombre,
         )
-    except (IsDeletedException, NotExistsException, OutOfRangeException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -55,6 +55,6 @@ async def detalle_abogado(
             db,
             abogado_id=abogado_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return AbogadoOut.from_orm(abogado)

@@ -6,7 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.permisos.models import Permiso
@@ -28,7 +28,7 @@ async def listado_soportes_categorias(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_soportes_categorias(db)
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -47,6 +47,6 @@ async def detalle_soporte_categoria(
             db,
             soporte_categoria_id=soporte_categoria_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return SoporteCategoriaOut.from_orm(soporte_categoria)

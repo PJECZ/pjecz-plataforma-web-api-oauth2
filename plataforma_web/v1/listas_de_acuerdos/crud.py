@@ -3,6 +3,7 @@ Listas de Acuerdos v1, CRUD (create, read, update, and delete)
 """
 from datetime import date, datetime, timedelta
 from typing import Any
+
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
@@ -10,8 +11,8 @@ from lib.exceptions import AlredyExistsException, IsDeletedException, NotExistsE
 from lib.safe_string import safe_string
 
 from .models import ListaDeAcuerdo
-from .schemas import ListaDeAcuerdoIn
-from ..autoridades.crud import get_autoridad
+from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
+from ..autoridades.crud import get_autoridad, get_autoridades
 
 LIMITE_DIAS = 7
 HOY = date.today()
@@ -62,7 +63,10 @@ def get_listas_de_acuerdos(
     return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdo.id.desc())
 
 
-def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int) -> ListaDeAcuerdo:
+def get_lista_de_acuerdo(
+    db: Session,
+    lista_de_acuerdo_id: int,
+) -> ListaDeAcuerdo:
     """Consultar una lista de acuerdo por su id"""
     lista_de_acuerdo = db.query(ListaDeAcuerdo).get(lista_de_acuerdo_id)
     if lista_de_acuerdo is None:
@@ -72,7 +76,10 @@ def get_lista_de_acuerdo(db: Session, lista_de_acuerdo_id: int) -> ListaDeAcuerd
     return lista_de_acuerdo
 
 
-def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> ListaDeAcuerdo:
+def insert_lista_de_acuerdo(
+    db: Session,
+    lista_de_acuerdo: ListaDeAcuerdoIn,
+) -> ListaDeAcuerdo:
     """Insertar una lista de acuerdos"""
     # Validar autoridad
     autoridad = get_autoridad(db, lista_de_acuerdo.autoridad_id)
@@ -106,4 +113,26 @@ def insert_lista_de_acuerdo(db: Session, lista_de_acuerdo: ListaDeAcuerdoIn) -> 
     )
     db.add(resultado)
     db.commit()
+    return resultado
+
+
+def get_listas_de_acuerdos_por_distrito_por_creado(
+    db: Session,
+    creado: date,
+    distrito_id: int,
+) -> Any:
+    """Consultar las listas de acuerdos por distrito"""
+
+    # Consultar las autoridades del distrito
+    autoridades = get_autoridades(db=db, distrito_id=distrito_id, es_jurisdiccional=True, es_notaria=False).all()
+
+    # Consultar las listas de acuerdos de las autoridades
+    resultado = []
+    for autoridad in autoridades:
+        listas_de_acuerdos = get_listas_de_acuerdos(db=db, autoridad_id=autoridad.id, creado=creado).all()
+        if listas_de_acuerdos:
+            for lista_de_acuerdo in listas_de_acuerdos:
+                resultado.append(ListaDeAcuerdoOut(*lista_de_acuerdo))
+
+    # Entregar
     return resultado

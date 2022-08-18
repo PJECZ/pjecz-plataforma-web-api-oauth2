@@ -7,7 +7,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.edictos.crud import get_edictos, get_edicto
@@ -39,7 +39,7 @@ async def listado_edictos(
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -55,6 +55,6 @@ async def detalle_edicto(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         edicto = get_edicto(db, edicto_id=edicto_id)
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return EdictoOut.from_orm(edicto)

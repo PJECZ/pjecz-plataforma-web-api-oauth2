@@ -6,7 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_juicios, get_materia_tipo_juicio
@@ -34,7 +34,7 @@ async def listado_materias_tipos_juicios(
             db,
             materia_id=materia_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -56,7 +56,7 @@ async def detalle_materia_tipo_juicio(
         )
         # if materia_tipo_juicio.materia_id != materia_id:
         #    raise ValueError("No corresponde la materia al tipo de juicio")
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return MateriaTipoJuicioOut.from_orm(materia_tipo_juicio)
 
@@ -79,6 +79,6 @@ async def listado_materias_tipos_juicios_sentencias(
         # if materia_tipo_juicio.materia_id != materia_id:
         #    raise ValueError("No corresponde la materia al tipo de juicio")
         listado = get_sentencias(db, materia_tipo_juicio_id=materia_tipo_juicio_id)
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)

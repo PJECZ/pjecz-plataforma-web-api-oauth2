@@ -6,7 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.autoridades.crud import get_autoridad, get_autoridades
@@ -21,7 +21,10 @@ autoridades = APIRouter(prefix="/v1/autoridades", tags=["catalogos"])
 @autoridades.get("", response_model=LimitOffsetPage[AutoridadOut])
 async def listado_autoridades(
     distrito_id: int = None,
+    es_jurisdiccional: bool = None,
+    es_notaria: bool = None,
     materia_id: int = None,
+    organo_jurisdiccional: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -32,9 +35,12 @@ async def listado_autoridades(
         listado = get_autoridades(
             db,
             distrito_id=distrito_id,
+            es_jurisdiccional=es_jurisdiccional,
+            es_notaria=es_notaria,
             materia_id=materia_id,
+            organo_jurisdiccional=organo_jurisdiccional,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -53,6 +59,6 @@ async def detalle_autoridad(
             db,
             autoridad_id=autoridad_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return AutoridadOut.from_orm(autoridad)

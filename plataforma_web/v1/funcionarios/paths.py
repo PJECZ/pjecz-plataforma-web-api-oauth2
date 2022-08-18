@@ -6,7 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
 from plataforma_web.v1.funcionarios.crud import get_funcionarios, get_funcionario
@@ -34,7 +34,7 @@ async def listado_funcionarios(
             en_funciones=en_funciones,
             en_soportes=en_soportes,
         )
-    except (IsDeletedException, NotExistsException, NotValidException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -53,6 +53,6 @@ async def detalle_funcionario(
             db,
             funcionario_id=funcionario_id,
         )
-    except (IsDeletedException, NotExistsException, NotValidException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return FuncionarioOut.from_orm(funcionario)

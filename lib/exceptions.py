@@ -3,21 +3,25 @@ Exceptions
 """
 
 
-class AlredyExistsException(Exception):
+class PlataformaWebAnyError(Exception):
+    """Base exception class"""
+
+
+class AlredyExistsException(PlataformaWebAnyError):
     """Excepción ya existe"""
 
 
-class IsDeletedException(Exception):
+class IsDeletedException(PlataformaWebAnyError):
     """Excepción esta eliminado"""
 
 
-class NotExistsException(Exception):
+class NotExistsException(PlataformaWebAnyError):
     """Excepción no existe"""
 
 
-class NotValidException(Exception):
+class NotValidException(PlataformaWebAnyError):
     """Excepción porque un parámetro es inválido"""
 
 
-class OutOfRangeException(Exception):
+class OutOfRangeException(PlataformaWebAnyError):
     """Excepción porque un parámetro esta fuera de rango"""
