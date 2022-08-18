@@ -22,8 +22,12 @@ def get_domicilios(
             params=parametros,
             timeout=TIMEOUT,
         )
+    except requests.exceptions.ConnectionError as error:
+        raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar domicilios") from error
+    except requests.exceptions.HTTPError as error:
+        raise lib.exceptions.CLIStatusCodeError("Error Status Code al solicitar domicilios: " + str(error)) from error
     except requests.exceptions.RequestException as error:
-        raise lib.exceptions.CLIConnectionError("No hay respuesta al solicitar domicilios") from error
+        raise lib.exceptions.CLIConnectionError("Error inesperado al solicitar domicilios") from error
     if response.status_code != 200:
         raise lib.exceptions.CLIStatusCodeError(f"No es lo esperado el status code: {response.status_code} al solicitar domicilios\nmensaje: {response.text}")
     data_json = response.json()

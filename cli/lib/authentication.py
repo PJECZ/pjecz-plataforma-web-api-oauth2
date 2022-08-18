@@ -19,10 +19,12 @@ def authorization_header() -> dict:
     headers = {"content-type": "application/x-www-form-urlencoded"}
     try:
         response = requests.post(f"{HOST}/token", data=data, headers=headers)
+    except requests.exceptions.ConnectionError as error:
+        raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al tratar de autentificar") from error
+    except requests.exceptions.HTTPError as error:
+        raise lib.exceptions.CLIStatusCodeError("Error Status Code al tratar de autentificar: " + str(error)) from error
     except requests.exceptions.RequestException as error:
-        raise lib.exceptions.CLIConnectionError("No hay respuesta al tratar de autentificar") from error
-    if response.status_code != 200:
-        raise lib.exceptions.CLIStatusCodeError(f"No es lo esperado el status code: {response.status_code}")
+        raise lib.exceptions.CLIConnectionError("Error inesperado al tratar de autentificar") from error
     data_json = response.json()
     if not "access_token" in data_json:
         raise lib.exceptions.CLIAuthenticationError("No se recibio el access_token en la respuesta")

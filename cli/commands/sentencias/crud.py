@@ -50,10 +50,12 @@ def get_sentencias(
             params=parametros,
             timeout=TIMEOUT,
         )
+    except requests.exceptions.ConnectionError as error:
+        raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar sentencias") from error
+    except requests.exceptions.HTTPError as error:
+        raise lib.exceptions.CLIStatusCodeError("Error Status Code al solicitar sentencias: " + str(error)) from error
     except requests.exceptions.RequestException as error:
-        raise lib.exceptions.CLIConnectionError("No hay respuesta al solicitar sentencias") from error
-    if response.status_code != 200:
-        raise lib.exceptions.CLIStatusCodeError(f"No es lo esperado el status code: {response.status_code} al solicitar sentencias\nmensaje: {response.text}")
+        raise lib.exceptions.CLIConnectionError("Error inesperado al solicitar sentencias") from error
     data_json = response.json()
     if "items" not in data_json or "total" not in data_json:
         raise lib.exceptions.CLIResponseError("No se recibio items o total en la respuesta al solicitar sentencias")
