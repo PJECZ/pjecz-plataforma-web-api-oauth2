@@ -41,9 +41,9 @@ def consultar(
         table.add_row(
             str(registro["id"]),
             registro["email"],
-            registro["nombres"][:24] if len(registro["nombres"]) > 24 else registro["nombres"],
-            registro["apellido_paterno"][:24] if len(registro["apellido_paterno"]) > 24 else registro["apellido_paterno"],
-            registro["apellido_materno"][:24] if len(registro["apellido_materno"]) > 24 else registro["apellido_materno"],
+            registro["nombres"],
+            registro["apellido_paterno"],
+            registro["apellido_materno"],
             registro["distrito_nombre_corto"],
             registro["autoridad_clave"],
             registro["oficina_clave"],
