@@ -58,9 +58,9 @@ def consultar(
             registro["autoridad_clave"],
             registro["fecha"],
             registro["expediente"],
-            registro["descripcion"][:24] if len(registro["descripcion"]) > 24 else registro["descripcion"],
+            registro["descripcion"],
             registro["materia_nombre"],
-            registro["materia_tipo_juicio_descripcion"][:24] if len(registro["materia_tipo_juicio_descripcion"]) > 24 else registro["materia_tipo_juicio_descripcion"],
+            registro["materia_tipo_juicio_descripcion"],
             "SI" if registro["es_perspectiva_genero"] else "",
         )
     console.print(table)

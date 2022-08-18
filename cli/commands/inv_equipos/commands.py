@@ -52,7 +52,7 @@ def consultar(
         table.add_row(
             str(registro["id"]),
             creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
-            registro["descripcion"][:32] if len(registro["descripcion"]) > 32 else registro["descripcion"],
+            registro["descripcion"],
             registro["tipo"],
             str(registro["inv_custodia_id"]),
             registro["inv_marca_nombre"],

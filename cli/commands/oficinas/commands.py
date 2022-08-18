@@ -44,7 +44,7 @@ def consultar(
             str(registro["id"]),
             registro["clave"],
             registro["descripcion_corta"],
-            registro["domicilio_completo"][:24] + "..." if len(registro["domicilio_completo"]) > 24 else registro["domicilio_completo"],
+            registro["domicilio_completo"],
             apertura.strftime("%H:%M"),
             cierre.strftime("%H:%M"),
             str(registro["limite_personas"]),
