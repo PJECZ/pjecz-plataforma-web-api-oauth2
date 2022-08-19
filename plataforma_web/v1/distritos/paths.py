@@ -6,16 +6,16 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.autoridades.crud import get_autoridades
-from plataforma_web.v1.autoridades.schemas import AutoridadOut
-from plataforma_web.v1.distritos.crud import get_distritos, get_distrito
-from plataforma_web.v1.distritos.schemas import DistritoOut
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB
+from .crud import get_distritos, get_distrito
+from .schemas import DistritoOut
+from ..autoridades.crud import get_autoridades
+from ..autoridades.schemas import AutoridadOut
+from ..permisos.models import Permiso
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
 
 distritos = APIRouter(prefix="/v1/distritos", tags=["catalogos"])
 
@@ -30,7 +30,7 @@ async def listado_distritos(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_distritos(db)
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -49,7 +49,7 @@ async def detalle_distrito(
             db,
             distrito_id=distrito_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return DistritoOut.from_orm(distrito)
 
@@ -69,9 +69,9 @@ async def listado_autoridades_del_distrito(
             db,
             distrito_id=distrito_id,
             materia_id=materia_id,
-            son_notarias=False,
+            es_notaria=False,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -89,8 +89,8 @@ async def listado_notarias_del_distrito(
         listado = get_autoridades(
             db,
             distrito_id=distrito_id,
-            son_notarias=True,
+            es_notaria=True,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)

@@ -6,13 +6,13 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
-from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInDB
+from .authentications import get_current_active_user
+from .crud import get_usuarios, get_usuario
+from .schemas import UsuarioOut, UsuarioInDB
+from ..permisos.models import Permiso
 
 usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
@@ -37,7 +37,7 @@ async def listado_usuarios(
             oficina_id=oficina_id,
             oficina_clave=oficina_clave,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -56,6 +56,6 @@ async def detalle_usuario(
             db,
             usuario_id=usuario_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return UsuarioOut.from_orm(usuario)

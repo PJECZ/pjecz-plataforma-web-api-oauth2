@@ -6,16 +6,16 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_juicios, get_materia_tipo_juicio
-from plataforma_web.v1.materias_tipos_juicios.schemas import MateriaTipoJuicioOut
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.sentencias.crud import get_sentencias
-from plataforma_web.v1.sentencias.schemas import SentenciaOut
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB
+from .crud import get_materias_tipos_juicios, get_materia_tipo_juicio
+from .schemas import MateriaTipoJuicioOut
+from ..permisos.models import Permiso
+from ..sentencias.crud import get_sentencias
+from ..sentencias.schemas import SentenciaOut
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
 
 materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["catalogos"])
 
@@ -34,7 +34,7 @@ async def listado_materias_tipos_juicios(
             db,
             materia_id=materia_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -56,7 +56,7 @@ async def detalle_materia_tipo_juicio(
         )
         # if materia_tipo_juicio.materia_id != materia_id:
         #    raise ValueError("No corresponde la materia al tipo de juicio")
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return MateriaTipoJuicioOut.from_orm(materia_tipo_juicio)
 
@@ -79,6 +79,6 @@ async def listado_materias_tipos_juicios_sentencias(
         # if materia_tipo_juicio.materia_id != materia_id:
         #    raise ValueError("No corresponde la materia al tipo de juicio")
         listado = get_sentencias(db, materia_tipo_juicio_id=materia_tipo_juicio_id)
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)

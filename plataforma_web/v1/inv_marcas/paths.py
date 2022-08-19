@@ -6,14 +6,14 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.inv_marcas.crud import get_inv_marcas, get_inv_marca
-from plataforma_web.v1.inv_marcas.schemas import InvMarcaOut
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB
+from .crud import get_inv_marcas, get_inv_marca
+from .schemas import InvMarcaOut
+from ..permisos.models import Permiso
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
 
 inv_marcas = APIRouter(prefix="/v1/inv_marcas", tags=["inventarios"])
 
@@ -28,7 +28,7 @@ async def listado_inv_marcas(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         listado = get_inv_marcas(db)
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -47,6 +47,6 @@ async def detalle_inv_marca(
             db,
             inv_marca_id=inv_marca_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return InvMarcaOut.from_orm(inv_marca)

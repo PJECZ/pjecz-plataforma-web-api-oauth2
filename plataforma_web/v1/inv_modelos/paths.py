@@ -6,14 +6,14 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.inv_modelos.crud import get_inv_modelos, get_inv_modelo
-from plataforma_web.v1.inv_modelos.schemas import InvModeloOut
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB
+from .crud import get_inv_modelos, get_inv_modelo
+from .schemas import InvModeloOut
+from ..permisos.models import Permiso
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
 
 inv_modelos = APIRouter(prefix="/v1/inv_modelos", tags=["inventarios"])
 
@@ -32,7 +32,7 @@ async def listado_inv_modelos(
             db,
             inv_marca_id=inv_marca_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return paginate(listado)
 
@@ -51,6 +51,6 @@ async def detalle_inv_modelo(
             db,
             inv_modelo_id=inv_modelo_id,
         )
-    except (IsDeletedException, NotExistsException) as error:
+    except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return InvModeloOut.from_orm(inv_modelo)

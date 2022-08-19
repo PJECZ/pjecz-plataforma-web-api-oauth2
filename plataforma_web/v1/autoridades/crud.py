@@ -15,9 +15,10 @@ from ..materias.crud import get_materia
 def get_autoridades(
     db: Session,
     distrito_id: int = None,
+    es_jurisdiccional: bool = None,
+    es_notaria: bool = None,
     materia_id: int = None,
     organo_jurisdiccional: str = None,
-    son_notarias: bool = False,
 ) -> Any:
     """Consultar las autoridades jurisdiccionales activas"""
     consulta = db.query(Autoridad).filter_by(es_jurisdiccional=True)
@@ -27,13 +28,14 @@ def get_autoridades(
     if materia_id:
         materia = get_materia(db, materia_id)
         consulta = consulta.filter(Autoridad.materia == materia)
-    organo_jurisdiccional = safe_string(organo_jurisdiccional)
-    if organo_jurisdiccional in Autoridad.ORGANOS_JURISDICCIONALES:
-        consulta = consulta.filter_by(organo_jurisdiccional=organo_jurisdiccional)
-    if son_notarias:
-        consulta = consulta.filter_by(es_notaria=True)
-    else:
-        consulta = consulta.filter_by(es_notaria=False)
+    if organo_jurisdiccional is not None:
+        organo_jurisdiccional = safe_string(organo_jurisdiccional)
+        if organo_jurisdiccional in Autoridad.ORGANOS_JURISDICCIONALES:
+            consulta = consulta.filter_by(organo_jurisdiccional=organo_jurisdiccional)
+    if es_jurisdiccional is not None:
+        consulta = consulta.filter_by(es_jurisdiccional=es_jurisdiccional)
+    if es_notaria is not None:
+        consulta = consulta.filter_by(es_notaria=es_notaria)
     return consulta.filter_by(estatus="A").order_by(Autoridad.clave.asc())
 
 
