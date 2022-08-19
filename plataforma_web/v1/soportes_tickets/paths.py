@@ -12,11 +12,11 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.soportes_tickets.crud import get_soportes_tickets, get_soporte_ticket, get_cantidades_distrito_categoria
-from plataforma_web.v1.soportes_tickets.schemas import SoporteTicketOut, SoporteTicketTotalOut
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB
+from .crud import get_soportes_tickets, get_soporte_ticket, get_cantidades_distrito_categoria
+from .schemas import SoporteTicketOut, SoporteTicketTotalOut
+from ..permisos.models import Permiso
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
 
 soportes_tickets = APIRouter(prefix="/v1/soportes_tickets", tags=["soportes"])
 

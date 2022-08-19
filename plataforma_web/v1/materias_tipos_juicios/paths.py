@@ -9,13 +9,13 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.materias_tipos_juicios.crud import get_materias_tipos_juicios, get_materia_tipo_juicio
-from plataforma_web.v1.materias_tipos_juicios.schemas import MateriaTipoJuicioOut
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.sentencias.crud import get_sentencias
-from plataforma_web.v1.sentencias.schemas import SentenciaOut
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB
+from .crud import get_materias_tipos_juicios, get_materia_tipo_juicio
+from .schemas import MateriaTipoJuicioOut
+from ..permisos.models import Permiso
+from ..sentencias.crud import get_sentencias
+from ..sentencias.schemas import SentenciaOut
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
 
 materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["catalogos"])
 

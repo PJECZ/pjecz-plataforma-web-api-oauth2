@@ -2,6 +2,7 @@
 Inventarios Custodias v1, rutas (paths)
 """
 from datetime import date
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
@@ -10,11 +11,11 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.inv_custodias.crud import get_inv_custodia, get_inv_custodias
-from plataforma_web.v1.inv_custodias.schemas import InvCustodiaOut
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.schemas import UsuarioInDB
+from .crud import get_inv_custodia, get_inv_custodias
+from .schemas import InvCustodiaOut
+from ..permisos.models import Permiso
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
 
 inv_custodias = APIRouter(prefix="/v1/inv_custodias", tags=["inventarios"])
 

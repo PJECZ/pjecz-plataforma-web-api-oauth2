@@ -9,10 +9,10 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from plataforma_web.v1.permisos.models import Permiso
-from plataforma_web.v1.usuarios.authentications import get_current_active_user
-from plataforma_web.v1.usuarios.crud import get_usuarios, get_usuario
-from plataforma_web.v1.usuarios.schemas import UsuarioOut, UsuarioInDB
+from .authentications import get_current_active_user
+from .crud import get_usuarios, get_usuario
+from .schemas import UsuarioOut, UsuarioInDB
+from ..permisos.models import Permiso
 
 usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 
