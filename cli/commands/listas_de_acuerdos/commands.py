@@ -10,7 +10,7 @@ from config.settings import LIMIT, LOCAL_HUSO_HORARIO
 from lib.authentication import authorization_header
 import lib.exceptions
 
-from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_por_distrito_por_creado
+from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_sintetizar_por_creado
 
 app = typer.Typer()
 
@@ -62,15 +62,15 @@ def consultar(
 
 
 @app.command()
-def consultar_por_distrito_por_creado(
+def sintetizar_por_creado(
     creado: str,
-    distrito_id: int,
+    distrito_id: int = None,
     limit: int = LIMIT,
 ):
-    """Consultar listas de acuerdos por distrito y creado"""
-    rich.print("Consultar listas de acuerdos por distrito y creado...")
+    """Consultar listas de acuerdos sintetizadas por creado"""
+    rich.print("Consultar listas de acuerdos sintetizadas por creado...")
     try:
-        respuesta = get_listas_de_acuerdos_por_distrito_por_creado(
+        listado = get_listas_de_acuerdos_sintetizar_por_creado(
             authorization_header=authorization_header(),
             creado=creado,
             distrito_id=distrito_id,
@@ -80,16 +80,16 @@ def consultar_por_distrito_por_creado(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("ID", "Autoridad", "Fecha", "Creado", "Archivo")
-    for registro in respuesta:
+    table = rich.table.Table("Distrito", "Autoridad", "ID", "Fecha", "Creado", "Archivo")
+    for registro in listado:
         creado = datetime.fromisoformat(registro["creado"])
         fecha = datetime.strptime(registro["fecha"], "%Y-%m-%d")
         table.add_row(
-            str(registro["id"]),
+            registro["distrito_nombre_corto"],
             registro["autoridad_clave"],
+            str(registro["id"]),
             fecha.strftime("%Y-%m-%d"),
             creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
             registro["archivo"],
         )
     console.print(table)
-    rich.print("Total: [green]PENDIENTE[/green] listas de acuerdos")

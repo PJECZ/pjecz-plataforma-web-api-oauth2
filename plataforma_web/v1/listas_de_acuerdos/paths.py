@@ -12,7 +12,7 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_por_distrito_por_creado, get_lista_de_acuerdo, insert_lista_de_acuerdo
+from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_sintetizar_por_creado, get_lista_de_acuerdo, insert_lista_de_acuerdo
 from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
@@ -52,10 +52,10 @@ async def listado_listas_de_acuerdos(
     return paginate(listado)
 
 
-@listas_de_acuerdos.get("/por_distrito_por_creado", response_model=List)
-async def listado_listas_de_acuerdos_por_distrito_por_creado(
+@listas_de_acuerdos.get("/sintetizar_por_creado", response_model=List)
+async def sintetizar_por_creado(
     creado: date,
-    distrito_id: int,
+    distrito_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -63,14 +63,14 @@ async def listado_listas_de_acuerdos_por_distrito_por_creado(
     if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_listas_de_acuerdos_por_distrito_por_creado(
+        resultados = get_listas_de_acuerdos_sintetizar_por_creado(
             db=db,
             creado=creado,
             distrito_id=distrito_id,
         )
     except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return listado
+    return resultados
 
 
 @listas_de_acuerdos.post("", response_model=ListaDeAcuerdoOut)

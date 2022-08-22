@@ -12,7 +12,6 @@ import lib.exceptions
 
 def get_listas_de_acuerdos(
     authorization_header: dict,
-    limit: int = LIMIT,
     autoridad_id: int = None,
     autoridad_clave: str = None,
     creado: date = None,
@@ -21,6 +20,7 @@ def get_listas_de_acuerdos(
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    limit: int = LIMIT,
 ) -> Any:
     """Solicitar listas de acuerdos"""
     parametros = {"limit": limit}
@@ -60,21 +60,22 @@ def get_listas_de_acuerdos(
     return data_json
 
 
-def get_listas_de_acuerdos_por_distrito_por_creado(
+def get_listas_de_acuerdos_sintetizar_por_creado(
     authorization_header: dict,
     creado: date,
-    distrito_id: int,
+    distrito_id: int = None,
     limit: int = LIMIT,
 ) -> Any:
-    """Solicitar listas de acuerdos por distrito y por creado"""
-    parametros = {"limit": limit}
-    if creado is not None:
-        parametros["creado"] = creado
+    """Solicitar listas de acuerdos sintetizadas por creado"""
+    parametros = {
+        "limit": limit,
+        "creado": creado,
+    }
     if distrito_id is not None:
         parametros["distrito_id"] = distrito_id
     try:
         response = requests.get(
-            f"{BASE_URL}/listas_de_acuerdos/por_distrito_por_creado",
+            f"{BASE_URL}/listas_de_acuerdos/sintetizar_por_creado",
             headers=authorization_header,
             params=parametros,
             timeout=TIMEOUT,

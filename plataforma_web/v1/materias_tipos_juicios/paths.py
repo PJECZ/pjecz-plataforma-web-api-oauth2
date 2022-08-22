@@ -12,21 +12,19 @@ from lib.fastapi_pagination import LimitOffsetPage
 from .crud import get_materias_tipos_juicios, get_materia_tipo_juicio
 from .schemas import MateriaTipoJuicioOut
 from ..permisos.models import Permiso
-from ..sentencias.crud import get_sentencias
-from ..sentencias.schemas import SentenciaOut
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
 
-materias_tipos_juicios = APIRouter(prefix="/v1/materias", tags=["catalogos"])
+materias_tipos_juicios = APIRouter(prefix="/v1/materias_tipos_juicios", tags=["catalogos"])
 
 
-@materias_tipos_juicios.get("/{materia_id}/tipos_juicios", response_model=LimitOffsetPage[MateriaTipoJuicioOut])
+@materias_tipos_juicios.get("", response_model=LimitOffsetPage[MateriaTipoJuicioOut])
 async def listado_materias_tipos_juicios(
-    materia_id: int,
+    materia_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """Listado de tipos de juicios de una materia"""
+    """Listado de tipos de juicios de las materias"""
     if current_user.permissions.get("MATERIAS TIPOS JUICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
@@ -39,9 +37,8 @@ async def listado_materias_tipos_juicios(
     return paginate(listado)
 
 
-@materias_tipos_juicios.get("/{materia_id}/tipos_juicios/{materia_tipo_juicio_id}", response_model=MateriaTipoJuicioOut)
+@materias_tipos_juicios.get("/{materia_tipo_juicio_id}", response_model=MateriaTipoJuicioOut)
 async def detalle_materia_tipo_juicio(
-    materia_id: int,
     materia_tipo_juicio_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -54,31 +51,6 @@ async def detalle_materia_tipo_juicio(
             db,
             materia_tipo_juicio_id=materia_tipo_juicio_id,
         )
-        # if materia_tipo_juicio.materia_id != materia_id:
-        #    raise ValueError("No corresponde la materia al tipo de juicio")
     except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
     return MateriaTipoJuicioOut.from_orm(materia_tipo_juicio)
-
-
-@materias_tipos_juicios.get("/{materia_id}/tipos_juicios/{materia_tipo_juicio_id}/sentencias", response_model=LimitOffsetPage[SentenciaOut])
-async def listado_materias_tipos_juicios_sentencias(
-    materia_id: int,
-    materia_tipo_juicio_id: int,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Listado de sentencias de un tipo de juicio"""
-    if current_user.permissions.get("SENTENCIAS", 0) < Permiso.VER:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        materia_tipo_juicio = get_materia_tipo_juicio(
-            db,
-            materia_tipo_juicio_id=materia_tipo_juicio_id,
-        )
-        # if materia_tipo_juicio.materia_id != materia_id:
-        #    raise ValueError("No corresponde la materia al tipo de juicio")
-        listado = get_sentencias(db, materia_tipo_juicio_id=materia_tipo_juicio_id)
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)
