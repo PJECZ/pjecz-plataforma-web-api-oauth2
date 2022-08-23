@@ -81,7 +81,7 @@ def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:
     return inv_equipo
 
 
-def get_cantidades_oficina_tipo(
+def get_inv_equipos_cantidades_por_oficina_por_tipo(
     db: Session,
     creado: date = None,
     creado_desde: date = None,
@@ -115,4 +115,4 @@ def get_cantidades_oficina_tipo(
     consulta = consulta.filter(InvCustodia.estatus == "A")
     consulta = consulta.filter(InvEquipo.estatus == "A")
     consulta = consulta.order_by(InvEquipo.tipo).group_by(Oficina.clave, InvEquipo.tipo)
-    return consulta
+    return consulta.all()

@@ -10,7 +10,7 @@ from config.settings import LIMIT, LOCAL_HUSO_HORARIO
 from lib.authentication import authorization_header
 import lib.exceptions
 
-from .crud import get_inv_equipos
+from .crud import get_inv_equipos, get_inv_equipos_cantidades_por_oficina_por_tipo
 
 app = typer.Typer()
 
@@ -62,3 +62,33 @@ def consultar(
         )
     console.print(table)
     rich.print(f"Total: [green]{respuesta['total']}[/green] equipos")
+
+
+@app.command()
+def cantidades_por_oficina_por_tipo(
+    creado: str = None,
+    creado_desde: str = None,
+    creado_hasta: str = None,
+):
+    """Consultar cantidades de equipos por oficina y por tipo"""
+    rich.print("Consultar cantidades de equipos por oficina y por tipo...")
+    try:
+        respuesta = get_inv_equipos_cantidades_por_oficina_por_tipo(
+            authorization_header=authorization_header(),
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
+        )
+    except lib.exceptions.CLIAnyError as error:
+        typer.secho(str(error), fg=typer.colors.RED)
+        raise typer.Exit()
+    console = rich.console.Console()
+    table = rich.table.Table("Oficina", "Tipo", "Cantidad")
+    for registro in respuesta["items"]:
+        table.add_row(
+            registro["oficina"],
+            registro["tipo"],
+            str(registro["cantidad"]),
+        )
+    console.print(table)
+    rich.print("Total: [green]N[/green] tickets de soporte")

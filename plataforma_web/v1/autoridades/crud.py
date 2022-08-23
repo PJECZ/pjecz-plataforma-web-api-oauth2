@@ -25,6 +25,10 @@ def get_autoridades(
     if distrito_id:
         distrito = get_distrito(db, distrito_id)
         consulta = consulta.filter(Autoridad.distrito == distrito)
+    if es_jurisdiccional is not None:
+        consulta = consulta.filter_by(es_jurisdiccional=es_jurisdiccional)
+    if es_notaria is not None:
+        consulta = consulta.filter_by(es_notaria=es_notaria)
     if materia_id:
         materia = get_materia(db, materia_id)
         consulta = consulta.filter(Autoridad.materia == materia)
@@ -32,10 +36,6 @@ def get_autoridades(
         organo_jurisdiccional = safe_string(organo_jurisdiccional)
         if organo_jurisdiccional in Autoridad.ORGANOS_JURISDICCIONALES:
             consulta = consulta.filter_by(organo_jurisdiccional=organo_jurisdiccional)
-    if es_jurisdiccional is not None:
-        consulta = consulta.filter_by(es_jurisdiccional=es_jurisdiccional)
-    if es_notaria is not None:
-        consulta = consulta.filter_by(es_notaria=es_notaria)
     return consulta.filter_by(estatus="A").order_by(Autoridad.clave.asc())
 
 

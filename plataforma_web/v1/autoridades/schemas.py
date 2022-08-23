@@ -16,6 +16,8 @@ class AutoridadOut(BaseModel):
     clave: str
     descripcion: str
     descripcion_corta: str
+    es_jurisdiccional: bool
+    es_notaria: bool
     organo_jurisdiccional: str
 
     class Config:

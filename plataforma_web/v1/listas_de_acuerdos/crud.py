@@ -2,7 +2,7 @@
 Listas de Acuerdos v1, CRUD (create, read, update, and delete)
 """
 from datetime import date, datetime, timedelta
-from typing import Any
+from typing import Any, List
 
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
@@ -116,23 +116,48 @@ def insert_lista_de_acuerdo(
     return resultado
 
 
-def get_listas_de_acuerdos_por_distrito_por_creado(
+def get_listas_de_acuerdos_sintetizar_por_creado(
     db: Session,
     creado: date,
-    distrito_id: int,
-) -> Any:
+    distrito_id: int = None,
+) -> List:
     """Consultar las listas de acuerdos por distrito"""
 
     # Consultar las autoridades del distrito
-    autoridades = get_autoridades(db=db, distrito_id=distrito_id, es_jurisdiccional=True, es_notaria=False).all()
+    autoridades = get_autoridades(
+        db=db,
+        distrito_id=distrito_id,
+        es_jurisdiccional=True,
+        es_notaria=False,
+    ).all()
 
     # Consultar las listas de acuerdos de las autoridades
-    resultado = []
+    listas_de_acuerdos = []
     for autoridad in autoridades:
-        listas_de_acuerdos = get_listas_de_acuerdos(db=db, autoridad_id=autoridad.id, creado=creado).all()
-        if listas_de_acuerdos:
-            for lista_de_acuerdo in listas_de_acuerdos:
-                resultado.append(ListaDeAcuerdoOut(*lista_de_acuerdo))
+        existentes = get_listas_de_acuerdos(db=db, autoridad_id=autoridad.id, creado=creado).all()
+        if existentes:
+            # Registros existentes
+            for lista_de_acuerdo in existentes:
+                listas_de_acuerdos.append(ListaDeAcuerdoOut.from_orm(lista_de_acuerdo))
+        else:
+            # Registro INEXISTENTE
+            listas_de_acuerdos.append(
+                ListaDeAcuerdoOut(
+                    id=0,
+                    autoridad_id=autoridad.id,
+                    autoridad_descripcion=autoridad.descripcion,
+                    autoridad_descripcion_corta=autoridad.descripcion_corta,
+                    autoridad_clave=autoridad.clave,
+                    distrito_id=autoridad.distrito_id,
+                    distrito_nombre=autoridad.distrito.nombre,
+                    distrito_nombre_corto=autoridad.distrito.nombre_corto,
+                    descripcion="ND",
+                    fecha=creado,
+                    archivo="",
+                    url="",
+                    creado=datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0),
+                )
+            )
 
-    # Entregar
-    return resultado
+    # Entregar lista
+    return listas_de_acuerdos

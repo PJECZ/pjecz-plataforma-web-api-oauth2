@@ -10,14 +10,13 @@ from config.settings import LIMIT, LOCAL_HUSO_HORARIO
 from lib.authentication import authorization_header
 import lib.exceptions
 
-from .crud import get_listas_de_acuerdos
+from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_sintetizar_por_creado
 
 app = typer.Typer()
 
 
 @app.command()
 def consultar(
-    limit: int = LIMIT,
     autoridad_id: int = None,
     autoridad_clave: str = None,
     creado: str = None,
@@ -26,6 +25,7 @@ def consultar(
     fecha: str = None,
     fecha_desde: str = None,
     fecha_hasta: str = None,
+    limit: int = LIMIT,
 ):
     """Consultar listas de acuerdos"""
     rich.print("Consultar listas de acuerdos...")
@@ -59,3 +59,38 @@ def consultar(
         )
     console.print(table)
     rich.print(f"Total: [green]{respuesta['total']}[/green] listas de acuerdos")
+
+
+@app.command()
+def sintetizar_por_creado(
+    creado: str,
+    distrito_id: int = None,
+    limit: int = LIMIT,
+):
+    """Consultar listas de acuerdos sintetizadas por creado"""
+    rich.print("Consultar listas de acuerdos sintetizadas por creado...")
+    try:
+        listado = get_listas_de_acuerdos_sintetizar_por_creado(
+            authorization_header=authorization_header(),
+            creado=creado,
+            distrito_id=distrito_id,
+            limit=limit,
+        )
+    except lib.exceptions.CLIAnyError as error:
+        typer.secho(str(error), fg=typer.colors.RED)
+        raise typer.Exit()
+    console = rich.console.Console()
+    table = rich.table.Table("Distrito", "Autoridad", "ID", "Fecha", "Creado", "Archivo")
+    for registro in listado:
+        creado = datetime.fromisoformat(registro["creado"])
+        fecha = datetime.strptime(registro["fecha"], "%Y-%m-%d")
+        table.add_row(
+            registro["distrito_nombre_corto"],
+            registro["autoridad_clave"],
+            str(registro["id"]),
+            fecha.strftime("%Y-%m-%d"),
+            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
+            registro["archivo"],
+        )
+    console.print(table)
+    rich.print("Total: [green]N[/green] listas de acuerdos")

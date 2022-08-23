@@ -12,7 +12,7 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from .crud import get_inv_equipos, get_inv_equipo, get_cantidades_oficina_tipo
+from .crud import get_inv_equipos, get_inv_equipo, get_inv_equipos_cantidades_por_oficina_por_tipo
 from .schemas import InvEquipoOut, CantidadesOficinaTipoOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
@@ -56,8 +56,8 @@ async def listado_inv_equipos(
     return paginate(listado)
 
 
-@inv_equipos.get("/cantidades_oficina_tipo", response_model=List[CantidadesOficinaTipoOut])
-async def listado_cantidades_oficina_tipo(
+@inv_equipos.get("/cantidades_por_oficina_por_tipo", response_model=List[CantidadesOficinaTipoOut])
+async def cantidades_por_oficina_por_tipo(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -68,7 +68,7 @@ async def listado_cantidades_oficina_tipo(
     if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_cantidades_oficina_tipo(
+        resultados = get_inv_equipos_cantidades_por_oficina_por_tipo(
             db,
             creado=creado,
             creado_desde=creado_desde,
@@ -76,7 +76,7 @@ async def listado_cantidades_oficina_tipo(
         )
     except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return consulta.all()
+    return resultados
 
 
 @inv_equipos.get("/{inv_equipo_id}", response_model=InvEquipoOut)

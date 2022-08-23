@@ -12,7 +12,7 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from .crud import get_soportes_tickets, get_soporte_ticket, get_cantidades_distrito_categoria
+from .crud import get_soportes_tickets, get_soporte_ticket, get_cantidades_por_distrito_por_categoria, get_cantidades_por_funcionario_por_estado
 from .schemas import SoporteTicketOut, SoporteTicketTotalOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
@@ -58,12 +58,11 @@ async def listado_soportes_tickets(
     return paginate(listado)
 
 
-@soportes_tickets.get("/cantidades_distrito_categoria", response_model=List[SoporteTicketTotalOut])
-async def listado_cantidades_distrito_categoria(
+@soportes_tickets.get("/cantidades_por_distrito_por_categoria", response_model=List[SoporteTicketTotalOut])
+async def cantidades_por_distrito_por_categoria(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
-    estado: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -71,16 +70,38 @@ async def listado_cantidades_distrito_categoria(
     if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_cantidades_distrito_categoria(
+        resultados = get_cantidades_por_distrito_por_categoria(
             db,
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
-            estado=estado,
         )
     except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return consulta.all()
+    return resultados
+
+
+@soportes_tickets.get("/cantidades_por_funcionario_por_estado", response_model=List[SoporteTicketTotalOut])
+async def cantidades_por_funcionario_por_estado(
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
+    current_user: UsuarioInDB = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Listado de totales de tickets por oficina y por categoria"""
+    if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    try:
+        resultados = get_cantidades_por_funcionario_por_estado(
+            db,
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
+        )
+    except PlataformaWebAnyError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return resultados
 
 
 @soportes_tickets.get("/{soporte_ticket_id}", response_model=SoporteTicketOut)

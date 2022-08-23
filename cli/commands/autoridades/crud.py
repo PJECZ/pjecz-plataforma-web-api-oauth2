@@ -13,12 +13,18 @@ def get_autoridades(
     authorization_header: dict,
     limit: int = LIMIT,
     distrito_id: int = None,
+    es_jurisdiccional: bool = None,
+    es_notaria: bool = None,
     materia_id: int = None,
 ) -> Any:
     """Solicitar autoridades"""
     parametros = {"limit": limit}
     if distrito_id is not None:
         parametros["distrito_id"] = distrito_id
+    if es_jurisdiccional is not None:
+        parametros["es_jurisdiccional"] = es_jurisdiccional
+    if es_notaria is not None:
+        parametros["es_notaria"] = es_notaria
     if materia_id is not None:
         parametros["materia_id"] = materia_id
     try:

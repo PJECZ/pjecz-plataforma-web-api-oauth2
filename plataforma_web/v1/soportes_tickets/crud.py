@@ -10,6 +10,7 @@ from lib.exceptions import IsDeletedException, NotExistsException, NotValidExcep
 from lib.safe_string import safe_string
 
 from .models import SoporteTicket
+from ..funcionarios.models import Funcionario
 from ..oficinas.crud import get_oficina, get_oficina_from_clave
 from ..oficinas.models import Oficina
 from ..soportes_categorias.crud import get_soporte_categoria
@@ -87,12 +88,11 @@ def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:
     return soporte_ticket
 
 
-def get_cantidades_distrito_categoria(
+def get_cantidades_por_distrito_por_categoria(
     db: Session,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
-    estado: str = None,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
     consulta = (
@@ -119,11 +119,40 @@ def get_cantidades_distrito_categoria(
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
                 raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
-    estado = safe_string(estado)
-    if estado:
-        estado = safe_string(estado)
-        if estado != "":
-            if estado not in SoporteTicket.ESTADOS:
-                raise NotValidException("Estado incorrecto")
-            consulta = consulta.filter(SoporteTicket.estado == estado)
-    return consulta.order_by("distrito_clave", "soporte_categoria_nombre").group_by("distrito_clave", "soporte_categoria_nombre")
+    consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
+    consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
+    return consulta.all()
+
+
+def get_cantidades_por_funcionario_por_estado(
+    db: Session,
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
+) -> Any:
+    """Consultar totales de tickets por oficina y por categoria"""
+    consulta = (
+        db.query(
+            Funcionario.nombre.label("tecnico"),
+            SoporteTicket.estado.label("estado"),
+            func.count("*").label("cantidad"),
+        )
+        .select_from(SoporteTicket)
+        .join(Funcionario)
+    )
+    if creado:
+        if not ANTIGUA_FECHA <= creado <= HOY:
+            raise OutOfRangeException("Creado fuera de rango")
+        consulta = consulta.filter(func.date(SoporteTicket.creado) == creado)
+    else:
+        if creado_desde:
+            if not ANTIGUA_FECHA <= creado_desde <= HOY:
+                raise OutOfRangeException("Creado fuera de rango")
+            consulta = consulta.filter(SoporteTicket.creado >= creado_desde)
+        if creado_hasta:
+            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
+                raise OutOfRangeException("Creado fuera de rango")
+            consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
+    consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
+    consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
+    return consulta.all()
