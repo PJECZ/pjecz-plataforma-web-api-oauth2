@@ -15,11 +15,12 @@ app = typer.Typer()
 
 @app.command()
 def consultar(
-    limit: int = LIMIT,
     distrito_id: int = None,
     es_jurisdiccional: bool = None,
     es_notaria: bool = None,
+    limit: int = LIMIT,
     materia_id: int = None,
+    offset: int = 0,
 ):
     """Consultar autoridades"""
     rich.print("Consultar autoridades...")
@@ -31,6 +32,7 @@ def consultar(
             es_jurisdiccional=es_jurisdiccional,
             es_notaria=es_notaria,
             materia_id=materia_id,
+            offset=offset,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)

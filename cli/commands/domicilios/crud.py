@@ -12,9 +12,12 @@ import lib.exceptions
 def get_domicilios(
     authorization_header: dict,
     limit: int = LIMIT,
+    offset: int = 0,
 ) -> Any:
     """Solicitar domicilios"""
     parametros = {"limit": limit}
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/domicilios",

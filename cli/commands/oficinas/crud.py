@@ -11,10 +11,11 @@ import lib.exceptions
 
 def get_oficinas(
     authorization_header: dict,
-    limit: int = LIMIT,
     distrito_id: int = None,
     domicilio_id: int = None,
     es_juridicional: bool = False,
+    limit: int = LIMIT,
+    offset: int = 0,
 ) -> Any:
     """Solicitar oficinas"""
     parametros = {"limit": limit}
@@ -24,6 +25,8 @@ def get_oficinas(
         parametros["domicilio_id"] = domicilio_id
     if es_juridicional is not None:
         parametros["es_juridicional"] = es_juridicional
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/oficinas",

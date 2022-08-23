@@ -12,7 +12,6 @@ import lib.exceptions
 
 def get_inv_equipos(
     authorization_header: dict,
-    limit: int = LIMIT,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -21,6 +20,8 @@ def get_inv_equipos(
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,
+    limit: int = LIMIT,
+    offset: int = 0,
 ) -> Any:
     """Solicitar inventarios equipos"""
     parametros = {"limit": limit}
@@ -40,6 +41,8 @@ def get_inv_equipos(
         parametros["inv_modelo_id"] = inv_modelo_id
     if inv_red_id is not None:
         parametros["inv_red_id"] = inv_red_id
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/inv_equipos",

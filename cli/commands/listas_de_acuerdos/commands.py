@@ -26,13 +26,13 @@ def consultar(
     fecha_desde: str = None,
     fecha_hasta: str = None,
     limit: int = LIMIT,
+    offset: int = 0,
 ):
     """Consultar listas de acuerdos"""
     rich.print("Consultar listas de acuerdos...")
     try:
         respuesta = get_listas_de_acuerdos(
             authorization_header=authorization_header(),
-            limit=limit,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
             creado=creado,
@@ -41,6 +41,8 @@ def consultar(
             fecha=fecha,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
+            limit=limit,
+            offset=offset,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
@@ -65,7 +67,6 @@ def consultar(
 def sintetizar_por_creado(
     creado: str,
     distrito_id: int = None,
-    limit: int = LIMIT,
 ):
     """Consultar listas de acuerdos sintetizadas por creado"""
     rich.print("Consultar listas de acuerdos sintetizadas por creado...")
@@ -74,7 +75,6 @@ def sintetizar_por_creado(
             authorization_header=authorization_header(),
             creado=creado,
             distrito_id=distrito_id,
-            limit=limit,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)

@@ -16,6 +16,7 @@ app = typer.Typer()
 @app.command()
 def consultar(
     limit: int = LIMIT,
+    offset: int = 0,
 ):
     """Consultar marcas"""
     rich.print("Consultar marcas...")
@@ -23,6 +24,7 @@ def consultar(
         respuesta = get_inv_marcas(
             authorization_header=authorization_header(),
             limit=limit,
+            offset=offset,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)

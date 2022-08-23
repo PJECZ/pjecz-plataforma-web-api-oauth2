@@ -4,6 +4,7 @@ CLI Typer main application
 """
 import typer
 
+from commands.abogados.commands import app as abogados_app
 from commands.autoridades.commands import app as autoridades_app
 from commands.distritos.commands import app as distritos_app
 from commands.domicilios.commands import app as domicilios_app
@@ -21,6 +22,7 @@ from commands.sentencias.commands import app as sentencias_app
 from commands.usuarios.commands import app as usuarios_app
 
 app = typer.Typer()
+app.add_typer(abogados_app, name="abogados")
 app.add_typer(autoridades_app, name="autoridades")
 app.add_typer(distritos_app, name="distritos")
 app.add_typer(domicilios_app, name="domicilios")

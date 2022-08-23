@@ -16,6 +16,7 @@ def get_autoridades(
     es_jurisdiccional: bool = None,
     es_notaria: bool = None,
     materia_id: int = None,
+    offset: int = 0,
 ) -> Any:
     """Solicitar autoridades"""
     parametros = {"limit": limit}
@@ -27,6 +28,8 @@ def get_autoridades(
         parametros["es_notaria"] = es_notaria
     if materia_id is not None:
         parametros["materia_id"] = materia_id
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/autoridades",
