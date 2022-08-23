@@ -2,7 +2,7 @@
 Inventarios Equipos v1, rutas (paths)
 """
 from datetime import date
-from typing import List
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate

@@ -3,6 +3,7 @@ Inventarios Equipos v1, CRUD (create, read, update, and delete)
 """
 from datetime import date
 from typing import Any
+
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
@@ -88,6 +89,8 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
     creado_hasta: date = None,
 ) -> Any:
     """Obtener las cantidades de equipos por oficina y por tipo"""
+
+    # Consultar la oficina, el tipo de equipo y las cantidades
     consulta = (
         db.query(
             Oficina.clave.label("oficina_clave"),
@@ -97,6 +100,8 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
         .select_from(InvEquipo)
         .join(InvCustodia, Usuario, Oficina)
     )
+
+    # Filtrar por fecha de creación
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
             raise OutOfRangeException("Creado fuera de rango")
@@ -110,9 +115,15 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
                 raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
+
+    # Filtrar por estatus
     consulta = consulta.filter(Oficina.estatus == "A")
     consulta = consulta.filter(Usuario.estatus == "A")
     consulta = consulta.filter(InvCustodia.estatus == "A")
     consulta = consulta.filter(InvEquipo.estatus == "A")
+
+    # Ordenar y agrupar
     consulta = consulta.order_by(InvEquipo.tipo).group_by(Oficina.clave, InvEquipo.tipo)
+
+    # Consultar y entregar
     return consulta.all()
