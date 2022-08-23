@@ -31,6 +31,8 @@ async def listado_inv_equipos(
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,
+    oficina_id: int = None,
+    oficina_clave: str = None,
     tipo: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -49,6 +51,8 @@ async def listado_inv_equipos(
             inv_custodia_id=inv_custodia_id,
             inv_modelo_id=inv_modelo_id,
             inv_red_id=inv_red_id,
+            oficina_id=oficina_id,
+            oficina_clave=oficina_clave,
             tipo=tipo,
         )
     except PlataformaWebAnyError as error:

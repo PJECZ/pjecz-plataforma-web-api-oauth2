@@ -22,6 +22,9 @@ def get_inv_equipos(
     inv_red_id: int = None,
     limit: int = LIMIT,
     offset: int = 0,
+    oficina_id: int = None,
+    oficina_clave: str = None,
+    tipo: str = None,
 ) -> Any:
     """Solicitar inventarios equipos"""
     parametros = {"limit": limit}
@@ -43,6 +46,12 @@ def get_inv_equipos(
         parametros["inv_red_id"] = inv_red_id
     if offset > 0:
         parametros["offset"] = offset
+    if oficina_id is not None:
+        parametros["oficina_id"] = oficina_id
+    if oficina_clave is not None:
+        parametros["oficina_clave"] = oficina_clave
+    if tipo is not None:
+        parametros["tipo"] = tipo
     try:
         response = requests.get(
             f"{BASE_URL}/inv_equipos",

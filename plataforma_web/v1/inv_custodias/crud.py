@@ -13,10 +13,10 @@ from ..usuarios.crud import get_usuario, get_usuario_from_email
 
 def get_inv_custodias(
     db: Session,
-    usuario_id: int = None,
-    usuario_email: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    usuario_id: int = None,
+    usuario_email: str = None,
 ) -> Any:
     """Consultar los custodias activos"""
     consulta = db.query(InvCustodia)

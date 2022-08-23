@@ -19,16 +19,19 @@ app = typer.Typer()
 
 @app.command()
 def consultar(
-    creado: str = None,
-    creado_desde: str = None,
-    creado_hasta: str = None,
-    fecha_fabricacion_desde: str = None,
-    fecha_fabricacion_hasta: str = None,
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
+    fecha_fabricacion_desde: date = None,
+    fecha_fabricacion_hasta: date = None,
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,
     limit: int = LIMIT,
     offset: int = 0,
+    oficina_id: int = None,
+    oficina_clave: str = None,
+    tipo: str = None,
 ):
     """Consultar equipos"""
     rich.print("Consultar equipos...")
@@ -45,6 +48,9 @@ def consultar(
             inv_red_id=inv_red_id,
             limit=limit,
             offset=offset,
+            oficina_id=oficina_id,
+            oficina_clave=oficina_clave,
+            tipo=tipo,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)

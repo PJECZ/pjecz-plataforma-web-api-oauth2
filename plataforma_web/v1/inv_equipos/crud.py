@@ -22,6 +22,7 @@ from ..usuarios.models import Usuario
 from ..inv_custodias.crud import get_inv_custodia
 from ..inv_modelos.crud import get_inv_modelo
 from ..inv_redes.crud import get_inv_red
+from ..oficinas.crud import get_oficina, get_oficina_from_clave
 
 HOY = date.today()
 ANTIGUA_FECHA = date(year=2000, month=1, day=1)
@@ -37,6 +38,8 @@ def get_inv_equipos(
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,
+    oficina_id: int = None,
+    oficina_clave: str = None,
     tipo: str = None,
 ) -> Any:
     """Consultar los equipos activos"""
@@ -54,6 +57,10 @@ def get_inv_equipos(
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
                 raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
+    if fecha_fabricacion_desde:
+        consulta = consulta.filter(InvEquipo.fecha_fabricacion >= fecha_fabricacion_desde)
+    if fecha_fabricacion_hasta:
+        consulta = consulta.filter(InvEquipo.fecha_fabricacion <= fecha_fabricacion_hasta)
     if inv_custodia_id:
         inv_custodia = get_inv_custodia(db, inv_custodia_id=inv_custodia_id)
         consulta = consulta.filter(InvEquipo.inv_custodia == inv_custodia)
@@ -63,13 +70,16 @@ def get_inv_equipos(
     if inv_red_id:
         inv_red = get_inv_red(db, inv_red_id=inv_red_id)
         consulta = consulta.filter(InvEquipo.inv_red == inv_red)
-    tipo = safe_string(tipo)
     if tipo:
-        consulta = consulta.filter_by(tipo=tipo)
-    if fecha_fabricacion_desde:
-        consulta = consulta.filter(InvEquipo.fecha_fabricacion >= fecha_fabricacion_desde)
-    if fecha_fabricacion_hasta:
-        consulta = consulta.filter(InvEquipo.fecha_fabricacion <= fecha_fabricacion_hasta)
+        tipo = safe_string(tipo)
+        if tipo in InvEquipo.TIPOS:
+            consulta = consulta.filter_by(tipo=tipo)
+    if oficina_id:
+        oficina = get_oficina(db, oficina_id=oficina_id)
+        consulta = consulta.filter(InvEquipo.oficina == oficina)
+    elif oficina_clave:
+        oficina = get_oficina_from_clave(db, oficina_clave=oficina_clave)
+        consulta = consulta.filter(InvEquipo.oficina == oficina)
     return consulta.filter_by(estatus="A").order_by(InvEquipo.id.desc())
 
 
@@ -170,11 +180,11 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
             consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
 
     # Filtrar por distrito
-    if distrito_id is not None:
+    if distrito_id:
         consulta = consulta.filter(Oficina.distrito_id == distrito_id)
 
     # Filtrar por tipo de equipo
-    if tipo is not None:
+    if tipo:
         tipo = safe_string(tipo)
         if tipo in InvEquipo.TIPOS:
             consulta = consulta.filter(InvEquipo.tipo == tipo)
