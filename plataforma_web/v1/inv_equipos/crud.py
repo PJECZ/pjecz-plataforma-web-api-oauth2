@@ -11,6 +11,7 @@ from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeExc
 from lib.safe_string import safe_string
 
 from .models import InvEquipo
+from ..distritos.models import Distrito
 from ..inv_custodias.models import InvCustodia
 from ..inv_equipos.models import InvEquipo
 from ..inv_marcas.models import InvMarca
@@ -134,6 +135,8 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    distrito_id: int = None,
+    tipo: str = None,
 ) -> Any:
     """Obtener las cantidades de equipos por oficina y por año de fabricación"""
 
@@ -165,6 +168,16 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
                 raise OutOfRangeException("Creado fuera de rango")
             consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
+
+    # Filtrar por distrito
+    if distrito_id is not None:
+        consulta = consulta.filter(Oficina.distrito_id == distrito_id)
+
+    # Filtrar por tipo de equipo
+    if tipo is not None:
+        tipo = safe_string(tipo)
+        if tipo in InvEquipo.TIPOS:
+            consulta = consulta.filter(InvEquipo.tipo == tipo)
 
     # Filtrar por estatus
     consulta = consulta.filter(Oficina.estatus == "A")

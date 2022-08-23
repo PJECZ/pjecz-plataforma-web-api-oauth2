@@ -84,6 +84,8 @@ async def cantidades_por_oficina_por_anio_fabricacion(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    distrito_id: int = None,
+    tipo: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -96,6 +98,8 @@ async def cantidades_por_oficina_por_anio_fabricacion(
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
+            distrito_id=distrito_id,
+            tipo=tipo,
         )
     except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error

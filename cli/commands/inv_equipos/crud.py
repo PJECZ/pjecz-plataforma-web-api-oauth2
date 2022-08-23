@@ -100,6 +100,8 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
     creado: str = None,
     creado_desde: str = None,
     creado_hasta: str = None,
+    distrito_id: int = None,
+    tipo: str = None,
 ) -> Any:
     """Obtener cantidades de equipos por oficina y año de fabricacion"""
     parametros = {}
@@ -109,6 +111,10 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
         parametros["creado_desde"] = creado_desde
     if creado_hasta is not None:
         parametros["creado_hasta"] = creado_hasta
+    if distrito_id is not None:
+        parametros["distrito_id"] = distrito_id
+    if tipo is not None:
+        parametros["tipo"] = tipo
     try:
         response = requests.get(
             f"{BASE_URL}/inv_equipos/cantidades_por_oficina_por_anio_fabricacion",

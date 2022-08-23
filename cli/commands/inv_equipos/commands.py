@@ -117,6 +117,8 @@ def cantidades_por_oficina_por_anio_fabricacion(
     creado: str = None,
     creado_desde: str = None,
     creado_hasta: str = None,
+    distrito_id: int = None,
+    tipo: str = None,
 ):
     """Consultar cantidades de equipos por oficina y por año de fabricacion"""
     rich.print("Consultar cantidades de equipos por oficina y por año de fabricacion...")
@@ -128,6 +130,8 @@ def cantidades_por_oficina_por_anio_fabricacion(
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
+            distrito_id=distrito_id,
+            tipo=tipo,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
