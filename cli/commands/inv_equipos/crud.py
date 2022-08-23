@@ -12,11 +12,11 @@ import lib.exceptions
 
 def get_inv_equipos(
     authorization_header: dict,
-    creado: date = None,
-    creado_desde: date = None,
-    creado_hasta: date = None,
-    fecha_fabricacion_desde: date = None,
-    fecha_fabricacion_hasta: date = None,
+    creado: str = None,
+    creado_desde: str = None,
+    creado_hasta: str = None,
+    fecha_fabricacion_desde: str = None,
+    fecha_fabricacion_hasta: str = None,
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,

@@ -5,7 +5,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import IsDeletedException, NotExistsException
-from lib.safe_string import safe_string
+from lib.safe_string import safe_clave
 
 from .models import Oficina
 from ..distritos.crud import get_distrito
@@ -43,7 +43,7 @@ def get_oficina(db: Session, oficina_id: int) -> Oficina:
 
 def get_oficina_from_clave(db: Session, oficina_clave: str) -> Oficina:
     """Consultar una oficina por su clave"""
-    clave = safe_string(oficina_clave)
+    clave = safe_clave(oficina_clave)
     oficina = db.query(Oficina).filter_by(clave=clave).first()
     if oficina is None:
         raise NotExistsException("No existe ese oficina")

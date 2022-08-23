@@ -44,6 +44,14 @@ def get_inv_equipos(
 ) -> Any:
     """Consultar los equipos activos"""
     consulta = db.query(InvEquipo)
+    if oficina_id:
+        oficina = get_oficina(db, oficina_id=oficina_id)
+        consulta = consulta.join(InvCustodia, Usuario)
+        consulta = consulta.filter(Usuario.oficina == oficina)
+    elif oficina_clave:
+        oficina = get_oficina_from_clave(db, oficina_clave=oficina_clave)
+        consulta = consulta.join(InvCustodia, Usuario)
+        consulta = consulta.filter(Usuario.oficina == oficina)
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
             raise OutOfRangeException("Creado fuera de rango")
@@ -73,13 +81,7 @@ def get_inv_equipos(
     if tipo:
         tipo = safe_string(tipo)
         if tipo in InvEquipo.TIPOS:
-            consulta = consulta.filter_by(tipo=tipo)
-    if oficina_id:
-        oficina = get_oficina(db, oficina_id=oficina_id)
-        consulta = consulta.filter(InvEquipo.oficina == oficina)
-    elif oficina_clave:
-        oficina = get_oficina_from_clave(db, oficina_clave=oficina_clave)
-        consulta = consulta.filter(InvEquipo.oficina == oficina)
+            consulta = consulta.filter(InvEquipo.tipo == tipo)
     return consulta.filter_by(estatus="A").order_by(InvEquipo.id.desc())
 
 
