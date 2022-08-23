@@ -17,16 +17,17 @@ app = typer.Typer()
 
 @app.command()
 def consultar(
-    limit: int = LIMIT,
     autoridad_id: int = None,
     autoridad_clave: str = None,
     creado: str = None,
     creado_desde: str = None,
     creado_hasta: str = None,
-    materia_tipo_juicio_id: int = None,
     fecha: str = None,
     fecha_desde: str = None,
     fecha_hasta: str = None,
+    limit: int = LIMIT,
+    materia_tipo_juicio_id: int = None,
+    offset: int = 0,
 ):
     """Consultar sentencias"""
     rich.print("Consultar sentencias...")
@@ -39,10 +40,11 @@ def consultar(
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
-            materia_tipo_juicio_id=materia_tipo_juicio_id,
             fecha=fecha,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
+            materia_tipo_juicio_id=materia_tipo_juicio_id,
+            offset=offset,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)

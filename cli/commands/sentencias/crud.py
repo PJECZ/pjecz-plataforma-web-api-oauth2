@@ -12,16 +12,17 @@ import lib.exceptions
 
 def get_sentencias(
     authorization_header: dict,
-    limit: int = LIMIT,
     autoridad_id: int = None,
     autoridad_clave: str = None,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
-    materia_tipo_juicio_id: int = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    limit: int = LIMIT,
+    materia_tipo_juicio_id: int = None,
+    offset: int = 0,
 ) -> Any:
     """Solicitar sentencias"""
     parametros = {"limit": limit}
@@ -35,14 +36,16 @@ def get_sentencias(
         parametros["creado_desde"] = creado_desde
     if creado_hasta is not None:
         parametros["creado_hasta"] = creado_hasta
-    if materia_tipo_juicio_id is not None:
-        parametros["materia_tipo_juicio_id"] = materia_tipo_juicio_id
     if fecha is not None:
         parametros["fecha"] = fecha
     if fecha_desde is not None:
         parametros["fecha_desde"] = fecha_desde
     if fecha_hasta is not None:
         parametros["fecha_hasta"] = fecha_hasta
+    if materia_tipo_juicio_id is not None:
+        parametros["materia_tipo_juicio_id"] = materia_tipo_juicio_id
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/sentencias",

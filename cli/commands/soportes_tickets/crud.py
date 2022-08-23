@@ -19,6 +19,7 @@ def get_soportes_tickets(
     limit: int = LIMIT,
     oficina_id: int = None,
     oficina_clave: str = None,
+    offset: int = 0,
     soporte_categoria_id: int = None,
     usuario_id: int = None,
     usuario_email: str = None,
@@ -39,6 +40,8 @@ def get_soportes_tickets(
         parametros["oficina_id"] = oficina_id
     if oficina_clave is not None:
         parametros["oficina_clave"] = oficina_clave
+    if offset > 0:
+        parametros["offset"] = offset
     if soporte_categoria_id is not None:
         parametros["soporte_categoria_id"] = soporte_categoria_id
     if usuario_id is not None:

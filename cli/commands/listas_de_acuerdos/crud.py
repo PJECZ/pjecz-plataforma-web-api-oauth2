@@ -21,6 +21,7 @@ def get_listas_de_acuerdos(
     fecha_desde: date = None,
     fecha_hasta: date = None,
     limit: int = LIMIT,
+    offset: int = 0,
 ) -> Any:
     """Solicitar listas de acuerdos"""
     parametros = {"limit": limit}
@@ -40,6 +41,8 @@ def get_listas_de_acuerdos(
         parametros["fecha_desde"] = fecha_desde
     if fecha_hasta is not None:
         parametros["fecha_hasta"] = fecha_hasta
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/listas_de_acuerdos",
@@ -64,13 +67,9 @@ def get_listas_de_acuerdos_sintetizar_por_creado(
     authorization_header: dict,
     creado: date,
     distrito_id: int = None,
-    limit: int = LIMIT,
 ) -> Any:
     """Solicitar listas de acuerdos sintetizadas por creado"""
-    parametros = {
-        "limit": limit,
-        "creado": creado,
-    }
+    parametros = {"creado": creado}
     if distrito_id is not None:
         parametros["distrito_id"] = distrito_id
     try:

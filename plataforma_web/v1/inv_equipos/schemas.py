@@ -37,8 +37,16 @@ class InvEquipoOut(BaseModel):
 
 
 class CantidadesOficinaTipoOut(BaseModel):
-    """Cantidades de equipos por tipo y oficina"""
+    """Cantidades de equipos por oficina y tipo de equipo"""
 
     oficina_clave: str
     inv_equipo_tipo: str
+    cantidad: int
+
+
+class CantidadesOficinaAnioFabricacionOut(BaseModel):
+    """Cantidades de equipos por oficina y año de fabricacion"""
+
+    oficina_clave: str
+    anio_fabricacion: Optional[int] = None
     cantidad: int

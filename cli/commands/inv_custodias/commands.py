@@ -17,22 +17,24 @@ app = typer.Typer()
 
 @app.command()
 def consultar(
-    limit: int = LIMIT,
-    usuario_id: int = None,
-    usuario_email: str = None,
     fecha_desde: str = None,
     fecha_hasta: str = None,
+    limit: int = LIMIT,
+    offset: int = 0,
+    usuario_id: int = None,
+    usuario_email: str = None,
 ):
     """Consultar custodias"""
     rich.print("Consultar custodias...")
     try:
         respuesta = get_inv_custodias(
             authorization_header=authorization_header(),
-            limit=limit,
-            usuario_id=usuario_id,
-            usuario_email=usuario_email,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
+            limit=limit,
+            offset=offset,
+            usuario_id=usuario_id,
+            usuario_email=usuario_email,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)

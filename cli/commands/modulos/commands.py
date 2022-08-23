@@ -16,6 +16,7 @@ app = typer.Typer()
 @app.command()
 def consultar(
     limit: int = LIMIT,
+    offset: int = 0,
 ):
     """Consultar modulos"""
     rich.print("Consultar modulos...")
@@ -23,6 +24,7 @@ def consultar(
         respuesta = get_modulos(
             authorization_header=authorization_header(),
             limit=limit,
+            offset=offset,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)

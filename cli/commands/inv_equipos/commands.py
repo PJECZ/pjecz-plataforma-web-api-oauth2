@@ -3,21 +3,22 @@ Inv Equipos Typer Commands
 """
 from datetime import datetime
 
+import pandas as pd
 import typer
 import rich
 
 from config.settings import LIMIT, LOCAL_HUSO_HORARIO
 from lib.authentication import authorization_header
 import lib.exceptions
+from lib.formats import df_to_table
 
-from .crud import get_inv_equipos, get_inv_equipos_cantidades_por_oficina_por_tipo
+from .crud import get_inv_equipos, get_inv_equipos_cantidades_por_oficina_por_tipo, get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion
 
 app = typer.Typer()
 
 
 @app.command()
 def consultar(
-    limit: int = LIMIT,
     creado: str = None,
     creado_desde: str = None,
     creado_hasta: str = None,
@@ -26,13 +27,17 @@ def consultar(
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,
+    limit: int = LIMIT,
+    offset: int = 0,
+    oficina_id: int = None,
+    oficina_clave: str = None,
+    tipo: str = None,
 ):
     """Consultar equipos"""
     rich.print("Consultar equipos...")
     try:
         respuesta = get_inv_equipos(
             authorization_header=authorization_header(),
-            limit=limit,
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
@@ -41,6 +46,11 @@ def consultar(
             inv_custodia_id=inv_custodia_id,
             inv_modelo_id=inv_modelo_id,
             inv_red_id=inv_red_id,
+            limit=limit,
+            offset=offset,
+            oficina_id=oficina_id,
+            oficina_clave=oficina_clave,
+            tipo=tipo,
         )
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
@@ -72,6 +82,8 @@ def cantidades_por_oficina_por_tipo(
 ):
     """Consultar cantidades de equipos por oficina y por tipo"""
     rich.print("Consultar cantidades de equipos por oficina y por tipo...")
+
+    # Solicitar datos a la API
     try:
         respuesta = get_inv_equipos_cantidades_por_oficina_por_tipo(
             authorization_header=authorization_header(),
@@ -82,13 +94,73 @@ def cantidades_por_oficina_por_tipo(
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
+
+    # Crear dataframe
+    dataframe = pd.DataFrame(respuesta)
+    dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
+    dataframe.inv_equipo_tipo = dataframe.inv_equipo_tipo.astype("category")
+
+    # Crear pivot table
+    pivot_table = dataframe.pivot_table(
+        index="oficina_clave",
+        columns="inv_equipo_tipo",
+        values="cantidad",
+        aggfunc="sum",
+    )
+
+    # Mostrar la tabla
+    tabla = rich.table.Table(show_lines=False)
+    tabla = df_to_table(pivot_table, tabla, "Oficinas")
     console = rich.console.Console()
-    table = rich.table.Table("Oficina", "Tipo", "Cantidad")
-    for registro in respuesta["items"]:
-        table.add_row(
-            registro["oficina"],
-            registro["tipo"],
-            str(registro["cantidad"]),
+    console.print(tabla)
+
+    # Mostrar el total
+    rich.print("Total: [green]XXX[/green] equipos")
+
+
+@app.command()
+def cantidades_por_oficina_por_anio_fabricacion(
+    creado: str = None,
+    creado_desde: str = None,
+    creado_hasta: str = None,
+    distrito_id: int = None,
+    tipo: str = None,
+):
+    """Consultar cantidades de equipos por oficina y por año de fabricacion"""
+    rich.print("Consultar cantidades de equipos por oficina y por año de fabricacion...")
+
+    # Solicitar datos a la API
+    try:
+        respuesta = get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
+            authorization_header=authorization_header(),
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
+            distrito_id=distrito_id,
+            tipo=tipo,
         )
-    console.print(table)
-    rich.print("Total: [green]N[/green] tickets de soporte")
+    except lib.exceptions.CLIAnyError as error:
+        typer.secho(str(error), fg=typer.colors.RED)
+        raise typer.Exit()
+
+    # Crear dataframe
+    dataframe = pd.DataFrame(respuesta)
+    dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
+    dataframe.anio_fabricacion = dataframe.anio_fabricacion.astype("int")
+
+    # Crear pivot table
+    pivot_table = dataframe.pivot_table(
+        index="oficina_clave",
+        columns="anio_fabricacion",
+        values="cantidad",
+        aggfunc="sum",
+    )
+
+    # Mostrar la tabla
+    tabla = rich.table.Table(show_lines=False)
+    tabla = df_to_table(pivot_table, tabla, "Oficinas")
+    console = rich.console.Console()
+    console.print(tabla)
+
+    # Mostrar el total
+    rich.print("Total: [green]XXX[/green] equipos")

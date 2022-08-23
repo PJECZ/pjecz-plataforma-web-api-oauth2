@@ -11,13 +11,16 @@ import lib.exceptions
 
 def get_inv_modelos(
     authorization_header: dict,
-    limit: int = LIMIT,
     inv_marca_id: int = None,
+    limit: int = LIMIT,
+    offset: int = 0,
 ) -> Any:
     """Solicitar modelos"""
     parametros = {"limit": limit}
     if inv_marca_id is not None:
         parametros["inv_marca_id"] = inv_marca_id
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/inv_modelos",

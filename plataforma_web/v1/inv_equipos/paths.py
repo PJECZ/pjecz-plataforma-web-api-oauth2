@@ -12,8 +12,8 @@ from lib.database import get_db
 from lib.exceptions import PlataformaWebAnyError
 from lib.fastapi_pagination import LimitOffsetPage
 
-from .crud import get_inv_equipos, get_inv_equipo, get_inv_equipos_cantidades_por_oficina_por_tipo
-from .schemas import InvEquipoOut, CantidadesOficinaTipoOut
+from .crud import get_inv_equipos, get_inv_equipo, get_inv_equipos_cantidades_por_oficina_por_tipo, get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion
+from .schemas import InvEquipoOut, CantidadesOficinaTipoOut, CantidadesOficinaAnioFabricacionOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -31,6 +31,8 @@ async def listado_inv_equipos(
     inv_custodia_id: int = None,
     inv_modelo_id: int = None,
     inv_red_id: int = None,
+    oficina_id: int = None,
+    oficina_clave: str = None,
     tipo: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -49,6 +51,8 @@ async def listado_inv_equipos(
             inv_custodia_id=inv_custodia_id,
             inv_modelo_id=inv_modelo_id,
             inv_red_id=inv_red_id,
+            oficina_id=oficina_id,
+            oficina_clave=oficina_clave,
             tipo=tipo,
         )
     except PlataformaWebAnyError as error:
@@ -73,6 +77,33 @@ async def cantidades_por_oficina_por_tipo(
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
+        )
+    except PlataformaWebAnyError as error:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    return resultados
+
+
+@inv_equipos.get("/cantidades_por_oficina_por_anio_fabricacion", response_model=List[CantidadesOficinaAnioFabricacionOut])
+async def cantidades_por_oficina_por_anio_fabricacion(
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
+    distrito_id: int = None,
+    tipo: str = None,
+    current_user: UsuarioInDB = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Cantidades de equipos por oficina y año de fabricación"""
+    if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    try:
+        resultados = get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
+            db,
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
+            distrito_id=distrito_id,
+            tipo=tipo,
         )
     except PlataformaWebAnyError as error:
         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error

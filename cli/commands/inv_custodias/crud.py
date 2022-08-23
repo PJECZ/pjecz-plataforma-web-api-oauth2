@@ -12,11 +12,12 @@ import lib.exceptions
 
 def get_inv_custodias(
     authorization_header: dict,
-    limit: int = LIMIT,
-    usuario_id: int = None,
-    usuario_email: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    limit: int = LIMIT,
+    offset: int = 0,
+    usuario_id: int = None,
+    usuario_email: str = None,
 ) -> Any:
     """Solicitar inventarios custodias"""
     parametros = {"limit": limit}
@@ -28,6 +29,8 @@ def get_inv_custodias(
         parametros["fecha_desde"] = fecha_desde
     if fecha_hasta is not None:
         parametros["fecha_hasta"] = fecha_hasta
+    if offset > 0:
+        parametros["offset"] = offset
     try:
         response = requests.get(
             f"{BASE_URL}/inv_custodias",

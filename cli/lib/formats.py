@@ -20,7 +20,7 @@ def df_to_table(
 
     # Cabecera de las demás columnas
     for columna in pandas_dataframe.columns:
-        rich_table.add_column(columna, pandas_dataframe[columna].values, justify="right")
+        rich_table.add_column(header=str(columna), justify="right")
 
     # Renglones con los valores de la tabla
     for numero, lista_valores in enumerate(pandas_dataframe.values.tolist()):

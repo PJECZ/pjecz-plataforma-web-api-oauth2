@@ -1,5 +1,5 @@
 """
-Oficinas CRUD (create, read, update, and delete)
+Centros de Trabajo CRUD (create, read, update, and delete)
 """
 from typing import Any
 
@@ -9,39 +9,36 @@ from config.settings import BASE_URL, LIMIT, TIMEOUT
 import lib.exceptions
 
 
-def get_oficinas(
+def get_centros_trabajos(
     authorization_header: dict,
     distrito_id: int = None,
     domicilio_id: int = None,
-    es_juridicional: bool = False,
     limit: int = LIMIT,
     offset: int = 0,
 ) -> Any:
-    """Solicitar oficinas"""
+    """Solicitar centros de trabajo"""
     parametros = {"limit": limit}
     if distrito_id is not None:
         parametros["distrito_id"] = distrito_id
     if domicilio_id is not None:
         parametros["domicilio_id"] = domicilio_id
-    if es_juridicional is not None:
-        parametros["es_juridicional"] = es_juridicional
     if offset > 0:
         parametros["offset"] = offset
     try:
         response = requests.get(
-            f"{BASE_URL}/oficinas",
+            f"{BASE_URL}/centros_trabajos",
             headers=authorization_header,
             params=parametros,
             timeout=TIMEOUT,
         )
         response.raise_for_status()
     except requests.exceptions.ConnectionError as error:
-        raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar oficinas") from error
+        raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar centros de trabajo") from error
     except requests.exceptions.HTTPError as error:
-        raise lib.exceptions.CLIStatusCodeError("Error Status Code al solicitar oficinas: " + str(error)) from error
+        raise lib.exceptions.CLIStatusCodeError("Error Status Code al solicitar centros de trabajo: " + str(error)) from error
     except requests.exceptions.RequestException as error:
-        raise lib.exceptions.CLIConnectionError("Error inesperado al solicitar oficinas") from error
+        raise lib.exceptions.CLIConnectionError("Error inesperado al solicitar centros de trabajo") from error
     data_json = response.json()
     if "items" not in data_json or "total" not in data_json:
-        raise lib.exceptions.CLIResponseError("No se recibio items o total en la respuesta al solicitar oficinas")
+        raise lib.exceptions.CLIResponseError("No se recibio items o total en la respuesta al solicitar centros de trabajo")
     return data_json
