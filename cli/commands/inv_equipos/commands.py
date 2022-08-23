@@ -12,7 +12,7 @@ from lib.authentication import authorization_header
 import lib.exceptions
 from lib.formats import df_to_table
 
-from .crud import get_inv_equipos, get_inv_equipos_cantidades_por_oficina_por_tipo
+from .crud import get_inv_equipos, get_inv_equipos_cantidades_por_oficina_por_tipo, get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion
 
 app = typer.Typer()
 
@@ -98,6 +98,50 @@ def cantidades_por_oficina_por_tipo(
     pivot_table = dataframe.pivot_table(
         index="oficina_clave",
         columns="inv_equipo_tipo",
+        values="cantidad",
+        aggfunc="sum",
+    )
+
+    # Mostrar la tabla
+    tabla = rich.table.Table(show_lines=False)
+    tabla = df_to_table(pivot_table, tabla, "Oficinas")
+    console = rich.console.Console()
+    console.print(tabla)
+
+    # Mostrar el total
+    rich.print("Total: [green]XXX[/green] equipos")
+
+
+@app.command()
+def cantidades_por_oficina_por_anio_fabricacion(
+    creado: str = None,
+    creado_desde: str = None,
+    creado_hasta: str = None,
+):
+    """Consultar cantidades de equipos por oficina y por año de fabricacion"""
+    rich.print("Consultar cantidades de equipos por oficina y por año de fabricacion...")
+
+    # Solicitar datos a la API
+    try:
+        respuesta = get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
+            authorization_header=authorization_header(),
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
+        )
+    except lib.exceptions.CLIAnyError as error:
+        typer.secho(str(error), fg=typer.colors.RED)
+        raise typer.Exit()
+
+    # Crear dataframe
+    dataframe = pd.DataFrame(respuesta)
+    dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
+    dataframe.anio_fabricacion = dataframe.anio_fabricacion.astype("int")
+
+    # Crear pivot table
+    pivot_table = dataframe.pivot_table(
+        index="oficina_clave",
+        columns="anio_fabricacion",
         values="cantidad",
         aggfunc="sum",
     )

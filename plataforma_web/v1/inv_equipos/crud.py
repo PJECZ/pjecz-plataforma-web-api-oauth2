@@ -5,7 +5,7 @@ from datetime import date
 from typing import Any
 
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, extract
 
 from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
 from lib.safe_string import safe_string
@@ -124,6 +124,56 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
 
     # Ordenar y agrupar
     consulta = consulta.order_by(InvEquipo.tipo).group_by(Oficina.clave, InvEquipo.tipo)
+
+    # Consultar y entregar
+    return consulta.all()
+
+
+def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
+    db: Session,
+    creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
+) -> Any:
+    """Obtener las cantidades de equipos por oficina y por año de fabricación"""
+
+    # Consultar el funcionario, el tipo de equipo y las cantidades
+    consulta = (
+        db.query(
+            Oficina.clave.label("oficina_clave"),
+            extract("year", InvEquipo.fecha_fabricacion).label("anio_fabricacion"),
+            func.count("*").label("cantidad"),
+        )
+        .select_from(InvEquipo)
+        .join(InvCustodia, Usuario, Oficina)
+    )
+
+    # Filtrar por los que si tengan fecha de fabricación
+    consulta = consulta.filter(InvEquipo.fecha_fabricacion != None)
+
+    # Filtrar por fecha de creación
+    if creado:
+        if not ANTIGUA_FECHA <= creado <= HOY:
+            raise OutOfRangeException("Creado fuera de rango")
+        consulta = consulta.filter(func.date(InvEquipo.creado) == creado)
+    else:
+        if creado_desde:
+            if not ANTIGUA_FECHA <= creado_desde <= HOY:
+                raise OutOfRangeException("Creado fuera de rango")
+            consulta = consulta.filter(InvEquipo.creado >= creado_desde)
+        if creado_hasta:
+            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
+                raise OutOfRangeException("Creado fuera de rango")
+            consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
+
+    # Filtrar por estatus
+    consulta = consulta.filter(Oficina.estatus == "A")
+    consulta = consulta.filter(Usuario.estatus == "A")
+    consulta = consulta.filter(InvCustodia.estatus == "A")
+    consulta = consulta.filter(InvEquipo.estatus == "A")
+
+    # Ordenar y agrupar
+    consulta = consulta.order_by(Oficina.clave).group_by(Oficina.clave, extract("year", InvEquipo.fecha_fabricacion))
 
     # Consultar y entregar
     return consulta.all()

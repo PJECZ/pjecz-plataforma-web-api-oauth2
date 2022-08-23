@@ -93,3 +93,35 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
         raise lib.exceptions.CLIConnectionError("Error inesperado al solicitar equipos") from error
     data_json = response.json()
     return data_json
+
+
+def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
+    authorization_header: dict,
+    creado: str = None,
+    creado_desde: str = None,
+    creado_hasta: str = None,
+) -> Any:
+    """Obtener cantidades de equipos por oficina y año de fabricacion"""
+    parametros = {}
+    if creado is not None:
+        parametros["creado"] = creado
+    if creado_desde is not None:
+        parametros["creado_desde"] = creado_desde
+    if creado_hasta is not None:
+        parametros["creado_hasta"] = creado_hasta
+    try:
+        response = requests.get(
+            f"{BASE_URL}/inv_equipos/cantidades_por_oficina_por_anio_fabricacion",
+            headers=authorization_header,
+            params=parametros,
+            timeout=TIMEOUT,
+        )
+        response.raise_for_status()
+    except requests.exceptions.ConnectionError as error:
+        raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar equipos") from error
+    except requests.exceptions.HTTPError as error:
+        raise lib.exceptions.CLIStatusCodeError("Error Status Code al solicitar equipos: " + str(error)) from error
+    except requests.exceptions.RequestException as error:
+        raise lib.exceptions.CLIConnectionError("Error inesperado al solicitar equipos") from error
+    data_json = response.json()
+    return data_json
