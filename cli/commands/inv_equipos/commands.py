@@ -82,3 +82,13 @@ def cantidades_por_oficina_por_tipo(
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
+    console = rich.console.Console()
+    table = rich.table.Table("Oficina", "Tipo", "Cantidad")
+    for registro in respuesta["items"]:
+        table.add_row(
+            registro["oficina"],
+            registro["tipo"],
+            str(registro["cantidad"]),
+        )
+    console.print(table)
+    rich.print("Total: [green]N[/green] tickets de soporte")

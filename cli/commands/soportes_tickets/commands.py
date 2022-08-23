@@ -66,9 +66,7 @@ def consultar(
     rich.print(f"Total: [green]{respuesta['total']}[/green] tickets de soporte")
 
 
-app.command()
-
-
+@app.command()
 def cantidades_por_distrito_por_categoria(
     creado: str = None,
     creado_desde: str = None,
@@ -95,9 +93,10 @@ def cantidades_por_distrito_por_categoria(
             str(registro["cantidad"]),
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] tickets de soporte")
+    rich.print("Total: [green]N[/green] tickets de soporte")
 
 
+@app.command()
 def cantidades_por_funcionario_por_estado(
     creado: str = None,
     creado_desde: str = None,
@@ -124,4 +123,4 @@ def cantidades_por_funcionario_por_estado(
             str(registro["cantidad"]),
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] tickets de soporte")
+    rich.print("Total: [green]N[/green] tickets de soporte")

@@ -93,3 +93,4 @@ def sintetizar_por_creado(
             registro["archivo"],
         )
     console.print(table)
+    rich.print("Total: [green]N[/green] listas de acuerdos")
