@@ -1,7 +1,7 @@
 """
 Listas de Acuerdos Typer Commands
 """
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import typer
 import rich
@@ -67,12 +67,14 @@ def consultar(
 
 
 @app.command()
-def sintetizar_creadas(
-    creado: str,
+def consultar_creadas(
+    creado: str = None,
     distrito_id: int = None,
 ):
-    """Consultar listas de acuerdos sintetizadas por su dia de creacion"""
-    rich.print("Consultar listas de acuerdos sintetizadas por su dia de creacion...")
+    """Consultar listas de acuerdos creadas en un día"""
+    rich.print("Consultar listas de acuerdos creadas en un día...")
+
+    # Solicitar datos a la API
     try:
         datos = get_listas_de_acuerdos_sintetizar_por_creado(
             authorization_header=authorization_header(),
@@ -82,6 +84,8 @@ def sintetizar_creadas(
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
+
+    # Mostrar tabla
     console = rich.console.Console()
     table = rich.table.Table("A. Clave", "Distrito", "Autoridad", "ID", "Fecha", "Creado", "Archivo")
     contador = 0
@@ -110,21 +114,19 @@ def sintetizar_creadas(
         )
         contador += 1
     console.print(table)
+
+    # Mostrar el total
     rich.print(f"Total: [green]{contador}[/green] listas de acuerdos")
 
 
 @app.command()
-def enviar_sintetizar_creadas(
+def enviar_creadas(
     email: str,
-    creado: str = "",
+    creado: str = None,
     test: bool = True,
 ):
-    """Consultar listas de acuerdos sintetizadas por su dia de creacion"""
-    rich.print("Consultar listas de acuerdos sintetizadas por su dia de creacion...")
-
-    # Si creado viene vacio, se toma la fecha de hoy
-    if creado == "":
-        creado = datetime.now().strftime("%Y-%m-%d")
+    """Enviar mensaje con listas de acuerdos creadas en un día"""
+    rich.print("Enviar mensaje con listas de acuerdos creadas en un día...")
 
     # Si test es falso, entonces se va a usar SendGrid
     sendgrid_client = None
@@ -143,7 +145,7 @@ def enviar_sintetizar_creadas(
         sendgrid_client = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
         from_email = Email(SENDGRID_FROM_EMAIL)
 
-    # Solicitar las listas de acuerdos del dia sintetizadas de hoy
+    # Solicitar datos a la API
     try:
         datos = get_listas_de_acuerdos_sintetizar_por_creado(
             authorization_header=authorization_header(),
@@ -152,6 +154,9 @@ def enviar_sintetizar_creadas(
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
+
+    # Definir el asunto
+    asunto = f"Listas de acuerdos creadas el {creado}"
 
     # Definir encabezados y renglones de la tabla
     encabezados = ["A. Clave", "Distrito", "Autoridad", "ID", "Fecha", "Creado", "Archivo"]
@@ -182,9 +187,6 @@ def enviar_sintetizar_creadas(
                 f"<a href=\"{dato['url']}\">{dato['archivo']}</a>",
             ]
         )
-
-    # Definir el asunto
-    asunto = f"Listas de acuerdos creadas el {creado}"
 
     # Mostrar tabla 'simple' si test es verdadero y terminar
     if test is True:
