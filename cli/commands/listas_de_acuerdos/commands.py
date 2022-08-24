@@ -1,12 +1,15 @@
 """
 Listas de Acuerdos Typer Commands
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import typer
 import rich
+import sendgrid
+from sendgrid.helpers.mail import Email, To, Content, Mail
+from tabulate import tabulate
 
-from config.settings import LIMIT, LOCAL_HUSO_HORARIO
+from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
 from lib.authentication import authorization_header
 import lib.exceptions
 
@@ -64,14 +67,14 @@ def consultar(
 
 
 @app.command()
-def sintetizar_por_creado(
+def sintetizar_creadas(
     creado: str,
     distrito_id: int = None,
 ):
-    """Consultar listas de acuerdos sintetizadas por creado"""
-    rich.print("Consultar listas de acuerdos sintetizadas por creado...")
+    """Consultar listas de acuerdos sintetizadas por su dia de creacion"""
+    rich.print("Consultar listas de acuerdos sintetizadas por su dia de creacion...")
     try:
-        listado = get_listas_de_acuerdos_sintetizar_por_creado(
+        datos = get_listas_de_acuerdos_sintetizar_por_creado(
             authorization_header=authorization_header(),
             creado=creado,
             distrito_id=distrito_id,
@@ -80,17 +83,142 @@ def sintetizar_por_creado(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("Distrito", "Autoridad", "ID", "Fecha", "Creado", "Archivo")
-    for registro in listado:
-        creado = datetime.fromisoformat(registro["creado"])
-        fecha = datetime.strptime(registro["fecha"], "%Y-%m-%d")
+    table = rich.table.Table("A. Clave", "Distrito", "Autoridad", "ID", "Fecha", "Creado", "Archivo")
+    contador = 0
+    for dato in datos:
+        if dato["id"] == 0:
+            table.add_row(
+                dato["autoridad_clave"],
+                dato["distrito_nombre_corto"],
+                dato["autoridad_descripcion_corta"],
+                "ND",
+                "ND",
+                "ND",
+                "ND",
+            )
+            continue
+        creado = datetime.fromisoformat(dato["creado"])
+        fecha = datetime.strptime(dato["fecha"], "%Y-%m-%d")
         table.add_row(
-            registro["distrito_nombre_corto"],
-            registro["autoridad_clave"],
-            str(registro["id"]),
+            dato["autoridad_clave"],
+            dato["distrito_nombre_corto"],
+            dato["autoridad_descripcion_corta"],
+            str(dato["id"]),
             fecha.strftime("%Y-%m-%d"),
-            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
-            registro["archivo"],
+            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
+            dato["archivo"],
         )
+        contador += 1
     console.print(table)
-    rich.print("Total: [green]N[/green] listas de acuerdos")
+    rich.print(f"Total: [green]{contador}[/green] listas de acuerdos")
+
+
+@app.command()
+def enviar_sintetizar_creadas(
+    email: str,
+    creado: str = "",
+    test: bool = True,
+):
+    """Consultar listas de acuerdos sintetizadas por su dia de creacion"""
+    rich.print("Consultar listas de acuerdos sintetizadas por su dia de creacion...")
+
+    # Si creado viene vacio, se toma la fecha de hoy
+    if creado == "":
+        creado = datetime.now().strftime("%Y-%m-%d")
+
+    # Si test es falso, entonces se va a usar SendGrid
+    sendgrid_client = None
+    from_email = None
+    if test is False:
+        # Validar variables de entorno
+        try:
+            if SENDGRID_API_KEY == "":
+                raise lib.exceptions.CLIConfigurationError("Falta SENDGRID_API_KEY")
+            if SENDGRID_FROM_EMAIL == "":
+                raise lib.exceptions.CLIConfigurationError("Falta SENDGRID_FROM_EMAIL")
+        except lib.exceptions.CLIAnyError as error:
+            typer.secho(str(error), fg=typer.colors.RED)
+            raise typer.Exit()
+        # Inicializar SendGrid
+        sendgrid_client = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+        from_email = Email(SENDGRID_FROM_EMAIL)
+
+    # Solicitar las listas de acuerdos del dia sintetizadas de hoy
+    try:
+        datos = get_listas_de_acuerdos_sintetizar_por_creado(
+            authorization_header=authorization_header(),
+            creado=creado,
+        )
+    except lib.exceptions.CLIAnyError as error:
+        typer.secho(str(error), fg=typer.colors.RED)
+        raise typer.Exit()
+
+    # Definir encabezados y renglones de la tabla
+    encabezados = ["A. Clave", "Distrito", "Autoridad", "ID", "Fecha", "Creado", "Archivo"]
+    renglones = []
+    for dato in datos:
+        if dato["id"] == 0:
+            renglones.append(
+                [
+                    dato["autoridad_clave"],
+                    dato["distrito_nombre_corto"],
+                    dato["autoridad_descripcion_corta"],
+                    "ND",
+                    "ND",
+                    "ND",
+                    "ND",
+                ]
+            )
+            continue
+        creado_dt = datetime.fromisoformat(dato["creado"])
+        renglones.append(
+            [
+                dato["autoridad_clave"],
+                dato["distrito_nombre_corto"],
+                dato["autoridad_descripcion_corta"],
+                dato["id"],
+                dato["fecha"],
+                creado_dt.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
+                f"<a href=\"{dato['url']}\">{dato['archivo']}</a>",
+            ]
+        )
+
+    # Definir el asunto
+    asunto = f"Listas de acuerdos creadas el {creado}"
+
+    # Mostrar tabla 'simple' si test es verdadero y terminar
+    if test is True:
+        tabla = tabulate(renglones, headers=encabezados, tablefmt="simple")
+        print(asunto)
+        print(tabla)
+        rich.print("[yellow]No se envio el mensaje porque esta en modo de prueba.[/yellow]")
+        return
+
+    # Crear tabla HTML
+    tabla_html = tabulate(renglones, headers=encabezados, tablefmt="unsafehtml")
+    tabla_html = tabla_html.replace("<table>", '<table border="1" style="width:100%; border: 1px solid black; border-collapse: collapse;">')
+    tabla_html = tabla_html.replace('<td style="', '<td style="padding: 4px;')
+    tabla_html = tabla_html.replace("<td>", '<td style="padding: 4px;">')
+
+    # Crear el cuerpo del mensaje
+    elaboracion_fecha_hora_str = datetime.now().strftime("%d/%B/%Y %I:%M%p")
+    contenidos = []
+    contenidos.append("<style> td {border:2px black solid !important} </style>")
+    contenidos.append("<h1>PJECZ Plataforma Web</h1>")
+    contenidos.append(f"<h2>{asunto}</h2>")
+    contenidos.append(tabla_html)
+    contenidos.append(f"<p>Fecha de elaboración: <b>{elaboracion_fecha_hora_str}.</b></p>")
+    contenidos.append("<p>ESTE MENSAJE ES ELABORADO POR UN PROGRAMA. FAVOR DE NO RESPONDER.</p>")
+
+    # Enviar el mensaje
+    to_email = To(email)
+    content = Content("text/html", "<br>".join(contenidos))
+    mail = Mail(from_email=from_email, to_emails=to_email, subject=asunto, html_content=content)
+    try:
+        sendgrid_client.client.mail.send.post(request_body=mail.get())
+    except Exception as error:
+        typer.secho(str(error), fg=typer.colors.RED)
+        raise typer.Exit()
+
+    # Mostrar mensaje final
+    rich.print(f"Se ha enviado el reporte del [green]{creado}[/green] a [blue]{email}[/blue].")
