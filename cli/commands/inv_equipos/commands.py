@@ -16,6 +16,7 @@ import lib.exceptions
 from lib.formats import df_to_table
 
 from .crud import get_inv_equipos, get_inv_equipos_cantidades_por_oficina_por_tipo, get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion
+from ..distritos.crud import get_distrito
 
 app = typer.Typer()
 
@@ -118,7 +119,7 @@ def consultar_cantidades_por_tipo(
     console.print(tabla)
 
     # Mostrar el total
-    rich.print("Total: [green]XXX[/green] equipos")
+    rich.print(f"Total: [green]{dataframe.cantidad.sum()}[/green] equipos")
 
 
 @app.command()
@@ -175,7 +176,7 @@ def enviar_cantidades_por_tipo(
     )
 
     # Definir el asunto
-    asunto = "Cantidades de equipos por oficina y por tipo creados"
+    asunto = f"{dataframe.cantidad.sum()} equipos por oficina y por tipo creados"
     if creado is not None:
         asunto += f" el {creado}"
     if creado_desde is not None:
@@ -190,8 +191,8 @@ def enviar_cantidades_por_tipo(
     # Mostrar tabla 'simple' si test es verdadero y terminar
     if test is True:
         tabla = tabulate(pivot_table, headers=encabezados, tablefmt="simple")
-        print(asunto)
-        print(tabla)
+        rich.print(asunto)
+        rich.print(tabla)
         rich.print("[yellow]No se envio el mensaje porque esta en modo de prueba.[/yellow]")
         return
 
@@ -237,10 +238,31 @@ def consultar_cantidades_por_anio_fabricacion(
     """Consultar cantidades de equipos por oficina y por año de fabricacion"""
     rich.print("Consultar cantidades de equipos por oficina y por año de fabricacion...")
 
-    # Solicitar datos a la API
+    # Autentificar
+    try:
+        auth_head = authorization_header()
+    except lib.exceptions.CLIAnyError as error:
+        typer.secho(str(error), fg=typer.colors.RED)
+        raise typer.Exit()
+
+    # Si viene el ID del distrito
+    if distrito_id is not None:
+        try:
+            distrito = get_distrito(
+                authorization_header=auth_head,
+                distrito_id=distrito_id,
+            )
+        except lib.exceptions.CLIAnyError as error:
+            typer.secho(str(error), fg=typer.colors.RED)
+            raise typer.Exit()
+        rich.print(f"Distrito: [cyan]{distrito['nombre']}[/cyan]")
+    else:
+        rich.print("Todos los distritos")
+
+    # Solicitar datos de los equipos
     try:
         datos = get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
-            authorization_header=authorization_header(),
+            authorization_header=auth_head,
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
@@ -271,7 +293,7 @@ def consultar_cantidades_por_anio_fabricacion(
     console.print(tabla)
 
     # Mostrar el total
-    rich.print("Total: [green]XXX[/green] equipos")
+    rich.print(f"Total: [green]{dataframe.cantidad.sum()}[/green] equipos")
 
 
 @app.command()
@@ -282,10 +304,12 @@ def enviar_cantidades_por_anio_fabricacion(
     creado_hasta: str = None,
     distrito_id: int = None,
     test: bool = True,
-    tipo: str = None,
 ):
     """Enviar mensaje con cantidades de equipos por oficina y por año de fabricacion"""
     rich.print("Enviar mensaje con cantidades de equipos por oficina y por año de fabricacion...")
+
+    # Definir los tipos de equipos
+    tipos = ["COMPUTADORA", "LAPTOP", "IMPRESORA", "MULTIFUNCIONAL", "TELEFONIA", "SERVIDOR", "SCANNER", "SWITCH", "VIDEOGRABACION", "OTROS"]
 
     # Si test es falso, entonces se va a usar SendGrid
     sendgrid_client = None
@@ -304,60 +328,100 @@ def enviar_cantidades_por_anio_fabricacion(
         sendgrid_client = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
         from_email = Email(SENDGRID_FROM_EMAIL)
 
-    # Solicitar datos a la API
+    # Autentificar
     try:
-        datos = get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
-            authorization_header=authorization_header(),
-            creado=creado,
-            creado_desde=creado_desde,
-            creado_hasta=creado_hasta,
-            distrito_id=distrito_id,
-            tipo=tipo,
-        )
+        auth_head = authorization_header()
     except lib.exceptions.CLIAnyError as error:
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
 
-    # Crear dataframe
-    dataframe = pd.DataFrame(datos)
-    dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
-    dataframe.anio_fabricacion = dataframe.anio_fabricacion.astype("int")
-
-    # Crear pivot table
-    pivot_table = dataframe.pivot_table(
-        index="oficina_clave",
-        columns="anio_fabricacion",
-        values="cantidad",
-        aggfunc="sum",
-    )
-
     # Definir el asunto
     asunto = "Cantidades de equipos por oficina y por año de fabricacion"
+    if distrito_id is not None:
+        try:
+            distrito = get_distrito(
+                authorization_header=auth_head,
+                distrito_id=distrito_id,
+            )
+        except lib.exceptions.CLIAnyError as error:
+            typer.secho(str(error), fg=typer.colors.RED)
+            raise typer.Exit()
+        asunto += f" en {distrito['nombre_corto']}"
+    else:
+        asunto += " en todos los distritos"
     if creado is not None:
         asunto += f" el {creado}"
     if creado_desde is not None:
         asunto += f" desde el {creado_desde}"
     if creado_hasta is not None:
         asunto += f" hasta el {creado_hasta}"
-
-    # Definir encabezados de la tabla
-    encabezados = ["Oficinas"]
-    encabezados.extend(pivot_table.columns.tolist())
-
-    # Mostrar tabla 'simple' si test es verdadero y terminar
     if test is True:
-        tabla = tabulate(pivot_table, headers=encabezados, tablefmt="simple")
-        print(asunto)
-        print(tabla)
+        rich.print(asunto)
+        rich.print()
+
+    # Bucle por los tipos de equipos
+    reportes = []
+    for tipo in tipos:
+
+        # Solicitar datos a la API
+        try:
+            datos = get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
+                authorization_header=auth_head,
+                creado=creado,
+                creado_desde=creado_desde,
+                creado_hasta=creado_hasta,
+                distrito_id=distrito_id,
+                tipo=tipo,
+            )
+        except lib.exceptions.CLIAnyError as error:
+            typer.secho(str(error), fg=typer.colors.RED)
+            raise typer.Exit()
+
+        # Si no hay datos, entonces continuar con el siguiente tipo
+        if len(datos) == 0:
+            continue
+
+        # Crear dataframe
+        dataframe = pd.DataFrame(datos)
+        dataframe.oficina_clave = dataframe.oficina_clave.astype("category")
+        dataframe.anio_fabricacion = dataframe.anio_fabricacion.astype("int")
+
+        # Crear pivot table
+        pivot_table = dataframe.pivot_table(
+            index="oficina_clave",
+            columns="anio_fabricacion",
+            values="cantidad",
+            aggfunc="sum",
+        )
+
+        # Definir encabezados de la tabla
+        encabezados = ["Oficinas"]
+        encabezados.extend(pivot_table.columns.tolist())
+
+        # Definir el titulo de la tabla
+        titulo = f"{dataframe.cantidad.sum()} {tipo}"
+
+        # Si test es verdadero
+        if test is True:
+            # Mostrar tabla 'simple'
+            tabla = tabulate(pivot_table, headers=encabezados, tablefmt="simple")
+            rich.print(titulo)
+            rich.print(tabla)
+            rich.print()
+        else:
+            # Crear tabla HTML
+            tabla_html = tabulate(pivot_table, headers=encabezados, tablefmt="html")
+            tabla_html = tabla_html.replace("<table>", '<table border="1" style="width:100%; border: 1px solid black; border-collapse: collapse;">')
+            tabla_html = tabla_html.replace('<td style="', '<td style="padding: 4px;')
+            tabla_html = tabla_html.replace("<td>", '<td style="padding: 4px;">')
+            tabla_html = tabla_html.replace("0</td>", "&nbsp;</td>")
+            # Acumular reporte
+            reportes.append(f"<h2>{titulo}</h2>\n{tabla_html}")
+
+    # Si test es verdadero, terminar
+    if test is True:
         rich.print("[yellow]No se envio el mensaje porque esta en modo de prueba.[/yellow]")
         return
-
-    # Crear tabla HTML
-    tabla_html = tabulate(pivot_table, headers=encabezados, tablefmt="html")
-    tabla_html = tabla_html.replace("<table>", '<table border="1" style="width:100%; border: 1px solid black; border-collapse: collapse;">')
-    tabla_html = tabla_html.replace('<td style="', '<td style="padding: 4px;')
-    tabla_html = tabla_html.replace("<td>", '<td style="padding: 4px;">')
-    tabla_html = tabla_html.replace("0</td>", "&nbsp;</td>")
 
     # Crear el cuerpo del mensaje
     elaboracion_fecha_hora_str = datetime.now().strftime("%d/%B/%Y %I:%M%p")
@@ -365,7 +429,7 @@ def enviar_cantidades_por_anio_fabricacion(
     contenidos.append("<style> td {border:2px black solid !important} </style>")
     contenidos.append("<h1>PJECZ Plataforma Web</h1>")
     contenidos.append(f"<h2>{asunto}</h2>")
-    contenidos.append(tabla_html)
+    contenidos.append("<hr>".join(reportes))
     contenidos.append(f"<p>Fecha de elaboración: <b>{elaboracion_fecha_hora_str}.</b></p>")
     contenidos.append("<p>ESTE MENSAJE ES ELABORADO POR UN PROGRAMA. FAVOR DE NO RESPONDER.</p>")
 
