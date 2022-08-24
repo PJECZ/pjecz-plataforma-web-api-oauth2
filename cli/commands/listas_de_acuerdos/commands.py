@@ -184,7 +184,7 @@ def enviar_creadas(
                 dato["id"],
                 dato["fecha"],
                 creado_dt.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
-                f"<a href=\"{dato['url']}\">{dato['archivo']}</a>",
+                dato["archivo"] if test else f"<a href=\"{dato['url']}\">{dato['archivo']}</a>",
             ]
         )
 
@@ -223,4 +223,4 @@ def enviar_creadas(
         raise typer.Exit()
 
     # Mostrar mensaje final
-    rich.print(f"Se ha enviado el reporte del [green]{creado}[/green] a [blue]{email}[/blue].")
+    rich.print(f"Se ha enviado [green]{asunto}[/green] a [blue]{email}[/blue].")
