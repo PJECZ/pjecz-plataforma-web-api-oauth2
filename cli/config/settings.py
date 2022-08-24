@@ -9,7 +9,7 @@ import pytz
 load_dotenv()
 
 # Host y URL base
-HOST = os.getenv("HOST", "http://127.0.0.1:8002")
+HOST = os.getenv("HOST", "http://127.0.0.1:8000")
 BASE_URL = f"{HOST}/v1"
 
 # Limit y timeout por defecto en segundos
@@ -17,8 +17,8 @@ LIMIT = int(os.getenv("LIMIT", "40"))
 TIMEOUT = int(os.getenv("LIMIT", "12"))
 
 # Usuario y contraseña
-USERNAME = os.getenv("USERNAME", "")
-PASSWORD = os.getenv("PASSWORD", "")
+USERNAME = os.getenv("USERNAME", "nonexistinguser")
+PASSWORD = os.getenv("PASSWORD", "badpassword")
 
 # Huso horario local
 # Tome el tiempo de creacion
@@ -26,3 +26,7 @@ PASSWORD = os.getenv("PASSWORD", "")
 # Y convierta a un texto en tiempo local
 #     creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S")
 LOCAL_HUSO_HORARIO = pytz.timezone("America/Mexico_City")
+
+# SendGrid
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
+SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "")
