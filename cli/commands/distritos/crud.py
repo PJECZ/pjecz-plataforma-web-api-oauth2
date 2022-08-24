@@ -36,3 +36,24 @@ def get_distritos(
     if "items" not in data_json or "total" not in data_json:
         raise lib.exceptions.CLIResponseError("No se recibio items o total en la respuesta al solicitar distritos")
     return data_json
+
+
+def get_distrito(
+    authorization_header: dict,
+    distrito_id: int,
+) -> Any:
+    """Solicitar distrito"""
+    try:
+        response = requests.get(
+            f"{BASE_URL}/distritos/{distrito_id}",
+            headers=authorization_header,
+            timeout=TIMEOUT,
+        )
+        response.raise_for_status()
+    except requests.exceptions.ConnectionError as error:
+        raise lib.exceptions.CLIStatusCodeError("No hubo respuesta al solicitar distrito") from error
+    except requests.exceptions.HTTPError as error:
+        raise lib.exceptions.CLIStatusCodeError("Error Status Code al solicitar distrito: " + str(error)) from error
+    except requests.exceptions.RequestException as error:
+        raise lib.exceptions.CLIConnectionError("Error inesperado al solicitar distrito") from error
+    return response.json()

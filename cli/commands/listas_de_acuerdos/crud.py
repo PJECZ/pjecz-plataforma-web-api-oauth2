@@ -65,7 +65,7 @@ def get_listas_de_acuerdos(
 
 def get_listas_de_acuerdos_sintetizar_por_creado(
     authorization_header: dict,
-    creado: date,
+    creado: date = None,
     distrito_id: int = None,
 ) -> Any:
     """Solicitar listas de acuerdos sintetizadas por creado"""
