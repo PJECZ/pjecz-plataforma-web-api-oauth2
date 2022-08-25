@@ -169,3 +169,13 @@ Lea `cli/README.md` para saber como configurar el CLI
 Ejecute el script `cli/app.py`
 
     cli/app.py --help
+
+## Google Cloud deployment
+
+Crear el archivo `requirements.txt`
+
+    poetry export -f requirements.txt --output requirements.txt --without-hashes
+
+Y subir a Google Cloud
+
+    gcloud app deploy

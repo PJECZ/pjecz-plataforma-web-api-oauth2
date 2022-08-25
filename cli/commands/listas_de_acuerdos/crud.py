@@ -1,7 +1,6 @@
 """
 Listas de Acuerdos CRUD (create, read, update, and delete)
 """
-from datetime import date
 from typing import Any
 
 import requests
@@ -14,12 +13,12 @@ def get_listas_de_acuerdos(
     authorization_header: dict,
     autoridad_id: int = None,
     autoridad_clave: str = None,
-    creado: date = None,
-    creado_desde: date = None,
-    creado_hasta: date = None,
-    fecha: date = None,
-    fecha_desde: date = None,
-    fecha_hasta: date = None,
+    creado: str = None,
+    creado_desde: str = None,
+    creado_hasta: str = None,
+    fecha: str = None,
+    fecha_desde: str = None,
+    fecha_hasta: str = None,
     limit: int = LIMIT,
     offset: int = 0,
 ) -> Any:
@@ -65,11 +64,13 @@ def get_listas_de_acuerdos(
 
 def get_listas_de_acuerdos_sintetizar_por_creado(
     authorization_header: dict,
-    creado: date = None,
+    creado: str = None,
     distrito_id: int = None,
 ) -> Any:
     """Solicitar listas de acuerdos sintetizadas por creado"""
-    parametros = {"creado": creado}
+    parametros = {}
+    if creado is not None:
+        parametros["creado"] = creado
     if distrito_id is not None:
         parametros["distrito_id"] = distrito_id
     try:

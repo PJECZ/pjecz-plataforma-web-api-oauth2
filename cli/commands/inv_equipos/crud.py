@@ -1,7 +1,6 @@
 """
 Inv Equipos CRUD (create, read, update, and delete)
 """
-from datetime import date
 from typing import Any
 
 import requests

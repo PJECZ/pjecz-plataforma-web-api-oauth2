@@ -118,10 +118,14 @@ def insert_lista_de_acuerdo(
 
 def get_listas_de_acuerdos_sintetizar_por_creado(
     db: Session,
-    creado: date,
+    creado: date = None,
     distrito_id: int = None,
 ) -> List:
     """Consultar las listas de acuerdos por distrito"""
+
+    # Si no se da creado, se toma el día de hoy
+    if creado is None:
+        creado = HOY
 
     # Consultar las autoridades del distrito
     autoridades = get_autoridades(
