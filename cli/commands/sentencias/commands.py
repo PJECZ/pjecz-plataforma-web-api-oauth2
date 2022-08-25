@@ -50,20 +50,19 @@ def consultar(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("ID", "Creado", "Distrito", "Autoridad", "Fecha", "Expediente", "Descripcion", "Materia", "Tipo de Juicio", "P.G.")
+    table = rich.table.Table("ID", "Creado", "Autoridad", "Fecha", "Expediente", "Materia", "Tipo de Juicio", "P.G.", "Archivo")
     for dato in datos["items"]:
         creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
             str(dato["id"]),
             creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
-            dato["distrito_nombre_corto"],
             dato["autoridad_clave"],
             dato["fecha"],
             dato["expediente"],
-            dato["descripcion"],
             dato["materia_nombre"],
             dato["materia_tipo_juicio_descripcion"],
             "SI" if dato["es_perspectiva_genero"] else "",
+            dato["archivo"],
         )
     console.print(table)
     rich.print(f"Total: [green]{datos['total']}[/green] sentencias")

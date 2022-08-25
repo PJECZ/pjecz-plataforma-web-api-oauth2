@@ -51,15 +51,15 @@ def consultar(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("ID", "Creado", "Distrito", "Autoridad", "Fecha")
+    table = rich.table.Table("ID", "Creado", "Autoridad", "Fecha", "Archivo")
     for dato in datos["items"]:
         creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
             str(dato["id"]),
             creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
-            dato["distrito_nombre_corto"],
             dato["autoridad_clave"],
             dato["fecha"],
+            dato["archivo"],
         )
     console.print(table)
     rich.print(f"Total: [green]{datos['total']}[/green] listas de acuerdos")
