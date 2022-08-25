@@ -12,11 +12,8 @@ from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeExc
 from lib.safe_string import safe_string
 
 from .models import InvEquipo
-from ..distritos.models import Distrito
 from ..inv_custodias.models import InvCustodia
 from ..inv_equipos.models import InvEquipo
-from ..inv_marcas.models import InvMarca
-from ..inv_modelos.models import InvModelo
 from ..oficinas.models import Oficina
 from ..usuarios.models import Usuario
 
@@ -169,7 +166,7 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
     )
 
     # Filtrar por los que si tengan fecha de fabricación
-    consulta = consulta.filter(InvEquipo.fecha_fabricacion != None)
+    consulta = consulta.filter(InvEquipo.fecha_fabricacion is not None)
 
     # Filtrar por fecha de creación
     if creado:
