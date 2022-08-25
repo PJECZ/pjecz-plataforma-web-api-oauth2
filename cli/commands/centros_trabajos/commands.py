@@ -23,7 +23,7 @@ def consultar(
     """Consultar centros de trabajo"""
     rich.print("Consultar centros de trabajo...")
     try:
-        respuesta = get_centros_trabajos(
+        datos = get_centros_trabajos(
             authorization_header=authorization_header(),
             limit=limit,
             distrito_id=distrito_id,
@@ -35,14 +35,14 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Clave", "Nombre", "Distrito", "Domicilio", "Telefono")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            registro["clave"],
-            registro["nombre"],
-            registro["distrito_nombre_corto"],
-            registro["domicilio_completo"],
-            registro["telefono"],
+            str(dato["id"]),
+            dato["clave"],
+            dato["nombre"],
+            dato["distrito_nombre_corto"],
+            dato["domicilio_completo"],
+            dato["telefono"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] centros de trabajo")
+    rich.print(f"Total: [green]{datos['total']}[/green] centros de trabajo")

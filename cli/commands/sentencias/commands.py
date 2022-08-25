@@ -6,7 +6,7 @@ from datetime import datetime
 import typer
 import rich
 
-from config.settings import LIMIT, LOCAL_HUSO_HORARIO
+from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SERVIDOR_HUSO_HORARIO
 from lib.authentication import authorization_header
 import lib.exceptions
 
@@ -32,7 +32,7 @@ def consultar(
     """Consultar sentencias"""
     rich.print("Consultar sentencias...")
     try:
-        respuesta = get_sentencias(
+        datos = get_sentencias(
             authorization_header=authorization_header(),
             limit=limit,
             autoridad_id=autoridad_id,
@@ -51,19 +51,19 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Creado", "Distrito", "Autoridad", "Fecha", "Expediente", "Descripcion", "Materia", "Tipo de Juicio", "P.G.")
-    for registro in respuesta["items"]:
-        creado = datetime.fromisoformat(registro["creado"])
+    for dato in datos["items"]:
+        creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
-            str(registro["id"]),
-            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
-            registro["distrito_nombre_corto"],
-            registro["autoridad_clave"],
-            registro["fecha"],
-            registro["expediente"],
-            registro["descripcion"],
-            registro["materia_nombre"],
-            registro["materia_tipo_juicio_descripcion"],
-            "SI" if registro["es_perspectiva_genero"] else "",
+            str(dato["id"]),
+            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
+            dato["distrito_nombre_corto"],
+            dato["autoridad_clave"],
+            dato["fecha"],
+            dato["expediente"],
+            dato["descripcion"],
+            dato["materia_nombre"],
+            dato["materia_tipo_juicio_descripcion"],
+            "SI" if dato["es_perspectiva_genero"] else "",
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] sentencias")
+    rich.print(f"Total: [green]{datos['total']}[/green] sentencias")

@@ -10,7 +10,7 @@ import sendgrid
 from sendgrid.helpers.mail import Email, To, Content, Mail
 from tabulate import tabulate
 
-from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
+from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SERVIDOR_HUSO_HORARIO, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
 from lib.authentication import authorization_header
 import lib.exceptions
 from lib.formats import df_to_table
@@ -62,10 +62,10 @@ def consultar(
     console = rich.console.Console()
     table = rich.table.Table("ID", "Creado", "Descripcion", "Tipo", "Custodia", "Marca", "Modelo", "Red", "F. Fab.")
     for dato in datos["items"]:
-        creado = datetime.fromisoformat(dato["creado"])
+        creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
             str(dato["id"]),
-            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
+            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
             dato["descripcion"],
             dato["tipo"],
             str(dato["inv_custodia_id"]),

@@ -25,7 +25,7 @@ def consultar(
     """Consultar autoridades"""
     rich.print("Consultar autoridades...")
     try:
-        respuesta = get_autoridades(
+        datos = get_autoridades(
             authorization_header=authorization_header(),
             limit=limit,
             distrito_id=distrito_id,
@@ -39,16 +39,16 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Clave", "Distrito", "Descripcion", "Materia", "Organo Jurisdiccional", "Es J.", "Es N.")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            registro["clave"],
-            registro["distrito_nombre_corto"],
-            registro["descripcion_corta"],
-            registro["materia_nombre"],
-            registro["organo_jurisdiccional"],
-            "Jurisdiccional" if registro["es_jurisdiccional"] else "",
-            "Notaría" if registro["es_notaria"] else "",
+            str(dato["id"]),
+            dato["clave"],
+            dato["distrito_nombre_corto"],
+            dato["descripcion_corta"],
+            dato["materia_nombre"],
+            dato["organo_jurisdiccional"],
+            "Jurisdiccional" if dato["es_jurisdiccional"] else "",
+            "Notaría" if dato["es_notaria"] else "",
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] autoridades")
+    rich.print(f"Total: [green]{datos['total']}[/green] autoridades")

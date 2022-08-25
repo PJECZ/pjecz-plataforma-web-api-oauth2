@@ -20,6 +20,7 @@ from commands.modulos.commands import app as modulos_app
 from commands.oficinas.commands import app as oficinas_app
 from commands.roles.commands import app as roles_app
 from commands.sentencias.commands import app as sentencias_app
+from commands.soportes_tickets.commands import app as soportes_tickets_app
 from commands.usuarios.commands import app as usuarios_app
 
 app = typer.Typer()
@@ -39,6 +40,7 @@ app.add_typer(modulos_app, name="modulos")
 app.add_typer(oficinas_app, name="oficinas")
 app.add_typer(roles_app, name="roles")
 app.add_typer(sentencias_app, name="sentencias")
+app.add_typer(soportes_tickets_app, name="soportes_tickets")
 app.add_typer(usuarios_app, name="usuarios")
 
 if __name__ == "__main__":

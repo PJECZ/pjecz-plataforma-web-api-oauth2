@@ -26,7 +26,7 @@ def consultar(
     """Consultar oficinas"""
     rich.print("Consultar oficinas...")
     try:
-        respuesta = get_oficinas(
+        datos = get_oficinas(
             authorization_header=authorization_header(),
             distrito_id=distrito_id,
             domicilio_id=domicilio_id,
@@ -39,18 +39,18 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Clave", "Descripcion", "Domicilio", "Col", "Col")
-    for registro in respuesta["items"]:
-        apertura = datetime.strptime(registro["apertura"], "%H:%M:%S")
-        cierre = datetime.strptime(registro["cierre"], "%H:%M:%S")
+    for dato in datos["items"]:
+        apertura = datetime.strptime(dato["apertura"], "%H:%M:%S")
+        cierre = datetime.strptime(dato["cierre"], "%H:%M:%S")
         table.add_row(
-            str(registro["id"]),
-            registro["clave"],
-            registro["descripcion_corta"],
-            registro["domicilio_completo"],
+            str(dato["id"]),
+            dato["clave"],
+            dato["descripcion_corta"],
+            dato["domicilio_completo"],
             apertura.strftime("%H:%M"),
             cierre.strftime("%H:%M"),
-            str(registro["limite_personas"]),
-            "SI" if bool(registro["es_jurisdiccional"]) else "",
+            str(dato["limite_personas"]),
+            "SI" if bool(dato["es_jurisdiccional"]) else "",
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] oficinas")
+    rich.print(f"Total: [green]{datos['total']}[/green] oficinas")

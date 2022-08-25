@@ -6,7 +6,7 @@ from datetime import datetime
 import typer
 import rich
 
-from config.settings import LIMIT, LOCAL_HUSO_HORARIO
+from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SERVIDOR_HUSO_HORARIO
 from lib.authentication import authorization_header
 import lib.exceptions
 
@@ -27,7 +27,7 @@ def consultar(
     """Consultar custodias"""
     rich.print("Consultar custodias...")
     try:
-        respuesta = get_inv_custodias(
+        datos = get_inv_custodias(
             authorization_header=authorization_header(),
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
@@ -40,15 +40,15 @@ def consultar(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("ID", "Creado", "e-mail", "Usuario", "Fecha")
-    for registro in respuesta["items"]:
-        creado = datetime.fromisoformat(registro["creado"])
+    table = rich.table.Table("ID", "Creado", "Usuario", "e-mail", "Fecha")
+    for dato in datos["items"]:
+        creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
-            str(registro["id"]),
-            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
-            registro["usuario_email"],
-            registro["usuario_nombre"],
-            registro["fecha"],
+            str(dato["id"]),
+            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
+            dato["usuario_nombre"],
+            dato["usuario_email"],
+            dato["fecha"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] custodias")
+    rich.print(f"Total: [green]{datos['total']}[/green] custodias")

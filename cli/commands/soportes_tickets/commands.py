@@ -6,11 +6,15 @@ from datetime import datetime
 import typer
 import rich
 
-from config.settings import LIMIT, LOCAL_HUSO_HORARIO
+from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SERVIDOR_HUSO_HORARIO
 from lib.authentication import authorization_header
 import lib.exceptions
 
-from .crud import get_soportes_tickets, get_soportes_tickets_cantidades_por_distrito_por_categoria, get_soportes_tickets_cantidades_por_funcionario_por_estado
+from .crud import (
+    get_soportes_tickets,
+    get_soportes_tickets_cantidades_por_distrito_por_categoria,
+    get_soportes_tickets_cantidades_por_funcionario_por_estado,
+)
 
 app = typer.Typer()
 
@@ -33,7 +37,7 @@ def consultar(
     """Consultar tickets de soporte"""
     rich.print("Consultar tickets de soporte...")
     try:
-        respuesta = get_soportes_tickets(
+        datos = get_soportes_tickets(
             authorization_header=authorization_header(),
             creado=creado,
             creado_desde=creado_desde,
@@ -52,20 +56,18 @@ def consultar(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("ID", "Creado", "Inicio", "Col", "Col", "Col")
-    for registro in respuesta["items"]:
-        creado = datetime.fromisoformat(registro["creado"])
-        inicio = datetime.strptime(registro["inicio"], "%Y-%m-%dT%H:%M:%S")
+    table = rich.table.Table("ID", "Creado", "Usuario", "Oficina", "Categoria")
+    for dato in datos["items"]:
+        creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
-            str(registro["id"]),
-            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
-            inicio.strftime("%Y-%m-%d %H:%M:%S"),
-            registro["col_str"],
-            str(registro["col_int"]),
-            "YA" if bool(registro["col_bool"]) else "",
+            str(dato["id"]),
+            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
+            dato["usuario_nombre"],
+            dato["usuario_oficina_clave"],
+            dato["soporte_categoria_nombre"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] tickets de soporte")
+    rich.print(f"Total: [green]{datos['total']}[/green] tickets de soporte")
 
 
 @app.command()
@@ -77,7 +79,7 @@ def cantidades_por_distrito_por_categoria(
     """Consultar cantidades de tickets de soporte por distrito y categoria"""
     rich.print("Consultar cantidades de tickets de soporte por distrito y categoria...")
     try:
-        respuesta = get_soportes_tickets_cantidades_por_distrito_por_categoria(
+        datos = get_soportes_tickets_cantidades_por_distrito_por_categoria(
             authorization_header=authorization_header(),
             creado=creado,
             creado_desde=creado_desde,
@@ -88,11 +90,11 @@ def cantidades_por_distrito_por_categoria(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("Distrito", "Categoria", "Cantidad")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            registro["distrito"],
-            registro["categoria"],
-            str(registro["cantidad"]),
+            dato["distrito"],
+            dato["categoria"],
+            str(dato["cantidad"]),
         )
     console.print(table)
     rich.print("Total: [green]N[/green] tickets de soporte")
@@ -107,7 +109,7 @@ def cantidades_por_funcionario_por_estado(
     """Consultar cantidades de tickets de soporte por funcionario y por estado"""
     rich.print("Consultar cantidades de tickets de soporte por funcionario y por estado...")
     try:
-        respuesta = get_soportes_tickets_cantidades_por_funcionario_por_estado(
+        datos = get_soportes_tickets_cantidades_por_funcionario_por_estado(
             authorization_header=authorization_header(),
             creado=creado,
             creado_desde=creado_desde,
@@ -118,11 +120,11 @@ def cantidades_por_funcionario_por_estado(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("Funcionario", "Estado", "Cantidad")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            registro["funcionario"],
-            registro["estado"],
-            str(registro["cantidad"]),
+            dato["funcionario"],
+            dato["estado"],
+            str(dato["cantidad"]),
         )
     console.print(table)
     rich.print("Total: [green]N[/green] tickets de soporte")

@@ -9,7 +9,7 @@ import sendgrid
 from sendgrid.helpers.mail import Email, To, Content, Mail
 from tabulate import tabulate
 
-from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
+from config.settings import LIMIT, LOCAL_HUSO_HORARIO, SERVIDOR_HUSO_HORARIO, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL
 from lib.authentication import authorization_header
 import lib.exceptions
 
@@ -34,7 +34,7 @@ def consultar(
     """Consultar listas de acuerdos"""
     rich.print("Consultar listas de acuerdos...")
     try:
-        respuesta = get_listas_de_acuerdos(
+        datos = get_listas_de_acuerdos(
             authorization_header=authorization_header(),
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
@@ -51,19 +51,18 @@ def consultar(
         typer.secho(str(error), fg=typer.colors.RED)
         raise typer.Exit()
     console = rich.console.Console()
-    table = rich.table.Table("ID", "Distrito", "Autoridad", "Fecha", "Creado")
-    for registro in respuesta["items"]:
-        creado = datetime.fromisoformat(registro["creado"])
-        fecha = datetime.strptime(registro["fecha"], "%Y-%m-%d")
+    table = rich.table.Table("ID", "Creado", "Distrito", "Autoridad", "Fecha")
+    for dato in datos["items"]:
+        creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
-            str(registro["id"]),
-            registro["distrito_nombre_corto"],
-            registro["autoridad_clave"],
-            fecha.strftime("%Y-%m-%d"),
-            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S"),
+            str(dato["id"]),
+            creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
+            dato["distrito_nombre_corto"],
+            dato["autoridad_clave"],
+            dato["fecha"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] listas de acuerdos")
+    rich.print(f"Total: [green]{datos['total']}[/green] listas de acuerdos")
 
 
 @app.command()
@@ -101,14 +100,13 @@ def consultar_creadas(
                 "ND",
             )
             continue
-        creado = datetime.fromisoformat(dato["creado"])
-        fecha = datetime.strptime(dato["fecha"], "%Y-%m-%d")
+        creado = datetime.fromisoformat(dato["creado"]).replace(tzinfo=SERVIDOR_HUSO_HORARIO)
         table.add_row(
             dato["autoridad_clave"],
             dato["distrito_nombre_corto"],
             dato["autoridad_descripcion_corta"],
             str(dato["id"]),
-            fecha.strftime("%Y-%m-%d"),
+            dato["fecha"],
             creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M"),
             dato["archivo"],
         )

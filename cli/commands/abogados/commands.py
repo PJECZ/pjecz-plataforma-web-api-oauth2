@@ -24,7 +24,7 @@ def consultar(
     """Consultar abogados"""
     rich.print("Consultar abogados...")
     try:
-        respuesta = get_abogados(
+        datos = get_abogados(
             authorization_header=authorization_header(),
             anio_desde=anio_desde,
             anio_hasta=anio_hasta,
@@ -37,13 +37,13 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Fecha", "Libro", "Numero", "Nombre")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            str(registro["fecha"]),
-            registro["libro"],
-            registro["numero"],
-            registro["nombre"],
+            str(dato["id"]),
+            str(dato["fecha"]),
+            dato["libro"],
+            dato["numero"],
+            dato["nombre"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] abogados")
+    rich.print(f"Total: [green]{datos['total']}[/green] abogados")

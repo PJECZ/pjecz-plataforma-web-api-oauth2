@@ -22,7 +22,7 @@ def consultar(
     """Consultar modelos"""
     rich.print("Consultar modelos...")
     try:
-        respuesta = get_inv_modelos(
+        datos = get_inv_modelos(
             authorization_header=authorization_header(),
             limit=limit,
             inv_marca_id=inv_marca_id,
@@ -33,11 +33,11 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Marca", "Descripcion")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            registro["inv_marca_nombre"],
-            registro["descripcion"],
+            str(dato["id"]),
+            dato["inv_marca_nombre"],
+            dato["descripcion"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] modelos")
+    rich.print(f"Total: [green]{datos['total']}[/green] modelos")
