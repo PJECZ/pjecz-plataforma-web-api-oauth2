@@ -5,8 +5,8 @@ from datetime import date, datetime, timedelta
 from typing import Any, List
 
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
 
+from config.settings import SERVIDOR_HUSO_HORARIO
 from lib.exceptions import AlredyExistsException, IsDeletedException, NotExistsException, NotValidException, OutOfRangeException
 from lib.safe_string import safe_string
 
@@ -36,17 +36,21 @@ def get_listas_de_acuerdos(
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Creado fuera de rango")
-        consulta = consulta.filter(func.date(ListaDeAcuerdo.creado) == creado)
+            raise OutOfRangeException("Fecha fuera de rango")
+        desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0))
+        hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59))
+        consulta = consulta.filter(ListaDeAcuerdo.creado >= desde_dt).filter(ListaDeAcuerdo.creado <= hasta_dt)
     else:
         if creado_desde:
             if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(ListaDeAcuerdo.creado >= creado_desde)
+                raise OutOfRangeException("Fecha fuera de rango")
+            desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_desde.year, month=creado_desde.month, day=creado_desde.day, hour=0, minute=0, second=0))
+            consulta = consulta.filter(ListaDeAcuerdo.creado >= desde_dt)
         if creado_hasta:
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(ListaDeAcuerdo.creado <= creado_hasta)
+                raise OutOfRangeException("Fecha fuera de rango")
+            hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59))
+            consulta = consulta.filter(ListaDeAcuerdo.creado <= hasta_dt)
     if fecha:
         if not ANTIGUA_FECHA <= fecha <= HOY:
             raise OutOfRangeException("Fecha fuera de rango")
@@ -118,10 +122,14 @@ def insert_lista_de_acuerdo(
 
 def get_listas_de_acuerdos_sintetizar_por_creado(
     db: Session,
-    creado: date,
+    creado: date = None,
     distrito_id: int = None,
 ) -> List:
     """Consultar las listas de acuerdos por distrito"""
+
+    # Si no se da creado, se toma el día de hoy
+    if creado is None:
+        creado = HOY
 
     # Consultar las autoridades del distrito
     autoridades = get_autoridades(

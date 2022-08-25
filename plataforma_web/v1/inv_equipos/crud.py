@@ -1,21 +1,19 @@
 """
 Inventarios Equipos v1, CRUD (create, read, update, and delete)
 """
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, extract
 
+from config.settings import SERVIDOR_HUSO_HORARIO
 from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
 from lib.safe_string import safe_string
 
 from .models import InvEquipo
-from ..distritos.models import Distrito
 from ..inv_custodias.models import InvCustodia
 from ..inv_equipos.models import InvEquipo
-from ..inv_marcas.models import InvMarca
-from ..inv_modelos.models import InvModelo
 from ..oficinas.models import Oficina
 from ..usuarios.models import Usuario
 
@@ -54,17 +52,21 @@ def get_inv_equipos(
         consulta = consulta.filter(Usuario.oficina == oficina)
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Creado fuera de rango")
-        consulta = consulta.filter(func.date(InvEquipo.creado) == creado)
+            raise OutOfRangeException("Fecha fuera de rango")
+        desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0))
+        hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59))
+        consulta = consulta.filter(InvEquipo.creado >= desde_dt).filter(InvEquipo.creado <= hasta_dt)
     else:
         if creado_desde:
             if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(InvEquipo.creado >= creado_desde)
+                raise OutOfRangeException("Fecha fuera de rango")
+            desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_desde.year, month=creado_desde.month, day=creado_desde.day, hour=0, minute=0, second=0))
+            consulta = consulta.filter(InvEquipo.creado >= desde_dt)
         if creado_hasta:
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
+                raise OutOfRangeException("Fecha fuera de rango")
+            hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59))
+            consulta = consulta.filter(InvEquipo.creado <= hasta_dt)
     if fecha_fabricacion_desde:
         consulta = consulta.filter(InvEquipo.fecha_fabricacion >= fecha_fabricacion_desde)
     if fecha_fabricacion_hasta:
@@ -164,22 +166,26 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
     )
 
     # Filtrar por los que si tengan fecha de fabricación
-    consulta = consulta.filter(InvEquipo.fecha_fabricacion != None)
+    consulta = consulta.filter(InvEquipo.fecha_fabricacion is not None)
 
     # Filtrar por fecha de creación
     if creado:
         if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Creado fuera de rango")
-        consulta = consulta.filter(func.date(InvEquipo.creado) == creado)
+            raise OutOfRangeException("Fecha fuera de rango")
+        desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0))
+        hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59))
+        consulta = consulta.filter(InvEquipo.creado >= desde_dt).filter(InvEquipo.creado <= hasta_dt)
     else:
         if creado_desde:
             if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(InvEquipo.creado >= creado_desde)
+                raise OutOfRangeException("Fecha fuera de rango")
+            desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_desde.year, month=creado_desde.month, day=creado_desde.day, hour=0, minute=0, second=0))
+            consulta = consulta.filter(InvEquipo.creado >= desde_dt)
         if creado_hasta:
             if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(InvEquipo.creado <= creado_hasta)
+                raise OutOfRangeException("Fecha fuera de rango")
+            hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59))
+            consulta = consulta.filter(InvEquipo.creado <= hasta_dt)
 
     # Filtrar por distrito
     if distrito_id:

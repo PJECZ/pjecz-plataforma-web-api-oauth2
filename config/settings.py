@@ -3,6 +3,8 @@ Configuración para producción
 """
 import os
 
+import pytz
+
 
 # Google Cloud SQL
 DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
@@ -33,3 +35,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", 
 ORIGINS = [
     "https://plataforma-web.justiciadigital.gob.mx",
 ]
+
+# Huso horario
+SERVIDOR_HUSO_HORARIO = pytz.utc
+LOCAL_HUSO_HORARIO = pytz.timezone("America/Mexico_City")
