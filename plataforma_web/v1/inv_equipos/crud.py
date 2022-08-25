@@ -166,7 +166,7 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
     )
 
     # Filtrar por los que si tengan fecha de fabricación
-    consulta = consulta.filter(InvEquipo.fecha_fabricacion is not None)
+    consulta = consulta.filter(InvEquipo.fecha_fabricacion != None)
 
     # Filtrar por fecha de creación
     if creado:
