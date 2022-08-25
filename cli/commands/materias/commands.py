@@ -21,7 +21,7 @@ def consultar(
     """Consultar materias"""
     rich.print("Consultar materias...")
     try:
-        respuesta = get_materias(
+        datos = get_materias(
             authorization_header=authorization_header(),
             limit=limit,
             offset=offset,
@@ -31,10 +31,10 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Nombre")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            registro["nombre"],
+            str(dato["id"]),
+            dato["nombre"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] materias")
+    rich.print(f"Total: [green]{datos['total']}[/green] materias")

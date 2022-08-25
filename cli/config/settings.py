@@ -21,11 +21,8 @@ USERNAME = os.getenv("USERNAME", "nonexistinguser")
 PASSWORD = os.getenv("PASSWORD", "badpassword")
 
 # Huso horario local
-# Tome el tiempo de creacion
-#     creado = datetime.fromisoformat(registro["creado"])
-# Y convierta a un texto en tiempo local
-#     creado.astimezone(LOCAL_HUSO_HORARIO).strftime("%Y-%m-%d %H:%M:%S")
 LOCAL_HUSO_HORARIO = pytz.timezone("America/Mexico_City")
+SERVIDOR_HUSO_HORARIO = pytz.utc
 
 # SendGrid
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")

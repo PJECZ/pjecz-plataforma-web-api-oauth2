@@ -21,7 +21,7 @@ def consultar(
     """Consultar domicilios"""
     rich.print("Consultar domicilios...")
     try:
-        respuesta = get_domicilios(
+        datos = get_domicilios(
             authorization_header=authorization_header(),
             limit=limit,
             offset=offset,
@@ -31,16 +31,16 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Estado", "Municipio", "Calle", "No. Ext.", "No. Int.", "Colonia", "C.P.")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            registro["estado"],
-            registro["municipio"],
-            registro["calle"],
-            registro["num_ext"],
-            registro["num_int"],
-            registro["colonia"],
-            str(registro["cp"]),
+            str(dato["id"]),
+            dato["estado"],
+            dato["municipio"],
+            dato["calle"],
+            dato["num_ext"],
+            dato["num_int"],
+            dato["colonia"],
+            str(dato["cp"]),
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] domicilios")
+    rich.print(f"Total: [green]{datos['total']}[/green] domicilios")

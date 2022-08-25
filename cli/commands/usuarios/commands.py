@@ -25,7 +25,7 @@ def consultar(
     """Consultar usuarios"""
     rich.print("Consultar usuarios...")
     try:
-        respuesta = get_usuarios(
+        datos = get_usuarios(
             authorization_header=authorization_header(),
             limit=limit,
             autoridad_id=autoridad_id,
@@ -39,16 +39,16 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "e-mail", "Nombres", "A. Paterno", "A. Materno", "Distrito", "Autoridad", "Oficina")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            registro["email"],
-            registro["nombres"],
-            registro["apellido_paterno"],
-            registro["apellido_materno"],
-            registro["distrito_nombre_corto"],
-            registro["autoridad_clave"],
-            registro["oficina_clave"],
+            str(dato["id"]),
+            dato["email"],
+            dato["nombres"],
+            dato["apellido_paterno"],
+            dato["apellido_materno"],
+            dato["distrito_nombre_corto"],
+            dato["autoridad_clave"],
+            dato["oficina_clave"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] usuarios")
+    rich.print(f"Total: [green]{datos['total']}[/green] usuarios")

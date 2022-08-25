@@ -21,7 +21,7 @@ def consultar(
     """Consultar redes"""
     rich.print("Consultar redes...")
     try:
-        respuesta = get_inv_redes(
+        datos = get_inv_redes(
             authorization_header=authorization_header(),
             limit=limit,
             offset=offset,
@@ -31,11 +31,11 @@ def consultar(
         raise typer.Exit()
     console = rich.console.Console()
     table = rich.table.Table("ID", "Nombre", "Tipo")
-    for registro in respuesta["items"]:
+    for dato in datos["items"]:
         table.add_row(
-            str(registro["id"]),
-            registro["nombre"],
-            registro["tipo"],
+            str(dato["id"]),
+            dato["nombre"],
+            dato["tipo"],
         )
     console.print(table)
-    rich.print(f"Total: [green]{respuesta['total']}[/green] redes")
+    rich.print(f"Total: [green]{datos['total']}[/green] redes")
