@@ -1,12 +1,14 @@
 """
 Soportes Tickets v1, CRUD (create, read, update, and delete)
 """
-from datetime import date
+from datetime import date, datetime
 from typing import Any
+
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from lib.exceptions import IsDeletedException, NotExistsException, NotValidException, OutOfRangeException
+from config.settings import SERVIDOR_HUSO_HORARIO
+from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
 from lib.safe_string import safe_string
 
 from .models import SoporteTicket
@@ -17,9 +19,6 @@ from ..soportes_categorias.crud import get_soporte_categoria
 from ..soportes_categorias.models import SoporteCategoria
 from ..usuarios.crud import get_usuario, get_usuario_from_email
 from ..usuarios.models import Usuario
-
-HOY = date.today()
-ANTIGUA_FECHA = date(year=2000, month=1, day=1)
 
 
 def get_soportes_tickets(
@@ -46,18 +45,16 @@ def get_soportes_tickets(
     else:
         consulta = db.query(SoporteTicket)
     if creado:
-        if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Creado fuera de rango")
-        consulta = consulta.filter(func.date(SoporteTicket.creado) == creado)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        consulta = consulta.filter(SoporteTicket.creado >= desde_dt).filter(SoporteTicket.creado <= hasta_dt)
     else:
         if creado_desde:
-            if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(SoporteTicket.creado >= creado_desde)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(SoporteTicket.creado >= desde_dt)
         if creado_hasta:
-            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
     if soporte_categoria_id:
         soporte_categoria = get_soporte_categoria(db, soporte_categoria_id)
         consulta = consulta.filter(SoporteTicket.soporte_categoria == soporte_categoria)
@@ -107,18 +104,16 @@ def get_cantidades_por_distrito_por_categoria(
         .join(SoporteCategoria)
     )
     if creado:
-        if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Creado fuera de rango")
-        consulta = consulta.filter(func.date(SoporteTicket.creado) == creado)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        consulta = consulta.filter(SoporteTicket.creado >= desde_dt).filter(SoporteTicket.creado <= hasta_dt)
     else:
         if creado_desde:
-            if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(SoporteTicket.creado >= creado_desde)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(SoporteTicket.creado >= desde_dt)
         if creado_hasta:
-            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
     consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
     consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
     return consulta.all()
@@ -141,18 +136,16 @@ def get_cantidades_por_funcionario_por_estado(
         .join(Funcionario)
     )
     if creado:
-        if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Creado fuera de rango")
-        consulta = consulta.filter(func.date(SoporteTicket.creado) == creado)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        consulta = consulta.filter(SoporteTicket.creado >= desde_dt).filter(SoporteTicket.creado <= hasta_dt)
     else:
         if creado_desde:
-            if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(SoporteTicket.creado >= creado_desde)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(SoporteTicket.creado >= desde_dt)
         if creado_hasta:
-            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(SoporteTicket.creado <= creado_hasta)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
     consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
     consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
     return consulta.all()
