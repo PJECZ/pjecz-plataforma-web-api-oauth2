@@ -1,19 +1,17 @@
 """
 Sentencias v1, CRUD (create, read, update, and delete)
 """
-from datetime import date
+from datetime import date, datetime
 from typing import Any
-from sqlalchemy.orm import Session
-from sqlalchemy.sql import func
 
+from sqlalchemy.orm import Session
+
+from config.settings import SERVIDOR_HUSO_HORARIO
 from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
 
 from .models import Sentencia
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 from ..materias_tipos_juicios.crud import get_materia_tipo_juicio
-
-HOY = date.today()
-ANTIGUA_FECHA = date(year=2000, month=1, day=1)
 
 
 def get_sentencias(
@@ -40,18 +38,16 @@ def get_sentencias(
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id)
         consulta = consulta.filter(Sentencia.materia_tipo_juicio == materia_tipo_juicio)
     if creado:
-        if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Creado fuera de rango")
-        consulta = consulta.filter(func.date(Sentencia.creado) == creado)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        consulta = consulta.filter(Sentencia.creado >= desde_dt).filter(Sentencia.creado <= hasta_dt)
     else:
         if creado_desde:
-            if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(Sentencia.creado >= creado_desde)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(Sentencia.creado >= desde_dt)
         if creado_hasta:
-            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Creado fuera de rango")
-            consulta = consulta.filter(Sentencia.creado <= creado_hasta)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            consulta = consulta.filter(Sentencia.creado <= hasta_dt)
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
             raise OutOfRangeException("Fecha fuera de rango")

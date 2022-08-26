@@ -15,8 +15,6 @@ from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
 from ..autoridades.crud import get_autoridad, get_autoridades
 
 LIMITE_DIAS = 7
-HOY = date.today()
-ANTIGUA_FECHA = date(year=2000, month=1, day=1)
 
 
 def get_listas_de_acuerdos(
@@ -35,34 +33,22 @@ def get_listas_de_acuerdos(
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     if creado:
-        if not ANTIGUA_FECHA <= creado <= HOY:
-            raise OutOfRangeException("Fecha fuera de rango")
-        desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0))
-        hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59))
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
         consulta = consulta.filter(ListaDeAcuerdo.creado >= desde_dt).filter(ListaDeAcuerdo.creado <= hasta_dt)
     else:
         if creado_desde:
-            if not ANTIGUA_FECHA <= creado_desde <= HOY:
-                raise OutOfRangeException("Fecha fuera de rango")
-            desde_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_desde.year, month=creado_desde.month, day=creado_desde.day, hour=0, minute=0, second=0))
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
             consulta = consulta.filter(ListaDeAcuerdo.creado >= desde_dt)
         if creado_hasta:
-            if not ANTIGUA_FECHA <= creado_hasta <= HOY:
-                raise OutOfRangeException("Fecha fuera de rango")
-            hasta_dt = SERVIDOR_HUSO_HORARIO.localize(datetime(year=creado_hasta.year, month=creado_hasta.month, day=creado_hasta.day, hour=23, minute=59, second=59))
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
             consulta = consulta.filter(ListaDeAcuerdo.creado <= hasta_dt)
     if fecha:
-        if not ANTIGUA_FECHA <= fecha <= HOY:
-            raise OutOfRangeException("Fecha fuera de rango")
         consulta = consulta.filter_by(fecha=fecha)
     else:
         if fecha_desde:
-            if not ANTIGUA_FECHA <= fecha_desde <= HOY:
-                raise OutOfRangeException("Fecha fuera de rango")
             consulta = consulta.filter(ListaDeAcuerdo.fecha >= fecha_desde)
         if fecha_hasta:
-            if not ANTIGUA_FECHA <= fecha_hasta <= HOY:
-                raise OutOfRangeException("Fecha fuera de rango")
             consulta = consulta.filter(ListaDeAcuerdo.fecha <= fecha_hasta)
     return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdo.id.desc())
 
@@ -92,10 +78,11 @@ def insert_lista_de_acuerdo(
     if not autoridad.es_jurisdiccional:
         raise NotValidException("No es jurisdiccional la autoridad")
     # Validar fecha
-    hoy_dt = datetime(year=HOY.year, month=HOY.month, day=HOY.day)
+    hoy = date.today()
+    hoy_dt = datetime(year=hoy.year, month=hoy.month, day=hoy.day)
     limite_dt = hoy_dt + timedelta(days=-LIMITE_DIAS)
     if lista_de_acuerdo.fecha is None:
-        fecha = HOY
+        fecha = hoy
     else:
         fecha = lista_de_acuerdo.fecha
         if not limite_dt <= datetime(year=fecha.year, month=fecha.month, day=fecha.day) <= hoy_dt:
@@ -123,13 +110,11 @@ def insert_lista_de_acuerdo(
 def get_listas_de_acuerdos_sintetizar_por_creado(
     db: Session,
     creado: date = None,
+    creado_desde: date = None,
+    creado_hasta: date = None,
     distrito_id: int = None,
 ) -> List:
     """Consultar las listas de acuerdos por distrito"""
-
-    # Si no se da creado, se toma el día de hoy
-    if creado is None:
-        creado = HOY
 
     # Consultar las autoridades del distrito
     autoridades = get_autoridades(
@@ -142,13 +127,19 @@ def get_listas_de_acuerdos_sintetizar_por_creado(
     # Consultar las listas de acuerdos de las autoridades
     listas_de_acuerdos = []
     for autoridad in autoridades:
-        existentes = get_listas_de_acuerdos(db=db, autoridad_id=autoridad.id, creado=creado).all()
+        existentes = get_listas_de_acuerdos(
+            db=db,
+            autoridad_id=autoridad.id,
+            creado=creado,
+            creado_desde=creado_desde,
+            creado_hasta=creado_hasta,
+        ).all()
         if existentes:
-            # Registros existentes
+            # Si hay listas de acuerdos, se agregan a la lista
             for lista_de_acuerdo in existentes:
                 listas_de_acuerdos.append(ListaDeAcuerdoOut.from_orm(lista_de_acuerdo))
         else:
-            # Registro INEXISTENTE
+            # Si NO hay listas de acuerdos, se agrega una renglon con ND
             listas_de_acuerdos.append(
                 ListaDeAcuerdoOut(
                     id=0,
