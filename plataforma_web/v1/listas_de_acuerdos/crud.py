@@ -12,7 +12,7 @@ from lib.safe_string import safe_string
 
 from .models import ListaDeAcuerdo
 from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
-from ..autoridades.crud import get_autoridad, get_autoridades
+from ..autoridades.crud import get_autoridad, get_autoridades, get_autoridad_from_clave
 
 LIMITE_DIAS = 7
 
@@ -20,6 +20,7 @@ LIMITE_DIAS = 7
 def get_listas_de_acuerdos(
     db: Session,
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -31,6 +32,9 @@ def get_listas_de_acuerdos(
     consulta = db.query(ListaDeAcuerdo)
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
+        consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
+    elif autoridad_clave:
+        autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     if creado:
         desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
