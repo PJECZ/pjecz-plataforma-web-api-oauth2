@@ -23,6 +23,7 @@ edictos = APIRouter(prefix="/v1/edictos", tags=["edictos"])
 @edictos.get("", response_model=LimitOffsetPage[EdictoOut])
 async def listado_edictos(
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
@@ -36,6 +37,7 @@ async def listado_edictos(
         listado = get_edictos(
             db,
             autoridad_id=autoridad_id,
+            autoridad_clave=autoridad_clave,
             fecha=fecha,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,

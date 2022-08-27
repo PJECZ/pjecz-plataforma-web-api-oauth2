@@ -10,12 +10,13 @@ from config.settings import SERVIDOR_HUSO_HORARIO
 from lib.exceptions import IsDeletedException, NotExistsException
 
 from .models import Edicto
-from ..autoridades.crud import get_autoridad
+from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 
 
 def get_edictos(
     db: Session,
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -27,6 +28,9 @@ def get_edictos(
     consulta = db.query(Edicto)
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
+        consulta = consulta.filter(Edicto.autoridad == autoridad)
+    elif autoridad_clave:
+        autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(Edicto.autoridad == autoridad)
     if creado:
         desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)

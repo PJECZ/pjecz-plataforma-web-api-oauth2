@@ -24,6 +24,7 @@ listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de
 @listas_de_acuerdos.get("", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
 async def listado_listas_de_acuerdos(
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
@@ -40,6 +41,7 @@ async def listado_listas_de_acuerdos(
         listado = get_listas_de_acuerdos(
             db,
             autoridad_id=autoridad_id,
+            autoridad_clave=autoridad_clave,
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
