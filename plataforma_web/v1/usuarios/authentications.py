@@ -62,7 +62,6 @@ def get_user(username: str, db: Session = Depends(get_db)):
 def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
     """Autentificar el usuario"""
     user = get_user(username, db)
-    print(repr(user))
     if not user:
         return False
     if not verify_password(password, user.hashed_password):

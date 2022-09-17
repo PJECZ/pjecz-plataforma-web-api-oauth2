@@ -11,8 +11,6 @@ __pycache__/
 .ipynb_checkpoints/
 
 /app.yaml
-/instance/settings.py
-/poetry.lock
 /requirements.txt
 /venv/
 /.venv/
