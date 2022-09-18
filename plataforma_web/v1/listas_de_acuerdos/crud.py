@@ -7,7 +7,7 @@ from typing import Any, List
 from sqlalchemy.orm import Session
 
 from config.settings import SERVIDOR_HUSO_HORARIO
-from lib.exceptions import AlredyExistsException, IsDeletedException, NotExistsException, NotValidException, OutOfRangeException
+from lib.exceptions import PWAlreadyExistsError, PWIsDeletedError, PWNotExistsError, PWNotValidParamError, PWOutOfRangeParamError
 from lib.safe_string import safe_string
 
 from .models import ListaDeAcuerdo
@@ -64,9 +64,9 @@ def get_lista_de_acuerdo(
     """Consultar una lista de acuerdo por su id"""
     lista_de_acuerdo = db.query(ListaDeAcuerdo).get(lista_de_acuerdo_id)
     if lista_de_acuerdo is None:
-        raise NotExistsException("No exite esa lista de acuerdos")
+        raise PWNotExistsError("No exite esa lista de acuerdos")
     if lista_de_acuerdo.estatus != "A":
-        raise IsDeletedException("No es activa la lista de acuerdos, fue eliminada")
+        raise PWIsDeletedError("No es activa la lista de acuerdos, fue eliminada")
     return lista_de_acuerdo
 
 
@@ -78,9 +78,9 @@ def insert_lista_de_acuerdo(
     # Validar autoridad
     autoridad = get_autoridad(db, lista_de_acuerdo.autoridad_id)
     if not autoridad.distrito.es_distrito_judicial:
-        raise NotValidException("No está la autoridad en un distrito judicial")
+        raise PWNotValidParamError("No está la autoridad en un distrito judicial")
     if not autoridad.es_jurisdiccional:
-        raise NotValidException("No es jurisdiccional la autoridad")
+        raise PWNotValidParamError("No es jurisdiccional la autoridad")
     # Validar fecha
     hoy = date.today()
     hoy_dt = datetime(year=hoy.year, month=hoy.month, day=hoy.day)
@@ -90,11 +90,11 @@ def insert_lista_de_acuerdo(
     else:
         fecha = lista_de_acuerdo.fecha
         if not limite_dt <= datetime(year=fecha.year, month=fecha.month, day=fecha.day) <= hoy_dt:
-            raise OutOfRangeException("Fecha fuera de rango")
+            raise PWOutOfRangeParamError("Fecha fuera de rango")
     # Si ya existe una lista de acuerdos con esa fecha, se aborta
     existe_esa_lista = db.query(ListaDeAcuerdo).filter_by(autoridad_id=autoridad.id).filter_by(fecha=fecha).filter_by(estatus="A").first()
     if existe_esa_lista:
-        raise AlredyExistsException("No se permite otra lista de acuerdos para la autoridad y fechas dadas")
+        raise PWAlreadyExistsError("No se permite otra lista de acuerdos para la autoridad y fechas dadas")
     # Validar descripcion
     if lista_de_acuerdo.descripcion == "":
         descripcion = "LISTA DE ACUERDOS"

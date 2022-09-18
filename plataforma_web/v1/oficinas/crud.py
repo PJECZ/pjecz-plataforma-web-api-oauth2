@@ -4,7 +4,7 @@ Oficinas v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_clave
 
 from .models import Oficina
@@ -35,18 +35,19 @@ def get_oficina(db: Session, oficina_id: int) -> Oficina:
     """Consultar una oficina por su id"""
     oficina = db.query(Oficina).get(oficina_id)
     if oficina is None:
-        raise NotExistsException("No existe ese oficina")
+        raise PWNotExistsError("No existe ese oficina")
     if oficina.estatus != "A":
-        raise IsDeletedException("No es activa ese oficina, está eliminada")
+        raise PWIsDeletedError("No es activa ese oficina, está eliminada")
     return oficina
 
 
 def get_oficina_from_clave(db: Session, oficina_clave: str) -> Oficina:
     """Consultar una oficina por su clave"""
+    # TODO: Validar clave
     clave = safe_clave(oficina_clave)
     oficina = db.query(Oficina).filter_by(clave=clave).first()
     if oficina is None:
-        raise NotExistsException("No existe ese oficina")
+        raise PWNotExistsError("No existe ese oficina")
     if oficina.estatus != "A":
-        raise IsDeletedException("No es activa ese oficina, está eliminada")
+        raise PWIsDeletedError("No es activa ese oficina, está eliminada")
     return oficina

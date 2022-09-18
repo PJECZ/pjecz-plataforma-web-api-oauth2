@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, extract
 
 from config.settings import SERVIDOR_HUSO_HORARIO
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
 from .models import InvEquipo
@@ -82,9 +82,9 @@ def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:
     """Consultar un equipo por su id"""
     inv_equipo = db.query(InvEquipo).get(inv_equipo_id)
     if inv_equipo is None:
-        raise NotExistsException("No existe ese equipo")
+        raise PWNotExistsError("No existe ese equipo")
     if inv_equipo.estatus != "A":
-        raise IsDeletedException("No es activo ese equipo, está eliminado")
+        raise PWIsDeletedError("No es activo ese equipo, está eliminado")
     return inv_equipo
 
 

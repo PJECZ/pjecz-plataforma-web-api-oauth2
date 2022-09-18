@@ -5,7 +5,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
 from .models import InvCategoria
 
@@ -19,7 +19,7 @@ def get_inv_categoria(db: Session, inv_categoria_id: int) -> InvCategoria:
     """Consultar una categoria por su id"""
     inv_categoria = db.query(InvCategoria).get(inv_categoria_id)
     if inv_categoria is None:
-        raise NotExistsException("No existe ese categoria")
+        raise PWNotExistsError("No existe ese categoria")
     if inv_categoria.estatus != "A":
-        raise IsDeletedException("No es activo ese categoria, está eliminado")
+        raise PWIsDeletedError("No es activo ese categoria, está eliminado")
     return inv_categoria

@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
 from config.settings import SERVIDOR_HUSO_HORARIO
-from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import safe_string
 
 from .models import SoporteTicket
@@ -67,7 +67,7 @@ def get_soportes_tickets(
     estado = safe_string(estado)
     if estado:
         if estado not in SoporteTicket.ESTADOS:
-            raise NotValidException("Estado incorrecto")
+            raise PWNotValidParamError("Estado incorrecto")
         consulta = consulta.filter(SoporteTicket.estado == estado)
     descripcion = safe_string(descripcion)
     if descripcion:
@@ -79,9 +79,9 @@ def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:
     """Consultar un soporte_ticket por su id"""
     soporte_ticket = db.query(SoporteTicket).get(soporte_ticket_id)
     if soporte_ticket is None:
-        raise NotExistsException("No existe ese ticket")
+        raise PWNotExistsError("No existe ese ticket")
     if soporte_ticket.estatus != "A":
-        raise IsDeletedException("No es activo ese ticket, está eliminado")
+        raise PWIsDeletedError("No es activo ese ticket, está eliminado")
     return soporte_ticket
 
 

@@ -4,7 +4,7 @@ Permisos v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
 from .models import Permiso
 from ..modulos.crud import get_modulo
@@ -31,7 +31,7 @@ def get_permiso(db: Session, permiso_id: int) -> Permiso:
     """Consultar un permiso por su id"""
     permiso = db.query(Permiso).get(permiso_id)
     if permiso is None:
-        raise NotExistsException("No existe ese permiso")
+        raise PWNotExistsError("No existe ese permiso")
     if permiso.estatus != "A":
-        raise IsDeletedException("No es activo ese permiso, está eliminado")
+        raise PWIsDeletedError("No es activo ese permiso, está eliminado")
     return permiso

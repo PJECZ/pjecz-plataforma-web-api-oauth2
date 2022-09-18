@@ -4,6 +4,8 @@ REDAM (Registro Estatal de Deudores Alimentarios) v1, CRUD (create, read, update
 from typing import Any
 from sqlalchemy.orm import Session
 
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
+
 from .models import Redam
 from ..autoridades.crud import get_autoridad
 from ..autoridades.models import Autoridad
@@ -30,7 +32,7 @@ def get_redam(db: Session, redam_id: int) -> Redam:
     """Consultar un deudor por su id"""
     redam = db.query(Redam).get(redam_id)
     if redam is None:
-        raise NotExistsException("No existe ese deudor")
+        raise PWNotExistsError("No existe ese deudor")
     if redam.estatus != "A":
-        raise IsDeletedException("No es activo ese deudor, está eliminado")
+        raise PWIsDeletedError("No es activo ese deudor, está eliminado")
     return redam

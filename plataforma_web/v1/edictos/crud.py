@@ -7,7 +7,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from config.settings import SERVIDOR_HUSO_HORARIO
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
 from .models import Edicto
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
@@ -57,7 +57,7 @@ def get_edicto(db: Session, edicto_id: int) -> Edicto:
     """Consultar un edicto por su id"""
     edicto = db.query(Edicto).get(edicto_id)
     if edicto is None:
-        raise NotExistsException("No existe ese edicto")
+        raise PWNotExistsError("No existe ese edicto")
     if edicto.estatus != "A":
-        raise IsDeletedException("No es activo ese edicto, está eliminado")
+        raise PWIsDeletedError("No es activo ese edicto, está eliminado")
     return edicto
