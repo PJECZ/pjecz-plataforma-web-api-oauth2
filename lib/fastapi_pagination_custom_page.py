@@ -53,7 +53,7 @@ class CustomPage(AbstractPage[T], Generic[T]):
         )
 
 
-def make_custom_error_page(error: Exception) -> CustomPage:
+def custom_page_success_false(error: Exception) -> CustomPage:
     """Crear pagina personalizada sin items, con success en falso y message con el error"""
 
     result = PageResult(total=0, items=[], limit=0, offset=0)

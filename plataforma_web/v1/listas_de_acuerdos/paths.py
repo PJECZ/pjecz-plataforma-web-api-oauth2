@@ -9,11 +9,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_sintetizar_por_creado, get_lista_de_acuerdo, insert_lista_de_acuerdo
-from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
+from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut, OneListaDeAcuerdoOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -21,7 +21,7 @@ from ..usuarios.schemas import UsuarioInDB
 listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de acuerdos"])
 
 
-@listas_de_acuerdos.get("", response_model=LimitOffsetPage[ListaDeAcuerdoOut])
+@listas_de_acuerdos.get("", response_model=CustomPage[ListaDeAcuerdoOut])
 async def listado_listas_de_acuerdos(
     autoridad_id: int = None,
     autoridad_clave: str = None,
@@ -49,8 +49,8 @@ async def listado_listas_de_acuerdos(
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    except PWAnyError as error:
+        return custom_page_success_false(error)
     return paginate(listado)
 
 
@@ -94,7 +94,7 @@ async def nueva_lista_de_acuerdos(
     return ListaDeAcuerdoOut.from_orm(resultado)
 
 
-@listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=ListaDeAcuerdoOut)
+@listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=OneListaDeAcuerdoOut)
 async def detalle_lista_de_acuerdos(
     lista_de_acuerdo_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -108,6 +108,6 @@ async def detalle_lista_de_acuerdos(
             db,
             lista_de_acuerdo_id=lista_de_acuerdo_id,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return ListaDeAcuerdoOut.from_orm(consulta)
+    except PWAnyError as error:
+        return OneListaDeAcuerdoOut(success=False, message=str(error))
+    return OneListaDeAcuerdoOut.from_orm(consulta)

@@ -9,11 +9,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_inv_equipos, get_inv_equipo, get_inv_equipos_cantidades_por_oficina_por_tipo, get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion
-from .schemas import InvEquipoOut, CantidadesOficinaTipoOut, CantidadesOficinaAnioFabricacionOut
+from .schemas import InvEquipoOut, OneInvEquipoOut, CantidadesOficinaTipoOut, CantidadesOficinaAnioFabricacionOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -21,7 +21,7 @@ from ..usuarios.schemas import UsuarioInDB
 inv_equipos = APIRouter(prefix="/v1/inv_equipos", tags=["inventarios"])
 
 
-@inv_equipos.get("", response_model=LimitOffsetPage[InvEquipoOut])
+@inv_equipos.get("", response_model=CustomPage[InvEquipoOut])
 async def listado_inv_equipos(
     creado: date = None,
     creado_desde: date = None,
@@ -55,8 +55,8 @@ async def listado_inv_equipos(
             oficina_clave=oficina_clave,
             tipo=tipo,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    except PWAnyError as error:
+        return custom_page_success_false(error)
     return paginate(listado)
 
 
@@ -110,7 +110,7 @@ async def cantidades_por_oficina_por_anio_fabricacion(
     return resultados
 
 
-@inv_equipos.get("/{inv_equipo_id}", response_model=InvEquipoOut)
+@inv_equipos.get("/{inv_equipo_id}", response_model=OneInvEquipoOut)
 async def detalle_inv_equipo(
     inv_equipo_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -124,6 +124,6 @@ async def detalle_inv_equipo(
             db,
             inv_equipo_id=inv_equipo_id,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return InvEquipoOut.from_orm(inv_equipo)
+    except PWAnyError as error:
+        return OneInvEquipoOut(success=False, message=str(error))
+    return OneInvEquipoOut.from_orm(inv_equipo)

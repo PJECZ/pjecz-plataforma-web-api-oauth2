@@ -8,11 +8,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_edictos, get_edicto
-from .schemas import EdictoOut
+from .schemas import EdictoOut, OneEdictoOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -20,7 +20,7 @@ from ..usuarios.schemas import UsuarioInDB
 edictos = APIRouter(prefix="/v1/edictos", tags=["edictos"])
 
 
-@edictos.get("", response_model=LimitOffsetPage[EdictoOut])
+@edictos.get("", response_model=CustomPage[EdictoOut])
 async def listado_edictos(
     autoridad_id: int = None,
     autoridad_clave: str = None,
@@ -42,12 +42,12 @@ async def listado_edictos(
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    except PWAnyError as error:
+        return custom_page_success_false(error)
     return paginate(listado)
 
 
-@edictos.get("/{edicto_id}", response_model=EdictoOut)
+@edictos.get("/{edicto_id}", response_model=OneEdictoOut)
 async def detalle_edicto(
     edicto_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -58,6 +58,6 @@ async def detalle_edicto(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         edicto = get_edicto(db, edicto_id=edicto_id)
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return EdictoOut.from_orm(edicto)
+    except PWAnyError as error:
+        return OneEdictoOut(success=False, message=str(error))
+    return OneEdictoOut.from_orm(edicto)

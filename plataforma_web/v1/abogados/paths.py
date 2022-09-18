@@ -6,11 +6,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_abogados, get_abogado
-from .schemas import AbogadoOut
+from .schemas import AbogadoOut, OneAbogadoOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -18,7 +18,7 @@ from ..usuarios.schemas import UsuarioInDB
 abogados = APIRouter(prefix="/v1/abogados", tags=["abogados"])
 
 
-@abogados.get("", response_model=LimitOffsetPage[AbogadoOut])
+@abogados.get("", response_model=CustomPage[AbogadoOut])
 async def listado_abogados(
     anio_desde: int = None,
     anio_hasta: int = None,
@@ -36,12 +36,12 @@ async def listado_abogados(
             anio_hasta=anio_hasta,
             nombre=nombre,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    except PWAnyError as error:
+        return custom_page_success_false(error)
     return paginate(listado)
 
 
-@abogados.get("/{abogado_id}", response_model=AbogadoOut)
+@abogados.get("/{abogado_id}", response_model=OneAbogadoOut)
 async def detalle_abogado(
     abogado_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -55,6 +55,6 @@ async def detalle_abogado(
             db,
             abogado_id=abogado_id,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return AbogadoOut.from_orm(abogado)
+    except PWAnyError as error:
+        return OneAbogadoOut(success=False, message=str(error))
+    return OneAbogadoOut.from_orm(abogado)

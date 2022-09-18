@@ -8,11 +8,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_inv_custodia, get_inv_custodias
-from .schemas import InvCustodiaOut
+from .schemas import InvCustodiaOut, OneInvCustodiaOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -20,7 +20,7 @@ from ..usuarios.schemas import UsuarioInDB
 inv_custodias = APIRouter(prefix="/v1/inv_custodias", tags=["inventarios"])
 
 
-@inv_custodias.get("", response_model=LimitOffsetPage[InvCustodiaOut])
+@inv_custodias.get("", response_model=CustomPage[InvCustodiaOut])
 async def listado_inv_custodias(
     usuario_id: int = None,
     usuario_email: str = None,
@@ -40,12 +40,12 @@ async def listado_inv_custodias(
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    except PWAnyError as error:
+        return custom_page_success_false(error)
     return paginate(listado)
 
 
-@inv_custodias.get("/{inv_custodia_id}", response_model=InvCustodiaOut)
+@inv_custodias.get("/{inv_custodia_id}", response_model=OneInvCustodiaOut)
 async def detalle_inv_custodia(
     inv_custodia_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -59,6 +59,6 @@ async def detalle_inv_custodia(
             db,
             inv_custodia_id=inv_custodia_id,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return InvCustodiaOut.from_orm(inv_custodia)
+    except PWAnyError as error:
+        return OneInvCustodiaOut(success=False, message=str(error))
+    return OneInvCustodiaOut.from_orm(inv_custodia)

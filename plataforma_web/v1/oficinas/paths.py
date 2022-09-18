@@ -6,11 +6,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_oficinas, get_oficina
-from .schemas import OficinaOut
+from .schemas import OficinaOut, OneOficinaOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -18,7 +18,7 @@ from ..usuarios.schemas import UsuarioInDB
 oficinas = APIRouter(prefix="/v1/oficinas", tags=["catalogos"])
 
 
-@oficinas.get("", response_model=LimitOffsetPage[OficinaOut])
+@oficinas.get("", response_model=CustomPage[OficinaOut])
 async def listado_oficinas(
     distrito_id: int = None,
     domicilio_id: int = None,
@@ -36,12 +36,12 @@ async def listado_oficinas(
             domicilio_id=domicilio_id,
             es_jurisdiccional=es_juridicional,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
+    except PWAnyError as error:
+        return custom_page_success_false(error)
     return paginate(listado)
 
 
-@oficinas.get("/{oficina_id}", response_model=OficinaOut)
+@oficinas.get("/{oficina_id}", response_model=OneOficinaOut)
 async def detalle_oficina(
     oficina_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -55,6 +55,6 @@ async def detalle_oficina(
             db,
             oficina_id=oficina_id,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return OficinaOut.from_orm(oficina)
+    except PWAnyError as error:
+        return OneOficinaOut(success=False, message=str(error))
+    return OneOficinaOut.from_orm(oficina)

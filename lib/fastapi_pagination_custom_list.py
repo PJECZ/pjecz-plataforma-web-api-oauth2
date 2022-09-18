@@ -50,7 +50,7 @@ class CustomList(AbstractPage[T], Generic[T]):
         )
 
 
-def make_custom_error_list(error: Exception) -> CustomList:
+def custom_list_success_false(error: Exception) -> CustomList:
     """Crear lista personalizada sin items, con success en falso y message con el error"""
 
     result = ListResult(total=0, items=[], size=0)
