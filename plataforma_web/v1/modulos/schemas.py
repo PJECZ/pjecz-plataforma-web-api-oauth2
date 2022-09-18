@@ -3,6 +3,8 @@ Modulos v1, esquemas de pydantic
 """
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class ModuloOut(BaseModel):
     """Esquema para entregar modulos"""
@@ -18,3 +20,7 @@ class ModuloOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneModuloOut(ModuloOut, OneBaseOut):
+    """Esquema para entregar un modulo"""

@@ -4,6 +4,8 @@ Usuarios v1.0, esquemas
 from typing import Optional
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class UsuarioOut(BaseModel):
     """Esquema para entregar usuario"""
@@ -30,6 +32,10 @@ class UsuarioOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneUsuarioOut(UsuarioOut, OneBaseOut):
+    """Esquema para entregar un usuario"""
 
 
 class UsuarioInDB(UsuarioOut):

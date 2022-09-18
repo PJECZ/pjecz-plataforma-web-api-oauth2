@@ -5,6 +5,8 @@ from datetime import date, datetime
 from typing import Optional
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class SentenciaOut(BaseModel):
     """Esquema para entregar sentencia"""
@@ -35,3 +37,7 @@ class SentenciaOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneSentenciaOut(SentenciaOut, OneBaseOut):
+    """Esquema para entregar una sentencia"""

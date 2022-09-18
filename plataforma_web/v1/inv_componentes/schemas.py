@@ -4,6 +4,8 @@ Inventarios Componentes v1, esquemas de pydantic
 from typing import Optional
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class InvComponenteOut(BaseModel):
     """Esquema para entregar componentes"""
@@ -22,3 +24,7 @@ class InvComponenteOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneInvComponenteOut(InvComponenteOut, OneBaseOut):
+    """Esquema para entregar un componente"""

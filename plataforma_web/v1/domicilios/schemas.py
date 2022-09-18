@@ -3,6 +3,8 @@ Domicilios v1, esquemas de pydantic
 """
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class DomicilioOut(BaseModel):
     """Esquema para entregar domicilios"""
@@ -21,3 +23,7 @@ class DomicilioOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneDomicilioOut(DomicilioOut, OneBaseOut):
+    """Esquema para entregar un domicilio"""

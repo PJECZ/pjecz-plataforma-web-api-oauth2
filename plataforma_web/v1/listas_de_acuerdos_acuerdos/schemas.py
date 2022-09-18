@@ -5,6 +5,8 @@ from datetime import date
 from typing import Optional
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class ListaDeAcuerdoAcuerdoIn(BaseModel):
     """Esquema para recibir acuerdo"""
@@ -29,3 +31,7 @@ class ListaDeAcuerdoAcuerdoOut(ListaDeAcuerdoAcuerdoIn):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneListaDeAcuerdoAcuerdoOut(ListaDeAcuerdoAcuerdoOut, OneBaseOut):
+    """Esquema para entregar un acuerdo"""

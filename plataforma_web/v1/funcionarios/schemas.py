@@ -5,6 +5,8 @@ from datetime import date
 from typing import Optional
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class FuncionarioOut(BaseModel):
     """Esquema para entregar funcionario"""
@@ -29,3 +31,7 @@ class FuncionarioOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneFuncionarioOut(FuncionarioOut, OneBaseOut):
+    """Esquema para entregar un funcionario"""

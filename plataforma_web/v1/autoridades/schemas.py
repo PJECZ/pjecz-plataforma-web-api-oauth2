@@ -3,6 +3,8 @@ Autoridades v1, esquemas
 """
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class AutoridadOut(BaseModel):
     """Esquema para entregar autoridad"""
@@ -24,3 +26,7 @@ class AutoridadOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneAutoridadOut(AutoridadOut, OneBaseOut):
+    """Esquema para entregar un autoridad"""

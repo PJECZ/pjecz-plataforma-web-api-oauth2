@@ -4,6 +4,8 @@ REDAM (Registro Estatal de Deudores Alimentarios) v1, esquemas de pydantic
 from datetime import date
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class RedamOut(BaseModel):
     """Esquema para entregar deudores"""
@@ -24,3 +26,7 @@ class RedamOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneRedamOut(RedamOut, OneBaseOut):
+    """Esquema para entregar un redam"""

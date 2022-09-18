@@ -3,6 +3,8 @@ Centros de Trabajo v1, esquemas de pydantic
 """
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class CentroTrabajoOut(BaseModel):
     """Esquema para entregar centro de trabajo"""
@@ -21,3 +23,7 @@ class CentroTrabajoOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneCentroTrabajoOut(CentroTrabajoOut, OneBaseOut):
+    """Esquema para entregar un centro de trabajo"""

@@ -4,6 +4,8 @@ Soportes Tickets v1, esquemas de pydantic
 from datetime import datetime
 from pydantic import BaseModel
 
+from lib.schemas_base import OneBaseOut
+
 
 class SoporteTicketOut(BaseModel):
     """Esquema para entregar soporte ticket"""
@@ -27,6 +29,10 @@ class SoporteTicketOut(BaseModel):
         """SQLAlchemy config"""
 
         orm_mode = True
+
+
+class OneSoporteTicketOut(SoporteTicketOut, OneBaseOut):
+    """Esquema para entregar un ticket de soporte"""
 
 
 class SoporteTicketTotalOut(BaseModel):
