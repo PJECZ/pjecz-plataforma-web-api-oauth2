@@ -5,8 +5,8 @@ from datetime import date, datetime, timedelta
 from typing import Any, List
 
 from sqlalchemy.orm import Session
+import pytz
 
-from config.settings import SERVIDOR_HUSO_HORARIO
 from lib.exceptions import PWAlreadyExistsError, PWIsDeletedError, PWNotExistsError, PWNotValidParamError, PWOutOfRangeParamError
 from lib.safe_string import safe_string
 
@@ -29,24 +29,35 @@ def get_listas_de_acuerdos(
     fecha_hasta: date = None,
 ) -> Any:
     """Consultar las listas de acuerdos activas"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
+
+    # Consultar
     consulta = db.query(ListaDeAcuerdo)
+
+    # Filtrar por autoridad
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
     elif autoridad_clave:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
+
+    # Filtrar por creado
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(ListaDeAcuerdo.creado >= desde_dt).filter(ListaDeAcuerdo.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(ListaDeAcuerdo.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(ListaDeAcuerdo.creado <= hasta_dt)
+
+    # Filtrar por fecha
     if fecha:
         consulta = consulta.filter_by(fecha=fecha)
     else:
@@ -54,6 +65,8 @@ def get_listas_de_acuerdos(
             consulta = consulta.filter(ListaDeAcuerdo.fecha >= fecha_desde)
         if fecha_hasta:
             consulta = consulta.filter(ListaDeAcuerdo.fecha <= fecha_hasta)
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdo.id.desc())
 
 
@@ -75,12 +88,14 @@ def insert_lista_de_acuerdo(
     lista_de_acuerdo: ListaDeAcuerdoIn,
 ) -> ListaDeAcuerdo:
     """Insertar una lista de acuerdos"""
+
     # Validar autoridad
     autoridad = get_autoridad(db, lista_de_acuerdo.autoridad_id)
     if not autoridad.distrito.es_distrito_judicial:
         raise PWNotValidParamError("No está la autoridad en un distrito judicial")
     if not autoridad.es_jurisdiccional:
         raise PWNotValidParamError("No es jurisdiccional la autoridad")
+
     # Validar fecha
     hoy = date.today()
     hoy_dt = datetime(year=hoy.year, month=hoy.month, day=hoy.day)
@@ -91,15 +106,18 @@ def insert_lista_de_acuerdo(
         fecha = lista_de_acuerdo.fecha
         if not limite_dt <= datetime(year=fecha.year, month=fecha.month, day=fecha.day) <= hoy_dt:
             raise PWOutOfRangeParamError("Fecha fuera de rango")
+
     # Si ya existe una lista de acuerdos con esa fecha, se aborta
     existe_esa_lista = db.query(ListaDeAcuerdo).filter_by(autoridad_id=autoridad.id).filter_by(fecha=fecha).filter_by(estatus="A").first()
     if existe_esa_lista:
         raise PWAlreadyExistsError("No se permite otra lista de acuerdos para la autoridad y fechas dadas")
+
     # Validar descripcion
     if lista_de_acuerdo.descripcion == "":
         descripcion = "LISTA DE ACUERDOS"
     else:
         descripcion = safe_string(lista_de_acuerdo.descripcion)
+
     # Insertar
     resultado = ListaDeAcuerdo(
         autoridad=autoridad,
@@ -108,6 +126,8 @@ def insert_lista_de_acuerdo(
     )
     db.add(resultado)
     db.commit()
+
+    # Entregar
     return resultado
 
 

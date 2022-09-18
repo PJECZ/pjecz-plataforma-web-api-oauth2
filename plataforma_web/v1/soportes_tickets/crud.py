@@ -6,8 +6,8 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
+import pytz
 
-from config.settings import SERVIDOR_HUSO_HORARIO
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import safe_string
 
@@ -35,6 +35,11 @@ def get_soportes_tickets(
     usuario_email: str = None,
 ) -> Any:
     """Consultar los soportes_tickets activos"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
+
+    # Consultar
     oficina = None
     if oficina_id:
         oficina = get_oficina(db, oficina_id)
@@ -44,17 +49,21 @@ def get_soportes_tickets(
         consulta = db.query(SoporteTicket).join(Usuario).filter(Usuario.oficina_id == oficina.id)
     else:
         consulta = db.query(SoporteTicket)
+
+    # Filtrar por creado
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(SoporteTicket.creado >= desde_dt).filter(SoporteTicket.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
+
+    # Filtrar por categoria
     if soporte_categoria_id:
         soporte_categoria = get_soporte_categoria(db, soporte_categoria_id)
         consulta = consulta.filter(SoporteTicket.soporte_categoria == soporte_categoria)
@@ -64,14 +73,20 @@ def get_soportes_tickets(
     elif usuario_email:
         usuario = get_usuario_from_email(db, usuario_email)
         consulta = consulta.filter(SoporteTicket.usuario == usuario)
+
+    # Filtrar por estado
     estado = safe_string(estado)
     if estado:
         if estado not in SoporteTicket.ESTADOS:
             raise PWNotValidParamError("Estado incorrecto")
         consulta = consulta.filter(SoporteTicket.estado == estado)
+
+    # Filtrar por descripcion
     descripcion = safe_string(descripcion)
     if descripcion:
         consulta = consulta.filter(SoporteTicket.descripcion.contains(descripcion))
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(SoporteTicket.id.desc())
 
 
@@ -92,6 +107,11 @@ def get_cantidades_por_distrito_por_categoria(
     creado_hasta: date = None,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
+
+    # Consultar
     consulta = (
         db.query(
             func.substring(Oficina.clave, 1, 4).label("distrito_clave"),
@@ -103,17 +123,21 @@ def get_cantidades_por_distrito_por_categoria(
         .join(Oficina)
         .join(SoporteCategoria)
     )
+
+    # Filtrar por creado
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(SoporteTicket.creado >= desde_dt).filter(SoporteTicket.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
+
+    # Entregar
     consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
     consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
     return consulta.all()
@@ -126,6 +150,11 @@ def get_cantidades_por_funcionario_por_estado(
     creado_hasta: date = None,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
+
+    # Consultar
     consulta = (
         db.query(
             Funcionario.nombre.label("tecnico"),
@@ -135,17 +164,21 @@ def get_cantidades_por_funcionario_por_estado(
         .select_from(SoporteTicket)
         .join(Funcionario)
     )
+
+    # Filtrar por creado
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(SoporteTicket.creado >= desde_dt).filter(SoporteTicket.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
+
+    # Entregar
     consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
     consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
     return consulta.all()

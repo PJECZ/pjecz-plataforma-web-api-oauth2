@@ -32,12 +32,15 @@ def get_acuerdo(db: Session, lista_de_acuerdo_acuerdo_id: int) -> ListaDeAcuerdo
 
 def insert_acuerdo(db: Session, acuerdo: ListaDeAcuerdoAcuerdoIn) -> ListaDeAcuerdoAcuerdo:
     """Insertar un acuerdo"""
+
     # Validar lista de acuerdos
     lista_de_acuerdo = get_lista_de_acuerdo(db, acuerdo.lista_de_acuerdo_id)
+
     # Evitar la duplicidad, en la misma autoridad no deben repetirse las referencias
     existe_acuerdos = db.query(ListaDeAcuerdoAcuerdo, ListaDeAcuerdo).join(ListaDeAcuerdo).filter(ListaDeAcuerdo.autoridad_id == lista_de_acuerdo.autoridad_id).filter(ListaDeAcuerdoAcuerdo.referencia == acuerdo.referencia).filter_by(estatus="A").first()
     if existe_acuerdos is not None:
         raise PWAlreadyExistsError("No se permite insertar el acuerdo porque la autoridad ya tiene uno con esa referencia")
+
     # Insertar
     resultado = ListaDeAcuerdoAcuerdo(
         lista_de_acuerdo=lista_de_acuerdo,
@@ -51,4 +54,6 @@ def insert_acuerdo(db: Session, acuerdo: ListaDeAcuerdoAcuerdoIn) -> ListaDeAcue
     )
     db.add(resultado)
     db.commit()
+
+    # Entregar
     return resultado

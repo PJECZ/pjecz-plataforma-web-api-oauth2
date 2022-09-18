@@ -5,8 +5,8 @@ from datetime import date, datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
+import pytz
 
-from config.settings import SERVIDOR_HUSO_HORARIO
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
 from .models import Edicto
@@ -25,24 +25,35 @@ def get_edictos(
     fecha_hasta: date = None,
 ) -> Any:
     """Consultar los edictos activos"""
+
+    # Zona horaria
+    servidor_huso_horario = pytz.utc
+
+    # Consultar
     consulta = db.query(Edicto)
+
+    # Filtrar por autoridad
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(Edicto.autoridad == autoridad)
     elif autoridad_clave:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(Edicto.autoridad == autoridad)
+
+    # Filtrar por creado
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(Edicto.creado >= desde_dt).filter(Edicto.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(Edicto.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(Edicto.creado <= hasta_dt)
+
+    # Filtrar por fecha
     if fecha:
         consulta = consulta.filter_by(fecha=fecha)
     else:
@@ -50,6 +61,8 @@ def get_edictos(
             consulta = consulta.filter(Edicto.fecha >= fecha_desde)
         if fecha_hasta:
             consulta = consulta.filter(Edicto.fecha <= fecha_hasta)
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(Edicto.id)
 
 
