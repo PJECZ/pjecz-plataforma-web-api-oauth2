@@ -15,7 +15,7 @@ class LimitOffsetParams(BaseLimitOffsetParams):
     """Modificar limit y offset por defecto"""
 
     limit: int = Query(100, ge=1, le=1000, description="Query limit")
-    offset: int = Query(1, ge=1, description="Query offset")
+    offset: int = Query(0, ge=0, description="Query offset")
 
 
 class PageResult(GenericModel, Generic[T]):
