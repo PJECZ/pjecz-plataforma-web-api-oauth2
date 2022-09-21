@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     db_name: str
     db_pass: str
     db_user: str
+    origins: str
     salt: str
     tz: str
 

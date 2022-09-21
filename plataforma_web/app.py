@@ -2,7 +2,10 @@
 Plataforma Web API OAuth2
 """
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
+
+from config.settings import get_settings
 
 from .v1.abogados.paths import abogados
 from .v1.autoridades.paths import autoridades
@@ -33,10 +36,21 @@ from .v1.soportes_tickets.paths import soportes_tickets
 from .v1.usuarios.paths import usuarios
 from .v1.usuarios_roles.paths import usuarios_roles
 
+settings = get_settings()
+
 # FastAPI
 app = FastAPI(
     title="Plataforma Web API OAuth2",
     description="Información del Sitio Web www.pjecz.gob.mx",
+)
+
+# CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.origins.split(","),
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Paths
