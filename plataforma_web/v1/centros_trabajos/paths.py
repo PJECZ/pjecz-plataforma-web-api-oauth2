@@ -29,14 +29,14 @@ async def listado_centros_trabajos(
     if current_user.permissions.get("CENTROS TRABAJOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_centros_trabajos(
-            db,
+        consulta = get_centros_trabajos(
+            db=db,
             distrito_id=distrito_id,
             domicilio_id=domicilio_id,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @centros_trabajos.get("/{centro_trabajo_id}", response_model=OneCentroTrabajoOut)
@@ -50,7 +50,7 @@ async def detalle_centro_trabajo(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         centro_trabajo = get_centro_trabajo(
-            db,
+            db=db,
             centro_trabajo_id=centro_trabajo_id,
         )
     except PWAnyError as error:

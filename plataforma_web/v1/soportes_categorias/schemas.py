@@ -9,11 +9,11 @@ from lib.schemas_base import OneBaseOut
 class SoporteCategoriaOut(BaseModel):
     """Esquema para entregar soporte categoria"""
 
-    id: int
-    rol_id: int
-    rol_nombre: str
-    nombre: str
-    instrucciones: str
+    id: int | None
+    rol_id: int | None
+    rol_nombre: str | None
+    nombre: str | None
+    instrucciones: str | None
 
     class Config:
         """SQLAlchemy config"""

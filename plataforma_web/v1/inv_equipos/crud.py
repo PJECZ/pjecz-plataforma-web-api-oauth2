@@ -114,6 +114,7 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    size: int = 10,
 ) -> Any:
     """Obtener las cantidades de equipos por oficina y por tipo"""
 
@@ -164,6 +165,7 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
     creado_hasta: date = None,
     distrito_id: int = None,
     tipo: str = None,
+    size: int = 10,
 ) -> Any:
     """Obtener las cantidades de equipos por oficina y por año de fabricación"""
 

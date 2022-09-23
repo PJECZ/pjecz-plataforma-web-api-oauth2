@@ -9,9 +9,9 @@ from lib.schemas_base import OneBaseOut
 class InvRedOut(BaseModel):
     """Esquema para entregar redes"""
 
-    id: int
-    nombre: str
-    tipo: str
+    id: int | None
+    nombre: str | None
+    tipo: str | None
 
     class Config:
         """SQLAlchemy config"""

@@ -27,10 +27,10 @@ async def listado_inv_redes(
     if current_user.permissions.get("INV REDES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_inv_redes(db)
+        consulta = get_inv_redes(db=db)
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @inv_redes.get("/{inv_red_id}", response_model=OneInvRedOut)
@@ -44,7 +44,7 @@ async def detalle_inv_red(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_red = get_inv_red(
-            db,
+            db=db,
             inv_red_id=inv_red_id,
         )
     except PWAnyError as error:

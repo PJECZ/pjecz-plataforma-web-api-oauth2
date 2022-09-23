@@ -32,8 +32,8 @@ async def listado_autoridades(
     if current_user.permissions.get("AUTORIDADES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_autoridades(
-            db,
+        consulta = get_autoridades(
+            db=db,
             distrito_id=distrito_id,
             es_jurisdiccional=es_jurisdiccional,
             es_notaria=es_notaria,
@@ -42,7 +42,7 @@ async def listado_autoridades(
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @autoridades.get("/{autoridad_id}", response_model=OneAutoridadOut)
@@ -56,7 +56,7 @@ async def detalle_autoridad(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         autoridad = get_autoridad(
-            db,
+            db=db,
             autoridad_id=autoridad_id,
         )
     except PWAnyError as error:

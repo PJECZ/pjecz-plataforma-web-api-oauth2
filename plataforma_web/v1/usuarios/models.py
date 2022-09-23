@@ -1,14 +1,13 @@
 """
 Usuarios v1.0, modelos
 """
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from lib.database import Base
 from lib.universal_mixin import UniversalMixin
 
-from plataforma_web.v1.modulos.models import Modulo
-from plataforma_web.v1.permisos.models import Permiso
+from ..permisos.models import Permiso
 
 
 class Usuario(Base, UniversalMixin):
@@ -38,6 +37,8 @@ class Usuario(Base, UniversalMixin):
     telefono = Column(String(48), nullable=False)
     extension = Column(String(24), nullable=False)
     fotografia_url = Column(String(512), nullable=False)
+    api_key = Column(String(128), nullable=False)
+    api_key_expiracion = Column(DateTime(), nullable=False)
 
     # Hijos
     inv_custodias = relationship("InvCustodia", back_populates="usuario")

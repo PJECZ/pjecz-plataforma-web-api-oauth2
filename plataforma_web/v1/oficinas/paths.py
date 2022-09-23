@@ -30,15 +30,15 @@ async def listado_oficinas(
     if current_user.permissions.get("OFICINAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_oficinas(
-            db,
+        consulta = get_oficinas(
+            db=db,
             distrito_id=distrito_id,
             domicilio_id=domicilio_id,
             es_jurisdiccional=es_juridicional,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @oficinas.get("/{oficina_id}", response_model=OneOficinaOut)
@@ -52,7 +52,7 @@ async def detalle_oficina(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         oficina = get_oficina(
-            db,
+            db=db,
             oficina_id=oficina_id,
         )
     except PWAnyError as error:

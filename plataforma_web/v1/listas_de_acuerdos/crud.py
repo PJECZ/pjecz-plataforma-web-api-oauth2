@@ -137,6 +137,7 @@ def get_listas_de_acuerdos_sintetizar_por_creado(
     creado_desde: date = None,
     creado_hasta: date = None,
     distrito_id: int = None,
+    size: int = 10,
 ) -> List:
     """Consultar las listas de acuerdos por distrito"""
 

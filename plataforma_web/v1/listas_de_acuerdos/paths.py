@@ -2,7 +2,6 @@
 Listas de Acuerdos v1, rutas (paths)
 """
 from datetime import date
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -10,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_list import CustomList, ListResult, custom_list_success_false
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_sintetizar_por_creado, get_lista_de_acuerdo, insert_lista_de_acuerdo
@@ -38,8 +38,8 @@ async def listado_listas_de_acuerdos(
     if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_listas_de_acuerdos(
-            db,
+        consulta = get_listas_de_acuerdos(
+            db=db,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
             creado=creado,
@@ -51,15 +51,16 @@ async def listado_listas_de_acuerdos(
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
-@listas_de_acuerdos.get("/sintetizar_por_creado", response_model=List)
+@listas_de_acuerdos.get("/sintetizar_por_creado", response_model=CustomList[ListaDeAcuerdoOut])
 async def sintetizar_por_creado(
     creado: date = None,
     distrito_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
+    size: int = 10,
 ):
     """Listado de listas de acuerdos por distrito y creado"""
     if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.VER:
@@ -69,13 +70,16 @@ async def sintetizar_por_creado(
             db=db,
             creado=creado,
             distrito_id=distrito_id,
+            size=size,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return resultados
+    except PWAnyError as error:
+        return custom_list_success_false(error)
+    total = len(resultados)
+    result = ListResult(total=total, items=resultados, size=size)
+    return CustomList(result=result)
 
 
-@listas_de_acuerdos.post("", response_model=ListaDeAcuerdoOut)
+@listas_de_acuerdos.post("", response_model=OneListaDeAcuerdoOut)
 async def nueva_lista_de_acuerdos(
     lista_de_acuerdo: ListaDeAcuerdoIn,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -85,13 +89,13 @@ async def nueva_lista_de_acuerdos(
     if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.CREAR:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        resultado = insert_lista_de_acuerdo(
-            db,
+        lista_de_acuerdo = insert_lista_de_acuerdo(
+            db=db,
             lista_de_acuerdo=lista_de_acuerdo,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return ListaDeAcuerdoOut.from_orm(resultado)
+    except PWAnyError as error:
+        return OneListaDeAcuerdoOut(success=False, message=str(error))
+    return OneListaDeAcuerdoOut.from_orm(lista_de_acuerdo)
 
 
 @listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=OneListaDeAcuerdoOut)
@@ -104,10 +108,10 @@ async def detalle_lista_de_acuerdos(
     if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_lista_de_acuerdo(
-            db,
+        lista_de_acuerdo = get_lista_de_acuerdo(
+            db=db,
             lista_de_acuerdo_id=lista_de_acuerdo_id,
         )
     except PWAnyError as error:
         return OneListaDeAcuerdoOut(success=False, message=str(error))
-    return OneListaDeAcuerdoOut.from_orm(consulta)
+    return OneListaDeAcuerdoOut.from_orm(lista_de_acuerdo)

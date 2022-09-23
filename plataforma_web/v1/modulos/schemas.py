@@ -9,12 +9,12 @@ from lib.schemas_base import OneBaseOut
 class ModuloOut(BaseModel):
     """Esquema para entregar modulos"""
 
-    id: int
-    nombre: str
-    nombre_corto: str
-    icono: str
-    ruta: str
-    en_navegacion: bool
+    id: int | None
+    nombre: str | None
+    nombre_corto: str | None
+    icono: str | None
+    ruta: str | None
+    en_navegacion: bool | None
 
     class Config:
         """SQLAlchemy config"""

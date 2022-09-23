@@ -27,10 +27,10 @@ async def listado_materias(
     if current_user.permissions.get("MATERIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_materias(db)
+        consulta = get_materias(db=db)
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @materias.get("/{materia_id}", response_model=OneMateriaOut)
@@ -44,7 +44,7 @@ async def detalle_materia(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         materia = get_materia(
-            db,
+            db=db,
             materia_id=materia_id,
         )
     except PWAnyError as error:

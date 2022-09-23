@@ -9,15 +9,15 @@ from lib.schemas_base import OneBaseOut
 class CentroTrabajoOut(BaseModel):
     """Esquema para entregar centro de trabajo"""
 
-    id: int
-    distrito_id: int
-    distrito_nombre: str
-    distrito_nombre_corto: str
-    domicilio_id: int
-    domicilio_completo: str
-    clave: str
-    nombre: str
-    telefono: str
+    id: int | None
+    distrito_id: int | None
+    distrito_nombre: str | None
+    distrito_nombre_corto: str | None
+    domicilio_id: int | None
+    domicilio_completo: str | None
+    clave: str | None
+    nombre: str | None
+    telefono: str | None
 
     class Config:
         """SQLAlchemy config"""

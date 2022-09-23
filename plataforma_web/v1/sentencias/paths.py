@@ -37,8 +37,8 @@ async def listado_sentencias(
     if current_user.permissions.get("SENTENCIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_sentencias(
-            db,
+        consulta = get_sentencias(
+            db=db,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
             creado=creado,
@@ -51,7 +51,7 @@ async def listado_sentencias(
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @sentencias.get("/{sentencia_id}", response_model=OneSentenciaOut)
@@ -65,7 +65,7 @@ async def detalle_sentencia(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         sentencia = get_sentencia(
-            db,
+            db=db,
             sentencia_id=sentencia_id,
         )
     except PWAnyError as error:

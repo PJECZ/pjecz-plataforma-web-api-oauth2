@@ -105,6 +105,7 @@ def get_cantidades_por_distrito_por_categoria(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    size: int = 10,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
 
@@ -137,10 +138,12 @@ def get_cantidades_por_distrito_por_categoria(
             hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
 
-    # Entregar
+    # Ordenar y agrupar
     consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
     consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
-    return consulta.all()
+
+    # Entregar
+    return consulta
 
 
 def get_cantidades_por_funcionario_por_estado(
@@ -148,6 +151,7 @@ def get_cantidades_por_funcionario_por_estado(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    size: int = 10,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
 
@@ -178,7 +182,9 @@ def get_cantidades_por_funcionario_por_estado(
             hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
 
-    # Entregar
+    # Ordenar y agrupar
     consulta = consulta.order_by("distrito_clave", "soporte_categoria_nombre")
     consulta = consulta.group_by("distrito_clave", "soporte_categoria_nombre")
-    return consulta.all()
+
+    # Entregar
+    return consulta

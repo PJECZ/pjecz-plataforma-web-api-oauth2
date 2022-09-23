@@ -20,6 +20,8 @@ permisos = APIRouter(prefix="/v1/permisos", tags=["usuarios"])
 
 @permisos.get("", response_model=CustomPage[PermisoOut])
 async def listado_permisos(
+    modulo_id: int = None,
+    rol_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,10 +29,14 @@ async def listado_permisos(
     if current_user.permissions.get("PERMISOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_permisos(db)
+        consulta = get_permisos(
+            db=db,
+            modulo_id=modulo_id,
+            rol_id=rol_id,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @permisos.get("/{permiso_id}", response_model=OnePermisoOut)
@@ -43,7 +49,10 @@ async def detalle_permiso(
     if current_user.permissions.get("PERMISOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        permiso = get_permiso(db, permiso_id=permiso_id)
+        permiso = get_permiso(
+            db=db,
+            permiso_id=permiso_id,
+        )
     except PWAnyError as error:
         return OnePermisoOut(success=False, message=str(error))
     return OnePermisoOut.from_orm(permiso)

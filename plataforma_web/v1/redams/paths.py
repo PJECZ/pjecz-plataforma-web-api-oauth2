@@ -29,14 +29,14 @@ async def listado_redams(
     if current_user.permissions.get("REDAMS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_redams(
-            db,
+        consulta = get_redams(
+            db=db,
             autoridad_id=autoridad_id,
             distrito_id=distrito_id,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @redams.get("/{redam_id}", response_model=OneRedamOut)
@@ -50,7 +50,7 @@ async def detalle_redam(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         redam = get_redam(
-            db,
+            db=db,
             redam_id=redam_id,
         )
     except PWAnyError as error:

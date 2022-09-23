@@ -2,7 +2,6 @@
 Inventarios Equipos v1, rutas (paths)
 """
 from datetime import date
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -10,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from lib.database import get_db
 from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_list import CustomList, ListResult, custom_list_success_false
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_inv_equipos, get_inv_equipo, get_inv_equipos_cantidades_por_oficina_por_tipo, get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion
@@ -41,8 +41,8 @@ async def listado_inv_equipos(
     if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_inv_equipos(
-            db,
+        consulta = get_inv_equipos(
+            db=db,
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
@@ -57,33 +57,40 @@ async def listado_inv_equipos(
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
-@inv_equipos.get("/cantidades_por_oficina_por_tipo", response_model=List[CantidadesOficinaTipoOut])
+@inv_equipos.get("/cantidades_por_oficina_por_tipo", response_model=CustomList[CantidadesOficinaTipoOut])
 async def cantidades_por_oficina_por_tipo(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
+    size: int = 10,
 ):
     """Cantidades de equipos por oficina y tipo"""
     if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         resultados = get_inv_equipos_cantidades_por_oficina_por_tipo(
-            db,
+            db=db,
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
+            size=size,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return resultados
+    except PWAnyError as error:
+        return custom_list_success_false(error)
+    items = []
+    for oficina_clave, inv_equipo_tipo, cantidad in resultados.all():
+        items.append(CantidadesOficinaTipoOut(oficina_clave=oficina_clave, inv_equipo_tipo=inv_equipo_tipo, cantidad=cantidad))
+    total = sum(item.cantidad for item in items)
+    result = ListResult(total=total, items=items, size=size)
+    return CustomList(result=result)
 
 
-@inv_equipos.get("/cantidades_por_oficina_por_anio_fabricacion", response_model=List[CantidadesOficinaAnioFabricacionOut])
+@inv_equipos.get("/cantidades_por_oficina_por_anio_fabricacion", response_model=CustomList[CantidadesOficinaAnioFabricacionOut])
 async def cantidades_por_oficina_por_anio_fabricacion(
     creado: date = None,
     creado_desde: date = None,
@@ -92,22 +99,29 @@ async def cantidades_por_oficina_por_anio_fabricacion(
     tipo: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
+    size: int = 10,
 ):
     """Cantidades de equipos por oficina y año de fabricación"""
     if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         resultados = get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
-            db,
+            db=db,
             creado=creado,
             creado_desde=creado_desde,
             creado_hasta=creado_hasta,
             distrito_id=distrito_id,
             tipo=tipo,
+            size=size,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return resultados
+    except PWAnyError as error:
+        return custom_list_success_false(error)
+    items = []
+    for oficina_clave, anio_fabricacion, cantidad in resultados.all():
+        items.append(CantidadesOficinaAnioFabricacionOut(oficina_clave=oficina_clave, anio_fabricacion=anio_fabricacion, cantidad=cantidad))
+    total = sum(item.cantidad for item in items)
+    result = ListResult(total=total, items=items, size=size)
+    return CustomList(result=result)
 
 
 @inv_equipos.get("/{inv_equipo_id}", response_model=OneInvEquipoOut)
@@ -121,7 +135,7 @@ async def detalle_inv_equipo(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_equipo = get_inv_equipo(
-            db,
+            db=db,
             inv_equipo_id=inv_equipo_id,
         )
     except PWAnyError as error:

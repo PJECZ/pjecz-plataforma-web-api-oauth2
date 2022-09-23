@@ -9,8 +9,8 @@ from lib.schemas_base import OneBaseOut
 class RolOut(BaseModel):
     """Esquema para entregar rol"""
 
-    id: int
-    nombre: str
+    id: int | None
+    nombre: str | None
 
     class Config:
         """SQLAlchemy config"""

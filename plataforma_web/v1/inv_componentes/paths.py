@@ -30,15 +30,15 @@ async def listado_inv_componentes(
     if current_user.permissions.get("INV COMPONENTES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_inv_componentes(
-            db,
+        consulta = get_inv_componentes(
+            db=db,
             inv_categoria_id=inv_categoria_id,
             inv_equipo_id=inv_equipo_id,
             generacion=generacion,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @inv_componentes.get("/{inv_componente_id}", response_model=OneInvComponenteOut)
@@ -52,7 +52,7 @@ async def detalle_inv_componente(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         inv_componente = get_inv_componente(
-            db,
+            db=db,
             inv_componente_id=inv_componente_id,
         )
     except PWAnyError as error:

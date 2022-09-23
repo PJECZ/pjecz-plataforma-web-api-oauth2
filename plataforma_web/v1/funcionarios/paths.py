@@ -29,14 +29,14 @@ async def listado_funcionarios(
     if current_user.permissions.get("FUNCIONARIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_funcionarios(
-            db,
+        consulta = get_funcionarios(
+            db=db,
             en_funciones=en_funciones,
             en_soportes=en_soportes,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @funcionarios.get("/{funcionario_id}", response_model=OneFuncionarioOut)
@@ -50,7 +50,7 @@ async def detalle_funcionario(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         funcionario = get_funcionario(
-            db,
+            db=db,
             funcionario_id=funcionario_id,
         )
     except PWAnyError as error:

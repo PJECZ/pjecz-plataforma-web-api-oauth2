@@ -9,15 +9,15 @@ from lib.schemas_base import OneBaseOut
 class DomicilioOut(BaseModel):
     """Esquema para entregar domicilios"""
 
-    id: int
-    estado: str
-    municipio: str
-    calle: str
-    num_ext: str
-    num_int: str
-    colonia: str
-    cp: int
-    completo: str
+    id: int | None
+    estado: str | None
+    municipio: str | None
+    calle: str | None
+    num_ext: str | None
+    num_int: str | None
+    colonia: str | None
+    cp: int | None
+    completo: str | None
 
     class Config:
         """SQLAlchemy config"""

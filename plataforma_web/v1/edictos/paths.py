@@ -34,8 +34,8 @@ async def listado_edictos(
     if current_user.permissions.get("EDICTOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_edictos(
-            db,
+        consulta = get_edictos(
+            db=db,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
             fecha=fecha,
@@ -44,7 +44,7 @@ async def listado_edictos(
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @edictos.get("/{edicto_id}", response_model=OneEdictoOut)
@@ -57,7 +57,10 @@ async def detalle_edicto(
     if current_user.permissions.get("EDICTOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        edicto = get_edicto(db, edicto_id=edicto_id)
+        edicto = get_edicto(
+            db=db,
+            edicto_id=edicto_id,
+        )
     except PWAnyError as error:
         return OneEdictoOut(success=False, message=str(error))
     return OneEdictoOut.from_orm(edicto)

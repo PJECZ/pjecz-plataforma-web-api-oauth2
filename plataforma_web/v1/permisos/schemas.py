@@ -2,7 +2,6 @@
 Permisos v1, esquemas de pydantic
 """
 from datetime import date
-from typing import Optional
 from pydantic import BaseModel
 
 from lib.schemas_base import OneBaseOut
@@ -11,13 +10,13 @@ from lib.schemas_base import OneBaseOut
 class PermisoOut(BaseModel):
     """Esquema para entregar permisos"""
 
-    id: int
-    rol_id: int
-    rol_nombre: str
-    modulo_id: int
-    modulo_nombre: str
-    nombre: str
-    nivel: int
+    id: int | None
+    rol_id: int | None
+    rol_nombre: str | None
+    modulo_id: int | None
+    modulo_nombre: str | None
+    nombre: str | None
+    nivel: int | None
 
     class Config:
         """SQLAlchemy config"""

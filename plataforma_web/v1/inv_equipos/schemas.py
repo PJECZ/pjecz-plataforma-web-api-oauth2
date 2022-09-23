@@ -2,7 +2,6 @@
 Inventario Equipos v1, esquemas de pydantic
 """
 from datetime import date, datetime
-from typing import Optional
 from pydantic import BaseModel
 
 from lib.schemas_base import OneBaseOut
@@ -11,26 +10,26 @@ from lib.schemas_base import OneBaseOut
 class InvEquipoOut(BaseModel):
     """Esquema para entregar equipos"""
 
-    id: int
-    inv_custodia_id: int
-    inv_custodia_nombre_completo: str
-    inv_marca_id: int
-    inv_marca_nombre: str
-    inv_modelo_id: int
-    inv_modelo_descripcion: str
-    inv_red_id: int
-    inv_red_nombre: str
-    fecha_fabricacion: Optional[date] = None
-    numero_serie: str
-    numero_inventario: Optional[int] = None
-    descripcion: str
-    tipo: str
-    direccion_ip: Optional[str] = None
-    direccion_mac: Optional[str] = None
-    numero_nodo: Optional[int] = None
-    numero_switch: Optional[int] = None
-    numero_puerto: Optional[int] = None
-    creado: datetime
+    id: int | None
+    inv_custodia_id: int | None
+    inv_custodia_nombre_completo: str | None
+    inv_marca_id: int | None
+    inv_marca_nombre: str | None
+    inv_modelo_id: int | None
+    inv_modelo_descripcion: str | None
+    inv_red_id: int | None
+    inv_red_nombre: str | None
+    fecha_fabricacion: date | None
+    numero_serie: str | None
+    numero_inventario: int | None
+    descripcion: str | None
+    tipo: str | None
+    direccion_ip: str | None
+    direccion_mac: str | None
+    numero_nodo: int | None
+    numero_switch: int | None
+    numero_puerto: int | None
+    creado: datetime | None
 
     class Config:
         """SQLAlchemy config"""
@@ -54,5 +53,5 @@ class CantidadesOficinaAnioFabricacionOut(BaseModel):
     """Cantidades de equipos por oficina y año de fabricacion"""
 
     oficina_clave: str
-    anio_fabricacion: Optional[int] = None
+    anio_fabricacion: int | None
     cantidad: int

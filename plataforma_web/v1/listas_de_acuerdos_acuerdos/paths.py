@@ -28,16 +28,16 @@ async def listado_acuerdos(
     if current_user.permissions.get("LISTAS DE ACUERDOS ACUERDOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_acuerdos(
-            db,
+        consulta = get_acuerdos(
+            db=db,
             lista_de_acuerdo_id=lista_de_acuerdo_id,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
-@listas_de_acuerdos_acuerdos.post("/{lista_de_acuerdo_id}/acuerdos", response_model=ListaDeAcuerdoAcuerdoOut)
+@listas_de_acuerdos_acuerdos.post("/{lista_de_acuerdo_id}/acuerdos", response_model=OneListaDeAcuerdoAcuerdoOut)
 async def nuevo_acuerdo(
     acuerdo: ListaDeAcuerdoAcuerdoIn,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -47,13 +47,13 @@ async def nuevo_acuerdo(
     if current_user.permissions.get("LISTAS DE ACUERDOS ACUERDOS", 0) < Permiso.CREAR:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = insert_acuerdo(
-            db,
+        acuerdo = insert_acuerdo(
+            db=db,
             acuerdo=acuerdo,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return ListaDeAcuerdoAcuerdoOut.from_orm(listado)
+    except PWAnyError as error:
+        return OneListaDeAcuerdoAcuerdoOut(success=False, message=str(error))
+    return OneListaDeAcuerdoAcuerdoOut.from_orm(acuerdo)
 
 
 @listas_de_acuerdos_acuerdos.get("/{lista_de_acuerdo_id}/acuerdos/{lista_de_acuerdo_acuerdo_id}", response_model=OneListaDeAcuerdoAcuerdoOut)
@@ -67,7 +67,7 @@ async def detalle_acuerdo(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         acuerdo = get_acuerdo(
-            db,
+            db=db,
             lista_de_acuerdo_acuerdo_id=lista_de_acuerdo_acuerdo_id,
         )
     except PWAnyError as error:

@@ -18,13 +18,13 @@ def get_permisos(
 ) -> Any:
     """Consultar los permisos activos"""
     consulta = db.query(Permiso)
-    if rol_id:
+    if rol_id is not None:
         rol = get_rol(db, rol_id)
         consulta = consulta.filter(Permiso.rol == rol)
-    if modulo_id:
+    if modulo_id is not None:
         modulo = get_modulo(db, modulo_id)
         consulta = consulta.filter(Permiso.modulo == modulo)
-    return consulta.filter_by(estatus="A").order_by(Permiso.id)
+    return consulta.filter_by(estatus="A").order_by(Permiso.nombre)
 
 
 def get_permiso(db: Session, permiso_id: int) -> Permiso:

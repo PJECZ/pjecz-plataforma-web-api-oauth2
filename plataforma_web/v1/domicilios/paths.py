@@ -27,10 +27,10 @@ async def listado_domicilios(
     if current_user.permissions.get("DOMICILIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_domicilios(db)
+        consulta = get_domicilios(db=db)
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @domicilios.get("/{domicilio_id}", response_model=OneDomicilioOut)
@@ -44,7 +44,7 @@ async def detalle_domicilio(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         domicilio = get_domicilio(
-            db,
+            db=db,
             domicilio_id=domicilio_id,
         )
     except PWAnyError as error:

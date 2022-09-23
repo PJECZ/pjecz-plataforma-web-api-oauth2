@@ -10,20 +10,20 @@ from lib.schemas_base import OneBaseOut
 class SoporteTicketOut(BaseModel):
     """Esquema para entregar soporte ticket"""
 
-    id: int
-    funcionario_id: int
-    funcionario_nombre: str
-    soporte_categoria_id: int
-    soporte_categoria_nombre: str
-    usuario_id: int
-    usuario_email: str
-    usuario_nombre: str
-    usuario_oficina_id: int
-    usuario_oficina_clave: str
-    descripcion: str
-    estado: str
-    soluciones: str
-    creado: datetime
+    id: int | None
+    funcionario_id: int | None
+    funcionario_nombre: str | None
+    soporte_categoria_id: int | None
+    soporte_categoria_nombre: str | None
+    usuario_id: int | None
+    usuario_email: str | None
+    usuario_nombre: str | None
+    usuario_oficina_id: int | None
+    usuario_oficina_clave: str | None
+    descripcion: str | None
+    estado: str | None
+    soluciones: str | None
+    creado: datetime | None
 
     class Config:
         """SQLAlchemy config"""

@@ -28,13 +28,13 @@ async def listado_materias_tipos_juicios(
     if current_user.permissions.get("MATERIAS TIPOS JUICIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_materias_tipos_juicios(
-            db,
+        consulta = get_materias_tipos_juicios(
+            db=db,
             materia_id=materia_id,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @materias_tipos_juicios.get("/{materia_tipo_juicio_id}", response_model=OneMateriaTipoJuicioOut)
@@ -48,7 +48,7 @@ async def detalle_materia_tipo_juicio(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         materia_tipo_juicio = get_materia_tipo_juicio(
-            db,
+            db=db,
             materia_tipo_juicio_id=materia_tipo_juicio_id,
         )
     except PWAnyError as error:

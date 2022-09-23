@@ -27,10 +27,10 @@ async def listado_usuarios_roles(
     if current_user.permissions.get("USUARIOS ROLES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_usuarios_roles(db)
+        consulta = get_usuarios_roles(db=db)
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @usuarios_roles.get("/{usuario_rol_id}", response_model=OneUsuarioRolOut)
@@ -44,7 +44,7 @@ async def detalle_usuario_rol(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         usuario_rol = get_usuario_rol(
-            db,
+            db=db,
             usuario_rol_id=usuario_rol_id,
         )
     except PWAnyError as error:

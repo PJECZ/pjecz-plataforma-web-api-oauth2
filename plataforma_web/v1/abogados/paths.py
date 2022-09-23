@@ -30,15 +30,15 @@ async def listado_abogados(
     if current_user.permissions.get("ABOGADOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_abogados(
-            db,
+        consulta = get_abogados(
+            db=db,
             anio_desde=anio_desde,
             anio_hasta=anio_hasta,
             nombre=nombre,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @abogados.get("/{abogado_id}", response_model=OneAbogadoOut)
@@ -52,7 +52,7 @@ async def detalle_abogado(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         abogado = get_abogado(
-            db,
+            db=db,
             abogado_id=abogado_id,
         )
     except PWAnyError as error:

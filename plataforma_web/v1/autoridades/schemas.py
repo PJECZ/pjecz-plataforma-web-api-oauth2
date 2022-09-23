@@ -9,18 +9,18 @@ from lib.schemas_base import OneBaseOut
 class AutoridadOut(BaseModel):
     """Esquema para entregar autoridad"""
 
-    id: int
-    distrito_id: int
-    distrito_nombre: str
-    distrito_nombre_corto: str
-    materia_id: int
-    materia_nombre: str
-    clave: str
-    descripcion: str
-    descripcion_corta: str
-    es_jurisdiccional: bool
-    es_notaria: bool
-    organo_jurisdiccional: str
+    id: int | None
+    distrito_id: int | None
+    distrito_nombre: str | None
+    distrito_nombre_corto: str | None
+    materia_id: int | None
+    materia_nombre: str | None
+    clave: str | None
+    descripcion: str | None
+    descripcion_corta: str | None
+    es_jurisdiccional: bool | None
+    es_notaria: bool | None
+    organo_jurisdiccional: str | None
 
     class Config:
         """SQLAlchemy config"""

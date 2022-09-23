@@ -27,10 +27,10 @@ async def listado_soportes_categorias(
     if current_user.permissions.get("SOPORTES CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_soportes_categorias(db)
+        consulta = get_soportes_categorias(db=db)
     except PWAnyError as error:
         return custom_page_success_false(error)
-    return paginate(listado)
+    return paginate(consulta)
 
 
 @soportes_categorias.get("/{soporte_categoria_id}", response_model=OneSoporteCategoriaOut)
@@ -44,7 +44,7 @@ async def detalle_soporte_categoria(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         soporte_categoria = get_soporte_categoria(
-            db,
+            db=db,
             soporte_categoria_id=soporte_categoria_id,
         )
     except PWAnyError as error:
