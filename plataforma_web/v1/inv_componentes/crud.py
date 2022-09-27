@@ -5,7 +5,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
 from .models import InvComponente
@@ -37,7 +37,7 @@ def get_inv_componente(db: Session, inv_componente_id: int) -> InvComponente:
     """Consultar un componente por su id"""
     inv_componente = db.query(InvComponente).get(inv_componente_id)
     if inv_componente is None:
-        raise NotExistsException("No existe ese componente")
+        raise PWNotExistsError("No existe ese componente")
     if inv_componente.estatus != "A":
-        raise IsDeletedException("No es activo ese componente, está eliminado")
+        raise PWIsDeletedError("No es activo ese componente, está eliminado")
     return inv_componente

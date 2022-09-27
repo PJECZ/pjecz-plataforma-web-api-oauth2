@@ -1,110 +1,115 @@
 """
 Autentificaciones
 """
-from datetime import datetime, timedelta
+from datetime import datetime
+import re
 from typing import Optional
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+from hashids import Hashids
+from fastapi.security.api_key import APIKeyHeader
+from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_403_FORBIDDEN
+from unidecode import unidecode
 
-from config.settings import SECRET_KEY, ALGORITHM
 from lib.database import get_db
+from lib.exceptions import PWAuthenticationError
+
 from .models import Usuario
-from .schemas import TokenData, UsuarioInDB
+from .schemas import UsuarioInDB
 
-pwd_context = CryptContext(schemes=["pbkdf2_sha256", "des_crypt"], deprecated="auto")  # In tutorial use schemes=["bcrypt"]
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-def verify_password(plain_password, hashed_password):
-    """Validar contraseña"""
-    return pwd_context.verify(plain_password, hashed_password)
+API_KEY_REGEXP = r"^\w+\.\w+\.\w+$"
+X_API_KEY = APIKeyHeader(name="X-Api-Key")
 
 
-def get_password_hash(password):
-    """Cifrar contraseña"""
-    return pwd_context.hash(password)
-
-
-def get_user(username: str, db: Session = Depends(get_db)):
-    """Obtener el usuario a partir de su e-mail"""
-    usuario = db.query(Usuario).filter(Usuario.email == username).first()
+def get_user(
+    usuario_id: int,
+    db: Session = Depends(get_db),
+) -> Optional[UsuarioInDB]:
+    """Get user from email"""
+    usuario = db.query(Usuario).get(usuario_id)
     if usuario:
-        datos = {
-            "id": usuario.id,
-            "distrito_id": usuario.autoridad.distrito_id,
-            "distrito_nombre": usuario.autoridad.distrito.nombre,
-            "distrito_nombre_corto": usuario.autoridad.distrito.nombre_corto,
-            "autoridad_id": usuario.autoridad_id,
-            "autoridad_clave": usuario.autoridad.clave,
-            "autoridad_descripcion": usuario.autoridad.descripcion,
-            "autoridad_descripcion_corta": usuario.autoridad.descripcion_corta,
-            "oficina_id": usuario.oficina_id,
-            "oficina_clave": usuario.oficina.clave,
-            "email": usuario.email,
-            "nombres": usuario.nombres,
-            "apellido_paterno": usuario.apellido_paterno,
-            "apellido_materno": usuario.apellido_materno,
-            "curp": "",
-            "puesto": "",
-            "telefono_celular": "",
-            "username": usuario.email,
-            "permissions": usuario.permissions,
-            "hashed_password": usuario.contrasena,
-            "disabled": usuario.estatus != "A",
-        }
-        return UsuarioInDB(**datos)
+        return UsuarioInDB(
+            id=usuario.id,
+            distrito_id=usuario.autoridad.distrito_id,
+            distrito_nombre=usuario.autoridad.distrito.nombre,
+            distrito_nombre_corto=usuario.autoridad.distrito.nombre_corto,
+            autoridad_id=usuario.autoridad_id,
+            autoridad_clave=usuario.autoridad.clave,
+            autoridad_descripcion=usuario.autoridad.descripcion,
+            autoridad_descripcion_corta=usuario.autoridad.descripcion_corta,
+            oficina_id=usuario.oficina_id,
+            oficina_clave=usuario.oficina.clave,
+            email=usuario.email,
+            nombres=usuario.nombres,
+            apellido_paterno=usuario.apellido_paterno,
+            apellido_materno=usuario.apellido_materno,
+            curp=usuario.curp,
+            puesto=usuario.puesto,
+            telefono_celular=usuario.telefono_celular,
+            username=usuario.email,
+            permissions=usuario.permissions,
+            hashed_password=usuario.contrasena,
+            disabled=usuario.estatus != "A",
+        )
+    return None
 
 
-def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
-    """Autentificar el usuario"""
-    user = get_user(username, db)
-    print(repr(user))
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
+def authenticate_user(
+    api_key: str,
+    db: Session,
+) -> UsuarioInDB:
+    """Authenticate user"""
 
+    # Validar con expresion regular
+    api_key = unidecode(api_key)
+    if re.match(API_KEY_REGEXP, api_key) is None:
+        raise PWAuthenticationError("No paso la validacion por expresion regular")
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """Crear el token de acceso"""
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    # Separar el id, el email y la cadena aleatoria del api_key
+    api_key_id, api_key_email, api_key_aleatorio = api_key.split(".")
 
+    # Decodificar el ID
+    usuario_id = Usuario.decode_id(api_key_id)
+    if usuario_id is None:
+        raise PWAuthenticationError("No se pudo descifrar el ID")
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    """Obtener el usuario a partir del token"""
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    usuario = get_user(token_data.username, db)
+    # Consultar
+    usuario = get_user(usuario_id, db)
     if usuario is None:
-        raise credentials_exception
+        raise PWAuthenticationError("No se encontro el usuario")
+
+    # Validar el api_key
+    if usuario.api_key != api_key:
+        raise PWAuthenticationError("No es igual la api_key al dato en la base de datos")
+
+    # Validar el email
+    if api_key_email != Hashids(salt=usuario.email, min_length=8).encode(1):
+        raise PWAuthenticationError("No coincide el correo electronico")
+
+    # Validar el tiempo de expiracion
+    if usuario.api_key_expiracion < datetime.now():
+        raise PWAuthenticationError("No vigente porque ya expiro")
+
+    # Validad que sea activo
+    if usuario.disabled:
+        raise PWAuthenticationError("No es activo este usuario porque fue eliminado")
+
+    # Entregar
     return usuario
 
 
-async def get_current_active_user(current_user: UsuarioInDB = Depends(get_current_user)):
-    """Obtener el usuario a partir del token y provocar error si está inactivo"""
-    if current_user.disabled:
-        raise HTTPException(status_code=401, detail="Unauthorized (usuario inactivo)")
-    return current_user
+async def get_current_active_user(
+    api_key: str = Depends(X_API_KEY),
+    db: Session = Depends(get_db),
+):
+    """Get current active user"""
+
+    # Try-except
+    try:
+        usuario = authenticate_user(api_key, db)
+    except PWAuthenticationError as error:
+        raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail=str(error)) from error
+
+    # Entregar
+    return usuario

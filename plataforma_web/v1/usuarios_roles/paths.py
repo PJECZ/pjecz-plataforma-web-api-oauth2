@@ -6,11 +6,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_usuarios_roles, get_usuario_rol
-from .schemas import UsuarioRolOut
+from .schemas import UsuarioRolOut, OneUsuarioRolOut
 from ..usuarios.authentications import get_current_active_user
 from ..permisos.models import Permiso
 from ..usuarios.schemas import UsuarioInDB
@@ -18,7 +18,7 @@ from ..usuarios.schemas import UsuarioInDB
 usuarios_roles = APIRouter(prefix="/v1/usuarios_roles", tags=["usuarios"])
 
 
-@usuarios_roles.get("", response_model=LimitOffsetPage[UsuarioRolOut])
+@usuarios_roles.get("", response_model=CustomPage[UsuarioRolOut])
 async def listado_usuarios_roles(
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -27,13 +27,13 @@ async def listado_usuarios_roles(
     if current_user.permissions.get("USUARIOS ROLES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_usuarios_roles(db)
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)
+        consulta = get_usuarios_roles(db=db)
+    except PWAnyError as error:
+        return custom_page_success_false(error)
+    return paginate(consulta)
 
 
-@usuarios_roles.get("/{usuario_rol_id}", response_model=UsuarioRolOut)
+@usuarios_roles.get("/{usuario_rol_id}", response_model=OneUsuarioRolOut)
 async def detalle_usuario_rol(
     usuario_rol_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -44,9 +44,9 @@ async def detalle_usuario_rol(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         usuario_rol = get_usuario_rol(
-            db,
+            db=db,
             usuario_rol_id=usuario_rol_id,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return UsuarioRolOut.from_orm(usuario_rol)
+    except PWAnyError as error:
+        return OneUsuarioRolOut(success=False, message=str(error))
+    return OneUsuarioRolOut.from_orm(usuario_rol)

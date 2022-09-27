@@ -5,9 +5,9 @@ from datetime import date, datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
+import pytz
 
-from config.settings import SERVIDOR_HUSO_HORARIO
-from lib.exceptions import IsDeletedException, NotExistsException, OutOfRangeException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWOutOfRangeParamError
 
 from .models import Sentencia
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
@@ -27,40 +27,55 @@ def get_sentencias(
     materia_tipo_juicio_id: int = None,
 ) -> Any:
     """Consultar los sentencias activas"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
+
+    # Consultar
     consulta = db.query(Sentencia)
+
+    # Filtar por autoridad
     if autoridad_id:
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(Sentencia.autoridad == autoridad)
     elif autoridad_clave:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(Sentencia.autoridad == autoridad)
+
+    # Filtrar por materia
     if materia_tipo_juicio_id:
         materia_tipo_juicio = get_materia_tipo_juicio(db, materia_tipo_juicio_id)
         consulta = consulta.filter(Sentencia.materia_tipo_juicio == materia_tipo_juicio)
+
+    # Filtrar por creado
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(Sentencia.creado >= desde_dt).filter(Sentencia.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(Sentencia.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(Sentencia.creado <= hasta_dt)
+
+    # Filtrar por fecha
     if fecha:
         if not date(year=2000, month=1, day=1) <= fecha <= date.today():
-            raise OutOfRangeException("Fecha fuera de rango")
+            raise PWOutOfRangeParamError("Fecha fuera de rango")
         consulta = consulta.filter_by(sentencia_fecha=fecha)
     else:
         if fecha_desde:
             if not date(year=2000, month=1, day=1) <= fecha_desde <= date.today():
-                raise OutOfRangeException("Fecha fuera de rango")
+                raise PWOutOfRangeParamError("Fecha fuera de rango")
             consulta = consulta.filter(Sentencia.fecha >= fecha_desde)
         if fecha_hasta:
             if not date(year=2000, month=1, day=1) <= fecha_hasta <= date.today():
-                raise OutOfRangeException("Fecha fuera de rango")
+                raise PWOutOfRangeParamError("Fecha fuera de rango")
             consulta = consulta.filter(Sentencia.fecha <= fecha_hasta)
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(Sentencia.id.desc())
 
 
@@ -68,7 +83,7 @@ def get_sentencia(db: Session, sentencia_id: int) -> Sentencia:
     """Consultar un sentencia por su id"""
     sentencia = db.query(Sentencia).get(sentencia_id)
     if sentencia is None:
-        raise NotExistsException("No existe esa sentencia")
+        raise PWNotExistsError("No existe esa sentencia")
     if sentencia.estatus != "A":
-        raise IsDeletedException("No es activa esa sentencia, está eliminada")
+        raise PWIsDeletedError("No es activa esa sentencia, está eliminada")
     return sentencia

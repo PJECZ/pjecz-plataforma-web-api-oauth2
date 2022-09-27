@@ -6,7 +6,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
 from .models import InvCustodia
 from ..usuarios.crud import get_usuario, get_usuario_from_email
@@ -38,7 +38,7 @@ def get_inv_custodia(db: Session, inv_custodia_id: int) -> InvCustodia:
     """Consultar un custodia por su id"""
     inv_custodia = db.query(InvCustodia).get(inv_custodia_id)
     if inv_custodia is None:
-        raise NotExistsException("No existe ese custodia")
+        raise PWNotExistsError("No existe ese custodia")
     if inv_custodia.estatus != "A":
-        raise IsDeletedException("No es activo ese custodia, está eliminado")
+        raise PWIsDeletedError("No es activo ese custodia, está eliminado")
     return inv_custodia

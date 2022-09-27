@@ -1,6 +1,6 @@
 # pjecz-plataforma-web-api-oauth2
 
-API de Plataforma Web con autentificación OAuth2
+API de Plataforma Web para brindar informacion a otros sistemas.
 
 ## Mejores practicas
 
@@ -10,16 +10,16 @@ Se va a mejorar con los consejos en [I've been abusing HTTP Status Codes in my A
 
 Status code: **200**
 
-Body
+Body que entrega un listado
 
     {
-        "result": true,
-        "payload": {
-            "id": 1,
-            "name": "slim",
-            "surname": "jim",
-            "email:" "james@slimjim.xyz",
-            "role": "chief doughnut"
+        "success": true,
+        "message": "Success",
+        "result": {
+            "total": 914,
+            "items": [ { "id": 1 } ],
+            "limit": 100,
+            "offset": 0
         }
     }
 
@@ -30,8 +30,8 @@ Status code: **200**
 Body
 
     {
-        "result": false,
-        "errorMessage": "No employee found for ID 100"
+        "success": false,
+        "message": "No employee found for ID 100"
     }
 
 ### Escenario fallido: ruta incorrecta
@@ -59,46 +59,21 @@ Genere el `SECRET_KEY`
 
 Cree un archivo para las variables de entorno `.env`
 
-    # Database
+    # Base de datos
     DB_HOST=127.0.0.1
-    DB_NAME=pjecz_plataforma_web
+    DB_NAME=pjecz_citas_v2
+    DB_USER=adminpjeczcitasv2
     DB_PASS=****************
-    DB_USER=adminpjeczplataformaweb
 
-    # OAuth2
-    ACCESS_TOKEN_EXPIRE_MINUTES=30
-    ALGORITHM=HS256
-    SECRET_KEY=****************************************************************
+    # Redis
+    REDIS_URL=redis://127.0.0.1:6379
+    TASK_QUEUE=pjecz_citas_v2
+
+    # Timezone
+    TZ=America/Mexico_City
 
     # Salt sirve para cifrar el ID con HashID, debe ser igual que en la app Flask
     SALT=************************
-
-Cree el archivo `instance/settings.py` que cargue las variables de entorno
-
-    """
-    Configuración para desarrollo
-    """
-    import os
-
-    # Base de datos
-    DB_USER = os.environ.get("DB_USER", "wronguser")
-    DB_PASS = os.environ.get("DB_PASS", "badpassword")
-    DB_NAME = os.environ.get("DB_NAME", "pjecz_plataforma_web")
-    DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
-
-    # PostgreSQL
-    SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}"
-
-    # CORS or "Cross-Origin Resource Sharing" refers to the situations when a frontend
-    # running in a browser has JavaScript code that communicates with a backend,
-    # and the backend is in a different "origin" than the frontend.
-    # https://fastapi.tiangolo.com/tutorial/cors/
-    ORIGINS = [
-        "http://localhost:8002",
-        "http://localhost:3000",
-        "http://127.0.0.1:8002",
-        "http://127.0.0.1:3000",
-    ]
 
 Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Konsole
 
@@ -111,18 +86,16 @@ Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Kons
         export $(grep -v '^#' .env | xargs)
     fi
 
-    figlet Plataforma Web API OAuth2
+    figlet Citas V2 API OAuth2
     echo
 
     echo "== Variables de entorno"
     export $(grep -v '^#' .env | xargs)
-    echo "   ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}"
     echo "   DB_HOST: ${DB_HOST}"
     echo "   DB_NAME: ${DB_NAME}"
     echo "   DB_USER: ${DB_USER}"
     echo "   DB_PASS: ${DB_PASS}"
     echo "   SALT: ${SALT}"
-    echo "   SECRET_KEY: ${SECRET_KEY}"
     echo
 
     export PGHOST=$DB_HOST
@@ -131,12 +104,20 @@ Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Kons
     export PGUSER=$DB_USER
     export PGPASSWORD=$DB_PASS
 
-    alias arrancar="uvicorn --port 8002 --reload plataforma_web.app:app"
+    alias arrancar="uvicorn --port 8002 --reload citas_admin.app:app"
     echo "-- FastAPI"
     echo "   arrancar"
     echo
 
 ## Instalacion
+
+En Fedora Linux agregue este software
+
+    sudo dnf -y groupinstall "Development Tools"
+    sudo dnf -y install glibc-langpack-en glibc-langpack-es
+    sudo dnf -y install pipenv poetry python3-virtualenv
+    sudo dnf -y install python3-devel python3-docs python3-idle
+    sudo dnf -y install python3-ipython
 
 Clone el repositorio `pjecz-plataforma-web-api-oauth2`
 
@@ -161,14 +142,6 @@ O use el comando para arrancar con uvicorn
 O use el comando para arrancar con gunicorn
 
     gunicorn --workers=2 --bind 127.0.0.1:8002 plataforma_web.app:app
-
-## Command Line Interface
-
-Lea `cli/README.md` para saber como configurar el CLI
-
-Ejecute el script `cli/app.py`
-
-    cli/app.py --help
 
 ## Google Cloud deployment
 

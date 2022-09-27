@@ -3,25 +3,33 @@ Exceptions
 """
 
 
-class PlataformaWebAnyError(Exception):
+class PWAnyError(Exception):
     """Base exception class"""
 
 
-class AlredyExistsException(PlataformaWebAnyError):
+class PWAlreadyExistsError(PWAnyError):
     """Excepción ya existe"""
 
 
-class IsDeletedException(PlataformaWebAnyError):
+class PWAuthenticationError(PWAnyError):
+    """Excepción por que fallo la autentificacion"""
+
+
+class PWEmptyError(PWAnyError):
+    """Excepción por que no hay resultados"""
+
+
+class PWIsDeletedError(PWAnyError):
     """Excepción esta eliminado"""
 
 
-class NotExistsException(PlataformaWebAnyError):
+class PWNotExistsError(PWAnyError):
     """Excepción no existe"""
 
 
-class NotValidException(PlataformaWebAnyError):
+class PWNotValidParamError(PWAnyError):
     """Excepción porque un parámetro es inválido"""
 
 
-class OutOfRangeException(PlataformaWebAnyError):
+class PWOutOfRangeParamError(PWAnyError):
     """Excepción porque un parámetro esta fuera de rango"""

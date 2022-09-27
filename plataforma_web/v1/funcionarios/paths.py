@@ -6,11 +6,11 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy.orm import Session
 
 from lib.database import get_db
-from lib.exceptions import PlataformaWebAnyError
-from lib.fastapi_pagination import LimitOffsetPage
+from lib.exceptions import PWAnyError
+from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
 from .crud import get_funcionarios, get_funcionario
-from .schemas import FuncionarioOut
+from .schemas import FuncionarioOut, OneFuncionarioOut
 from ..permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
@@ -18,7 +18,7 @@ from ..usuarios.schemas import UsuarioInDB
 funcionarios = APIRouter(prefix="/v1/funcionarios", tags=["funcionarios"])
 
 
-@funcionarios.get("", response_model=LimitOffsetPage[FuncionarioOut])
+@funcionarios.get("", response_model=CustomPage[FuncionarioOut])
 async def listado_funcionarios(
     en_funciones: bool = None,
     en_soportes: bool = None,
@@ -29,17 +29,17 @@ async def listado_funcionarios(
     if current_user.permissions.get("FUNCIONARIOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_funcionarios(
-            db,
+        consulta = get_funcionarios(
+            db=db,
             en_funciones=en_funciones,
             en_soportes=en_soportes,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return paginate(listado)
+    except PWAnyError as error:
+        return custom_page_success_false(error)
+    return paginate(consulta)
 
 
-@funcionarios.get("/{funcionario_id}", response_model=FuncionarioOut)
+@funcionarios.get("/{funcionario_id}", response_model=OneFuncionarioOut)
 async def detalle_funcionario(
     funcionario_id: int,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -50,9 +50,9 @@ async def detalle_funcionario(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
         funcionario = get_funcionario(
-            db,
+            db=db,
             funcionario_id=funcionario_id,
         )
-    except PlataformaWebAnyError as error:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Not acceptable: {str(error)}") from error
-    return FuncionarioOut.from_orm(funcionario)
+    except PWAnyError as error:
+        return OneFuncionarioOut(success=False, message=str(error))
+    return OneFuncionarioOut.from_orm(funcionario)

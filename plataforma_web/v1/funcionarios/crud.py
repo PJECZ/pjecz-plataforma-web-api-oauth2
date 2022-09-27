@@ -5,7 +5,7 @@ import re
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import CURP_REGEXP
 
 from .models import Funcionario
@@ -29,19 +29,19 @@ def get_funcionario(db: Session, funcionario_id: int) -> Funcionario:
     """Consultar un funcionario por su id"""
     funcionario = db.query(Funcionario).get(funcionario_id)
     if funcionario is None:
-        raise NotExistsException("No existe ese funcionario")
+        raise PWNotExistsError("No existe ese funcionario")
     if funcionario.estatus != "A":
-        raise IsDeletedException("No es activo ese funcionario, está eliminado")
+        raise PWIsDeletedError("No es activo ese funcionario, está eliminado")
     return funcionario
 
 
 def get_funcionario_with_curp(db: Session, curp: str) -> Funcionario:
     """Consultar un funcionario por su id"""
     if re.match(CURP_REGEXP, curp) is None:
-        raise NotValidException("El CURP es incorrecto")
+        raise PWNotValidParamError("El CURP es incorrecto")
     funcionario = db.query(Funcionario).filter_by(curp=curp).first()
     if funcionario is None:
-        raise NotExistsException("No existe ese funcionario")
+        raise PWNotExistsError("No existe ese funcionario")
     if funcionario.estatus != "A":
-        raise IsDeletedException("No es activo ese funcionario, está eliminado")
+        raise PWIsDeletedError("No es activo ese funcionario, está eliminado")
     return funcionario

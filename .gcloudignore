@@ -19,7 +19,6 @@ __pycache__/
 /.venv
 /.vscode
 /cli
-/instance/settings.py
 /notebooks
 /poetry.lock
 /pyproject.toml

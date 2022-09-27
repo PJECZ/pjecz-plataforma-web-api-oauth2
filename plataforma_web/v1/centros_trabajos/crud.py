@@ -4,7 +4,7 @@ Centros de Trabajo v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import IsDeletedException, NotExistsException, NotValidException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import safe_clave
 
 from .models import CentroTrabajo
@@ -32,9 +32,9 @@ def get_centro_trabajo(db: Session, centro_trabajo_id: int) -> CentroTrabajo:
     """Consultar un centro de trabajo por su id"""
     centro_trabajo = db.query(CentroTrabajo).get(centro_trabajo_id)
     if centro_trabajo is None:
-        raise NotExistsException("No existe ese centro de trabajo")
+        raise PWNotExistsError("No existe ese centro de trabajo")
     if centro_trabajo.estatus != "A":
-        raise IsDeletedException("No es activo ese centro de trabajo, está eliminado")
+        raise PWIsDeletedError("No es activo ese centro de trabajo, está eliminado")
     return centro_trabajo
 
 
@@ -43,10 +43,10 @@ def get_centro_trabajo_from_clave(db: Session, centro_trabajo_clave: str) -> Cen
     try:
         clave = safe_clave(centro_trabajo_clave)
     except ValueError as error:
-        raise NotValidException("No es válida la clave") from error
+        raise PWNotValidParamError("No es válida la clave") from error
     centro_trabajo = db.query(CentroTrabajo).filter_by(clave=clave).first()
     if centro_trabajo is None:
-        raise NotExistsException("No existe ese centro de trabajo")
+        raise PWNotExistsError("No existe ese centro de trabajo")
     if centro_trabajo.estatus != "A":
-        raise IsDeletedException("No es activo ese centro de trabajo, está eliminado")
+        raise PWIsDeletedError("No es activo ese centro de trabajo, está eliminado")
     return centro_trabajo

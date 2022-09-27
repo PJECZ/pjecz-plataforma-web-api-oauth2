@@ -6,9 +6,9 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func, extract
+import pytz
 
-from config.settings import SERVIDOR_HUSO_HORARIO
-from lib.exceptions import IsDeletedException, NotExistsException
+from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
 from .models import InvEquipo
@@ -38,7 +38,14 @@ def get_inv_equipos(
     tipo: str = None,
 ) -> Any:
     """Consultar los equipos activos"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
+
+    # Consultar
     consulta = db.query(InvEquipo)
+
+    # Filtrar por oficina
     if oficina_id:
         oficina = get_oficina(db, oficina_id=oficina_id)
         consulta = consulta.join(InvCustodia, Usuario)
@@ -47,34 +54,48 @@ def get_inv_equipos(
         oficina = get_oficina_from_clave(db, oficina_clave=oficina_clave)
         consulta = consulta.join(InvCustodia, Usuario)
         consulta = consulta.filter(Usuario.oficina == oficina)
+
+    # Filtrar por creado
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(InvEquipo.creado >= desde_dt).filter(InvEquipo.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(InvEquipo.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(InvEquipo.creado <= hasta_dt)
+
+    # Filtrar por fecha de fabricacion
     if fecha_fabricacion_desde:
         consulta = consulta.filter(InvEquipo.fecha_fabricacion >= fecha_fabricacion_desde)
     if fecha_fabricacion_hasta:
         consulta = consulta.filter(InvEquipo.fecha_fabricacion <= fecha_fabricacion_hasta)
+
+    # Filtrar por custodia
     if inv_custodia_id:
         inv_custodia = get_inv_custodia(db, inv_custodia_id=inv_custodia_id)
         consulta = consulta.filter(InvEquipo.inv_custodia == inv_custodia)
+
+    # Filtrar por modelo
     if inv_modelo_id:
         inv_modelo = get_inv_modelo(db, inv_modelo_id=inv_modelo_id)
         consulta = consulta.filter(InvEquipo.inv_modelo == inv_modelo)
+
+    # Filtrar por red
     if inv_red_id:
         inv_red = get_inv_red(db, inv_red_id=inv_red_id)
         consulta = consulta.filter(InvEquipo.inv_red == inv_red)
+
+    # Filtrar por tipo
     if tipo:
         tipo = safe_string(tipo)
         if tipo in InvEquipo.TIPOS:
             consulta = consulta.filter(InvEquipo.tipo == tipo)
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(InvEquipo.id.desc())
 
 
@@ -82,9 +103,9 @@ def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:
     """Consultar un equipo por su id"""
     inv_equipo = db.query(InvEquipo).get(inv_equipo_id)
     if inv_equipo is None:
-        raise NotExistsException("No existe ese equipo")
+        raise PWNotExistsError("No existe ese equipo")
     if inv_equipo.estatus != "A":
-        raise IsDeletedException("No es activo ese equipo, está eliminado")
+        raise PWIsDeletedError("No es activo ese equipo, está eliminado")
     return inv_equipo
 
 
@@ -93,8 +114,12 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    size: int = 10,
 ) -> Any:
     """Obtener las cantidades de equipos por oficina y por tipo"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
 
     # Consultar la oficina, el tipo de equipo y las cantidades
     consulta = (
@@ -109,15 +134,15 @@ def get_inv_equipos_cantidades_por_oficina_por_tipo(
 
     # Filtrar por fecha de creación
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(InvEquipo.creado >= desde_dt).filter(InvEquipo.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(InvEquipo.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(InvEquipo.creado <= hasta_dt)
 
     # Filtrar por estatus
@@ -140,8 +165,12 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
     creado_hasta: date = None,
     distrito_id: int = None,
     tipo: str = None,
+    size: int = 10,
 ) -> Any:
     """Obtener las cantidades de equipos por oficina y por año de fabricación"""
+
+    # Huso horario
+    servidor_huso_horario = pytz.utc
 
     # Consultar el funcionario, el tipo de equipo y las cantidades
     consulta = (
@@ -159,15 +188,15 @@ def get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion(
 
     # Filtrar por fecha de creación
     if creado:
-        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
-        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+        desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
+        hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(InvEquipo.creado >= desde_dt).filter(InvEquipo.creado <= hasta_dt)
     else:
         if creado_desde:
-            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(SERVIDOR_HUSO_HORARIO)
+            desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
             consulta = consulta.filter(InvEquipo.creado >= desde_dt)
         if creado_hasta:
-            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(SERVIDOR_HUSO_HORARIO)
+            hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(InvEquipo.creado <= hasta_dt)
 
     # Filtrar por distrito
