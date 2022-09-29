@@ -16,6 +16,7 @@ def get_centros_trabajos(
     db: Session,
     distrito_id: int = None,
     domicilio_id: int = None,
+    estatus: str = None,
 ) -> Any:
     """Consultar los centros de trabajo activos"""
     consulta = db.query(CentroTrabajo)
@@ -25,10 +26,17 @@ def get_centros_trabajos(
     if domicilio_id:
         domicilio = get_domicilio(db, domicilio_id=domicilio_id)
         consulta = consulta.filter(CentroTrabajo.domicilio == domicilio)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
     return consulta.filter_by(estatus="A").order_by(CentroTrabajo.id)
 
 
-def get_centro_trabajo(db: Session, centro_trabajo_id: int) -> CentroTrabajo:
+def get_centro_trabajo(
+    db: Session,
+    centro_trabajo_id: int,
+) -> CentroTrabajo:
     """Consultar un centro de trabajo por su id"""
     centro_trabajo = db.query(CentroTrabajo).get(centro_trabajo_id)
     if centro_trabajo is None:
@@ -38,7 +46,10 @@ def get_centro_trabajo(db: Session, centro_trabajo_id: int) -> CentroTrabajo:
     return centro_trabajo
 
 
-def get_centro_trabajo_from_clave(db: Session, centro_trabajo_clave: str) -> CentroTrabajo:
+def get_centro_trabajo_from_clave(
+    db: Session,
+    centro_trabajo_clave: str,
+) -> CentroTrabajo:
     """Consultar un centro de trabajo por su id"""
     try:
         clave = safe_clave(centro_trabajo_clave)

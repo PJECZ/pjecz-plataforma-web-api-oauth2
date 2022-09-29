@@ -20,6 +20,7 @@ permisos = APIRouter(prefix="/v1/permisos", tags=["usuarios"])
 
 @permisos.get("", response_model=CustomPage[PermisoOut])
 async def listado_permisos(
+    estatus: str = None,
     modulo_id: int = None,
     rol_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -31,6 +32,7 @@ async def listado_permisos(
     try:
         consulta = get_permisos(
             db=db,
+            estatus=estatus,
             modulo_id=modulo_id,
             rol_id=rol_id,
         )

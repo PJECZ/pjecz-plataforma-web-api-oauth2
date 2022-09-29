@@ -9,12 +9,23 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from .models import Domicilio
 
 
-def get_domicilios(db: Session) -> Any:
+def get_domicilios(
+    db: Session,
+    estatus: str = None,
+) -> Any:
     """Consultar los domicilios activos"""
-    return db.query(Domicilio).filter_by(estatus="A").order_by(Domicilio.id.desc())
+    consulta = db.query(Domicilio)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    return consulta.order_by(Domicilio.id.desc())
 
 
-def get_domicilio(db: Session, domicilio_id: int) -> Domicilio:
+def get_domicilio(
+    db: Session,
+    domicilio_id: int,
+) -> Domicilio:
     """Consultar un domicilio por su id"""
     domicilio = db.query(Domicilio).get(domicilio_id)
     if domicilio is None:

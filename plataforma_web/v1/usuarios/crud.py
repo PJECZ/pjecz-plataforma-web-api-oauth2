@@ -17,6 +17,7 @@ def get_usuarios(
     db: Session,
     autoridad_id: int = None,
     autoridad_clave: str = None,
+    estatus: str = None,
     oficina_id: int = None,
     oficina_clave: str = None,
 ) -> Any:
@@ -28,6 +29,10 @@ def get_usuarios(
     elif autoridad_clave:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(Usuario.autoridad == autoridad)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
     if oficina_id:
         oficina = get_oficina(db, oficina_id)
         consulta = consulta.filter(Usuario.oficina == oficina)
@@ -37,7 +42,7 @@ def get_usuarios(
     return consulta.order_by(Usuario.email.asc())
 
 
-def get_usuario(db: Session, usuario_id: int) -> Usuario:
+def get_usuario(db: Session, usuario_id: int,) -> Usuario:
     """Consultar un usuario por su id"""
     usuario = db.query(Usuario).get(usuario_id)
     if usuario is None:
@@ -47,7 +52,7 @@ def get_usuario(db: Session, usuario_id: int) -> Usuario:
     return usuario
 
 
-def get_usuario_from_email(db: Session, email: str) -> Usuario:
+def get_usuario_from_email(db: Session, email: str,) -> Usuario:
     """Consultar un usuario por su email"""
     if re.match(EMAIL_REGEXP, email) is None:
         raise PWNotValidParamError("El e-mail es incorrecto")

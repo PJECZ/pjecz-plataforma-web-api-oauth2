@@ -12,12 +12,19 @@ from ..materias.crud import get_materia
 
 def get_materias_tipos_juicios(
     db: Session,
-    materia_id: int,
+    estatus: str = None,
+    materia_id: int = None,
 ) -> Any:
     """Consultar los tipos de juicios activos de una materia"""
-    materia = get_materia(db, materia_id)
-    consulta = db.query(MateriaTipoJuicio).filter(MateriaTipoJuicio.materia == materia)
-    return consulta.filter_by(estatus="A").order_by(MateriaTipoJuicio.id.desc())
+    consulta = db.query(MateriaTipoJuicio)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    if materia_id is not None:
+        materia = get_materia(db, materia_id)
+        consulta = consulta.filter(MateriaTipoJuicio.materia == materia)
+    return consulta.order_by(MateriaTipoJuicio.descripcion)
 
 
 def get_materia_tipo_juicio(

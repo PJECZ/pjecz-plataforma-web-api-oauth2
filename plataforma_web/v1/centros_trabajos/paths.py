@@ -22,6 +22,7 @@ centros_trabajos = APIRouter(prefix="/v1/centros_trabajos", tags=["funcionarios"
 async def listado_centros_trabajos(
     distrito_id: int = None,
     domicilio_id: int = None,
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -33,6 +34,7 @@ async def listado_centros_trabajos(
             db=db,
             distrito_id=distrito_id,
             domicilio_id=domicilio_id,
+            estatus=estatus,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)

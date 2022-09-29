@@ -20,6 +20,7 @@ modulos = APIRouter(prefix="/v1/modulos", tags=["usuarios"])
 
 @modulos.get("", response_model=CustomPage[ModuloOut])
 async def listado_modulos(
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,10 @@ async def listado_modulos(
     if current_user.permissions.get("MODULOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_modulos(db=db)
+        consulta = get_modulos(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(consulta)

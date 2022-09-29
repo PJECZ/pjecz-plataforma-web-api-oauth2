@@ -9,12 +9,23 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from .models import Modulo
 
 
-def get_modulos(db: Session) -> Any:
+def get_modulos(
+    db: Session,
+    estatus: str = None,
+) -> Any:
     """Consultar los modulos activos"""
-    return db.query(Modulo).filter_by(estatus="A").order_by(Modulo.nombre.asc())
+    consulta = db.query(Modulo)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    return consulta.order_by(Modulo.nombre)
 
 
-def get_modulo(db: Session, modulo_id: int) -> Modulo:
+def get_modulo(
+    db: Session,
+    modulo_id: int,
+) -> Modulo:
     """Consultar un modulo por su id"""
     modulo = db.query(Modulo).get(modulo_id)
     if modulo is None:
