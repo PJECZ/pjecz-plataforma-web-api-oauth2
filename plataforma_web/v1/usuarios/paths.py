@@ -24,6 +24,7 @@ async def listado_usuarios(
     estatus: str = None,
     oficina_id: int = None,
     oficina_clave: str = None,
+    workspace: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -38,6 +39,7 @@ async def listado_usuarios(
             estatus=estatus,
             oficina_id=oficina_id,
             oficina_clave=oficina_clave,
+            workspace=workspace,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)
