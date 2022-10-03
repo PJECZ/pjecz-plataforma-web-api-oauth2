@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
-from lib.safe_string import EMAIL_REGEXP
+from lib.safe_string import EMAIL_REGEXP, safe_string
 
 from .models import Usuario
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
@@ -20,6 +20,7 @@ def get_usuarios(
     estatus: str = None,
     oficina_id: int = None,
     oficina_clave: str = None,
+    workspace: str = None,
 ) -> Any:
     """Consultar los usuarios activos"""
     consulta = db.query(Usuario)
@@ -39,10 +40,17 @@ def get_usuarios(
     elif oficina_clave:
         oficina = get_oficina_from_clave(db, oficina_clave)
         consulta = consulta.filter(Usuario.oficina == oficina)
+    if workspace is not None:
+        workspace = safe_string(workspace)
+        if workspace in Usuario.WORKSPACES:
+            consulta = consulta.filter_by(workspace=workspace)
     return consulta.order_by(Usuario.email.asc())
 
 
-def get_usuario(db: Session, usuario_id: int,) -> Usuario:
+def get_usuario(
+    db: Session,
+    usuario_id: int,
+) -> Usuario:
     """Consultar un usuario por su id"""
     usuario = db.query(Usuario).get(usuario_id)
     if usuario is None:
@@ -52,7 +60,10 @@ def get_usuario(db: Session, usuario_id: int,) -> Usuario:
     return usuario
 
 
-def get_usuario_from_email(db: Session, email: str,) -> Usuario:
+def get_usuario_from_email(
+    db: Session,
+    email: str,
+) -> Usuario:
     """Consultar un usuario por su email"""
     if re.match(EMAIL_REGEXP, email) is None:
         raise PWNotValidParamError("El e-mail es incorrecto")

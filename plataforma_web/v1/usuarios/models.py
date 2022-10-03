@@ -1,7 +1,8 @@
 """
 Usuarios v1.0, modelos
 """
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from collections import OrderedDict
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from lib.database import Base
@@ -12,6 +13,15 @@ from ..permisos.models import Permiso
 
 class Usuario(Base, UniversalMixin):
     """Usuario"""
+
+    WORKSPACES = OrderedDict(
+        [
+            ("BUSINESS STARTED", "Business Started"),
+            ("BUSINESS STANDARD", "Business Standard"),
+            ("COAHUILA", "Coahuila"),
+            ("EXTERNO", "Externo"),
+        ]
+    )
 
     # Nombre de la tabla
     __tablename__ = "usuarios"
@@ -27,18 +37,19 @@ class Usuario(Base, UniversalMixin):
 
     # Columnas
     email = Column(String(256), unique=True, index=True)
-    contrasena = Column(String(256), nullable=False)
     nombres = Column(String(256), nullable=False)
     apellido_paterno = Column(String(256), nullable=False)
     apellido_materno = Column(String(256))
     curp = Column(String(18))
     puesto = Column(String(256))
-    telefono_celular = Column(String(256))
     telefono = Column(String(48), nullable=False)
     extension = Column(String(24), nullable=False)
-    fotografia_url = Column(String(512), nullable=False)
+    workspace = Column(Enum(*WORKSPACES, name="tipos_workspaces", native_enum=False), index=True, nullable=False)
+
+    # Columnas que no deben ser expuestas
     api_key = Column(String(128), nullable=False)
     api_key_expiracion = Column(DateTime(), nullable=False)
+    contrasena = Column(String(256), nullable=False)
 
     # Hijos
     inv_custodias = relationship("InvCustodia", back_populates="usuario")

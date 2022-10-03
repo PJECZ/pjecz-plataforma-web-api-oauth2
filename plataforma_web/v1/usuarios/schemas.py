@@ -11,13 +11,13 @@ class UsuarioOut(BaseModel):
     """Esquema para entregar usuario"""
 
     id: int | None
-    distrito_id: int | None
-    distrito_nombre: str | None
-    distrito_nombre_corto: str | None
     autoridad_id: int | None
     autoridad_clave: str | None
     autoridad_descripcion: str | None
     autoridad_descripcion_corta: str | None
+    distrito_id: int | None
+    distrito_nombre: str | None
+    distrito_nombre_corto: str | None
     oficina_id: int | None
     oficina_clave: str | None
     email: str | None
@@ -26,7 +26,9 @@ class UsuarioOut(BaseModel):
     apellido_materno: str | None
     curp: str | None
     puesto: str | None
-    telefono_celular: str | None
+    telefono: str | None
+    extension: str | None
+    workspace: str | None
 
     class Config:
         """SQLAlchemy config"""
