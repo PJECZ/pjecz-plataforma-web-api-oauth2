@@ -13,10 +13,15 @@ from ..inv_marcas.crud import get_inv_marca
 
 def get_inv_modelos(
     db: Session,
+    estatus: str = None,
     inv_marca_id: int = None,
 ) -> Any:
     """Consultar los modelos activos"""
     consulta = db.query(InvModelo)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
     if inv_marca_id:
         inv_marca = get_inv_marca(db, inv_marca_id=inv_marca_id)
         consulta = consulta.filter(InvModelo.inv_marca == inv_marca)

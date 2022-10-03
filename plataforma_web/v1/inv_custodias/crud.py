@@ -14,6 +14,7 @@ from ..usuarios.crud import get_usuario, get_usuario_from_email
 
 def get_inv_custodias(
     db: Session,
+    estatus: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
     usuario_id: int = None,
@@ -21,16 +22,20 @@ def get_inv_custodias(
 ) -> Any:
     """Consultar los custodias activos"""
     consulta = db.query(InvCustodia)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    if fecha_desde:
+        consulta = consulta.filter(InvCustodia.fecha >= fecha_desde)
+    if fecha_hasta:
+        consulta = consulta.filter(InvCustodia.fecha <= fecha_hasta)
     if usuario_id:
         usuario = get_usuario(db, usuario_id=usuario_id)
         consulta = consulta.filter(InvCustodia.usuario == usuario)
     elif usuario_email:
         usuario = get_usuario_from_email(db, email=usuario_email)
         consulta = consulta.filter(InvCustodia.usuario == usuario)
-    if fecha_desde:
-        consulta = consulta.filter(InvCustodia.fecha >= fecha_desde)
-    if fecha_hasta:
-        consulta = consulta.filter(InvCustodia.fecha <= fecha_hasta)
     return consulta.filter_by(estatus="A").order_by(InvCustodia.id.desc())
 
 

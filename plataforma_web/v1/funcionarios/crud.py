@@ -13,6 +13,7 @@ from .models import Funcionario
 
 def get_funcionarios(
     db: Session,
+    estatus: str = None,
     en_funciones: bool = False,
     en_soportes: bool = False,
 ) -> Any:
@@ -22,6 +23,10 @@ def get_funcionarios(
         consulta = consulta.filetr_by(en_funciones=True)
     if en_soportes is True:
         consulta = consulta.filetr_by(en_soportes=True)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
     return consulta.filter_by(estatus="A").order_by(Funcionario.curp.asc())
 
 

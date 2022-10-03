@@ -16,6 +16,7 @@ def get_abogados(
     db: Session,
     anio_desde: int = None,
     anio_hasta: int = None,
+    estatus: str = None,
     nombre: str = None,
 ) -> Any:
     """Consultar los abogados activos"""
@@ -30,6 +31,10 @@ def get_abogados(
             consulta = consulta.filter(Abogado.fecha <= date(year=anio_hasta, month=12, day=31))
         else:
             raise PWOutOfRangeParamError("Año fuera de rango.")
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
     if nombre is not None:
         nombre = safe_string(nombre)
         if nombre != "":

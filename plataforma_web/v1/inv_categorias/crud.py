@@ -10,12 +10,23 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from .models import InvCategoria
 
 
-def get_inv_categorias(db: Session) -> Any:
+def get_inv_categorias(
+    db: Session,
+    estatus: str = None,
+) -> Any:
     """Consultar las categorias activas"""
-    return db.query(InvCategoria).filter_by(estatus="A").order_by(InvCategoria.id)
+    consulta = db.query(InvCategoria)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    return consulta.order_by(InvCategoria.id)
 
 
-def get_inv_categoria(db: Session, inv_categoria_id: int) -> InvCategoria:
+def get_inv_categoria(
+    db: Session,
+    inv_categoria_id: int,
+) -> InvCategoria:
     """Consultar una categoria por su id"""
     inv_categoria = db.query(InvCategoria).get(inv_categoria_id)
     if inv_categoria is None:
