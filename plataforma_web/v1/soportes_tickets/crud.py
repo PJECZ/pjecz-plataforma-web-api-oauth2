@@ -105,7 +105,7 @@ def get_cantidades_por_distrito_por_categoria(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
-    size: int = 10,
+    size: int = 100,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
 
@@ -151,7 +151,7 @@ def get_cantidades_por_funcionario_por_estado(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
-    size: int = 10,
+    size: int = 100,
 ) -> Any:
     """Consultar totales de tickets por oficina y por categoria"""
 
