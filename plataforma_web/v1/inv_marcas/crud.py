@@ -10,12 +10,23 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from .models import InvMarca
 
 
-def get_inv_marcas(db: Session) -> Any:
+def get_inv_marcas(
+    db: Session,
+    estatus: str = None,
+) -> Any:
     """Consultar las marcas activas"""
-    return db.query(InvMarca).filter_by(estatus="A").order_by(InvMarca.nombre)
+    consulta = db.query(InvMarca)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    return consulta.order_by(InvMarca.nombre)
 
 
-def get_inv_marca(db: Session, inv_marca_id: int) -> InvMarca:
+def get_inv_marca(
+    db: Session,
+    inv_marca_id: int,
+) -> InvMarca:
     """Consultar una marca por su id"""
     inv_marca = db.query(InvMarca).get(inv_marca_id)
     if inv_marca is None:

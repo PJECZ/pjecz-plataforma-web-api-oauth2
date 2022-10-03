@@ -9,12 +9,23 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from .models import Distrito
 
 
-def get_distritos(db: Session) -> Any:
+def get_distritos(
+    db: Session,
+    estatus: str = None,
+) -> Any:
     """Consultar los distritos judiciales activos"""
-    return db.query(Distrito).filter_by(estatus="A").order_by(Distrito.nombre.asc())
+    consulta = db.query(Distrito)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    return consulta.order_by(Distrito.nombre.asc())
 
 
-def get_distrito(db: Session, distrito_id: int) -> Distrito:
+def get_distrito(
+    db: Session,
+    distrito_id: int,
+) -> Distrito:
     """Consultar un distrito por su id"""
     distrito = db.query(Distrito).get(distrito_id)
     if distrito is None:

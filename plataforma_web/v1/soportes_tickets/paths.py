@@ -65,7 +65,7 @@ async def cantidades_por_distrito_por_categoria(
     creado_hasta: date = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-    size: int = 10,
+    size: int = 100,
 ):
     """Listado de totales de tickets por oficina y por categoria"""
     if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:
@@ -95,7 +95,7 @@ async def cantidades_por_funcionario_por_estado(
     creado_hasta: date = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-    size: int = 10,
+    size: int = 100,
 ):
     """Listado de totales de tickets por oficina y por categoria"""
     if current_user.permissions.get("SOPORTES TICKETS", 0) < Permiso.VER:

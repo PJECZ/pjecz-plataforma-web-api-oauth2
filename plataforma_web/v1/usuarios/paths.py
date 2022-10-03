@@ -21,6 +21,7 @@ usuarios = APIRouter(prefix="/v1/usuarios", tags=["usuarios"])
 async def listado_usuarios(
     autoridad_id: int = None,
     autoridad_clave: str = None,
+    estatus: str = None,
     oficina_id: int = None,
     oficina_clave: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -34,6 +35,7 @@ async def listado_usuarios(
             db=db,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
+            estatus=estatus,
             oficina_id=oficina_id,
             oficina_clave=oficina_clave,
         )

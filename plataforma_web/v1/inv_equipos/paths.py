@@ -67,7 +67,7 @@ async def cantidades_por_oficina_por_tipo(
     creado_hasta: date = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-    size: int = 10,
+    size: int = 100,
 ):
     """Cantidades de equipos por oficina y tipo"""
     if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:
@@ -99,7 +99,7 @@ async def cantidades_por_oficina_por_anio_fabricacion(
     tipo: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-    size: int = 10,
+    size: int = 100,
 ):
     """Cantidades de equipos por oficina y año de fabricación"""
     if current_user.permissions.get("INV EQUIPOS", 0) < Permiso.VER:

@@ -20,6 +20,7 @@ distritos = APIRouter(prefix="/v1/distritos", tags=["catalogos"])
 
 @distritos.get("", response_model=CustomPage[DistritoOut])
 async def listado_distritos(
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,10 @@ async def listado_distritos(
     if current_user.permissions.get("DISTRITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_distritos(db=db)
+        consulta = get_distritos(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(consulta)

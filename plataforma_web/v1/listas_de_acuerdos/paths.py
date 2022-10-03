@@ -60,7 +60,7 @@ async def sintetizar_por_creado(
     distrito_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
-    size: int = 10,
+    size: int = 100,
 ):
     """Listado de listas de acuerdos por distrito y creado"""
     if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.VER:

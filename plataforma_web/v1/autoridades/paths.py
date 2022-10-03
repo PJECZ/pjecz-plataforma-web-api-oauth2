@@ -23,6 +23,7 @@ async def listado_autoridades(
     distrito_id: int = None,
     es_jurisdiccional: bool = None,
     es_notaria: bool = None,
+    estatus: str = None,
     materia_id: int = None,
     organo_jurisdiccional: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
@@ -37,6 +38,7 @@ async def listado_autoridades(
             distrito_id=distrito_id,
             es_jurisdiccional=es_jurisdiccional,
             es_notaria=es_notaria,
+            estatus=estatus,
             materia_id=materia_id,
             organo_jurisdiccional=organo_jurisdiccional,
         )

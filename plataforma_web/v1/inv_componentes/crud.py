@@ -15,12 +15,17 @@ from ..inv_equipos.crud import get_inv_equipo
 
 def get_inv_componentes(
     db: Session,
+    estatus: str = None,
     inv_categoria_id: int = None,
     inv_equipo_id: int = None,
     generacion: str = False,
 ) -> Any:
     """Consultar los componentes activos"""
     consulta = db.query(InvComponente)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
     if inv_categoria_id:
         inv_categoria = get_inv_categoria(db, inv_categoria_id=inv_categoria_id)
         consulta = consulta.filter(InvComponente.inv_categoria == inv_categoria)

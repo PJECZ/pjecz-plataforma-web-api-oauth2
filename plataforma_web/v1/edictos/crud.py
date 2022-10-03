@@ -20,6 +20,7 @@ def get_edictos(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    estatus: str = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
@@ -52,6 +53,12 @@ def get_edictos(
         if creado_hasta:
             hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(Edicto.creado <= hasta_dt)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
 
     # Filtrar por fecha
     if fecha:

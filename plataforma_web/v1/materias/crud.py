@@ -9,12 +9,23 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from .models import Materia
 
 
-def get_materias(db: Session) -> Any:
-    """Consultar las materias activas (excepto el id 1 que es NO DEFINIDO)"""
-    return db.query(Materia).filter_by(estatus="A").filter(Materia.id != 1).order_by(Materia.nombre.asc())
+def get_materias(
+    db: Session,
+    estatus: str = None,
+) -> Any:
+    """Consultar las materias activas"""
+    consulta = db.query(Materia)
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+    return consulta.order_by(Materia.nombre.asc())
 
 
-def get_materia(db: Session, materia_id: int) -> Materia:
+def get_materia(
+    db: Session,
+    materia_id: int,
+) -> Materia:
     """Consultar un materia por su id"""
     materia = db.query(Materia).get(materia_id)
     if materia is None:

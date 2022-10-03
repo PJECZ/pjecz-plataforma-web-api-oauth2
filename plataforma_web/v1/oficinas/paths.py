@@ -22,6 +22,7 @@ oficinas = APIRouter(prefix="/v1/oficinas", tags=["catalogos"])
 async def listado_oficinas(
     distrito_id: int = None,
     domicilio_id: int = None,
+    estatus: str = None,
     es_juridicional: bool = False,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -35,6 +36,7 @@ async def listado_oficinas(
             distrito_id=distrito_id,
             domicilio_id=domicilio_id,
             es_jurisdiccional=es_juridicional,
+            estatus=estatus,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)

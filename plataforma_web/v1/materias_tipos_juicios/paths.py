@@ -20,6 +20,7 @@ materias_tipos_juicios = APIRouter(prefix="/v1/materias_tipos_juicios", tags=["c
 
 @materias_tipos_juicios.get("", response_model=CustomPage[MateriaTipoJuicioOut])
 async def listado_materias_tipos_juicios(
+    estatus: str = None,
     materia_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -30,6 +31,7 @@ async def listado_materias_tipos_juicios(
     try:
         consulta = get_materias_tipos_juicios(
             db=db,
+            estatus=estatus,
             materia_id=materia_id,
         )
     except PWAnyError as error:

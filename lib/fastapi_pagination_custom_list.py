@@ -14,7 +14,7 @@ T = TypeVar("T")
 class ListParams(BaseParams):
     """Modificar size por defecto"""
 
-    size: int = Query(100, ge=1, le=1000, description="Page size")
+    size: int = Query(100, ge=1, le=10000, description="Page size")
 
 
 class ListResult(GenericModel, Generic[T]):
