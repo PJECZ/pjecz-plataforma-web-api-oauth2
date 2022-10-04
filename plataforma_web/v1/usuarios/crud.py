@@ -22,7 +22,7 @@ def get_usuarios(
     oficina_clave: str = None,
     workspace: str = None,
 ) -> Any:
-    """Consultar los usuarios activos"""
+    """Consultar los usuarios"""
 
     # Consultar
     consulta = db.query(Usuario)

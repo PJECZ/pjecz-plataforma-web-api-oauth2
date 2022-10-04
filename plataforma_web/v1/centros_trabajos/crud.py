@@ -18,18 +18,28 @@ def get_centros_trabajos(
     domicilio_id: int = None,
     estatus: str = None,
 ) -> Any:
-    """Consultar los centros de trabajo activos"""
+    """Consultar los centros de trabajo"""
+
+    # Consultar
     consulta = db.query(CentroTrabajo)
+
+    # Filtrar por distrito
     if distrito_id is not None:
         distrito = get_distrito(db, distrito_id=distrito_id)
         consulta = consulta.filter(CentroTrabajo.distrito == distrito)
+
+    # Filtrar por domicilio
     if domicilio_id is not None:
         domicilio = get_domicilio(db, domicilio_id=domicilio_id)
         consulta = consulta.filter(CentroTrabajo.domicilio == domicilio)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(CentroTrabajo.id.desc())
 
 

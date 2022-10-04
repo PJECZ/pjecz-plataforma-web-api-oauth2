@@ -20,7 +20,7 @@ def get_inv_custodias(
     usuario_id: int = None,
     usuario_email: str = None,
 ) -> Any:
-    """Consultar los custodias activos"""
+    """Consultar los custodias"""
 
     # Consultar
     consulta = db.query(InvCustodia)

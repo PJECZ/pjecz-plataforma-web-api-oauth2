@@ -13,7 +13,7 @@ def get_roles(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar los roles activos"""
+    """Consultar los roles"""
 
     # Consultar
     consulta = db.query(Rol)

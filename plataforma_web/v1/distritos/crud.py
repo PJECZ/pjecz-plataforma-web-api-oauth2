@@ -13,12 +13,18 @@ def get_distritos(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar los distritos judiciales activos"""
+    """Consultar los distritos judiciales"""
+
+    # Consultar
     consulta = db.query(Distrito)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(Distrito.nombre)
 
 

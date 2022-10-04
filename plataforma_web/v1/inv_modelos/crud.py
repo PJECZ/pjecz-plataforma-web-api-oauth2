@@ -16,15 +16,23 @@ def get_inv_modelos(
     estatus: str = None,
     inv_marca_id: int = None,
 ) -> Any:
-    """Consultar los modelos activos"""
+    """Consultar los modelos"""
+
+    # Consultar
     consulta = db.query(InvModelo)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por marca
     if inv_marca_id:
         inv_marca = get_inv_marca(db, inv_marca_id=inv_marca_id)
         consulta = consulta.filter(InvModelo.inv_marca == inv_marca)
+
+    # Entregar
     return consulta.order_by(InvModelo.descripcion)
 
 

@@ -22,26 +22,42 @@ def get_autoridades(
     materia_id: int = None,
     organo_jurisdiccional: str = None,
 ) -> Any:
-    """Consultar las autoridades jurisdiccionales activas"""
+    """Consultar las autoridades jurisdiccionales"""
+
+    # Consultar
     consulta = db.query(Autoridad).filter_by(es_jurisdiccional=True)
+
+    # Filtrar por distrito
     if distrito_id is not None:
         distrito = get_distrito(db, distrito_id)
         consulta = consulta.filter(Autoridad.distrito == distrito)
+
+    # Filtrar por es_jurisdiccional
     if es_jurisdiccional is not None:
         consulta = consulta.filter_by(es_jurisdiccional=es_jurisdiccional)
+
+    # Filtrar por es_notaria
     if es_notaria is not None:
         consulta = consulta.filter_by(es_notaria=es_notaria)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por materia
     if materia_id is not None:
         materia = get_materia(db, materia_id)
         consulta = consulta.filter(Autoridad.materia == materia)
+
+    # Filtrar por organo_jurisdiccional
     if organo_jurisdiccional is not None:
         organo_jurisdiccional = safe_string(organo_jurisdiccional)
         if organo_jurisdiccional in Autoridad.ORGANOS_JURISDICCIONALES:
             consulta = consulta.filter_by(organo_jurisdiccional=organo_jurisdiccional)
+
+    # Entregar
     return consulta.order_by(Autoridad.clave)
 
 

@@ -14,12 +14,18 @@ def get_inv_categorias(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar las categorias activas"""
+    """Consultar las categorias"""
+
+    # Consultar
     consulta = db.query(InvCategoria)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(InvCategoria.nombre)
 
 

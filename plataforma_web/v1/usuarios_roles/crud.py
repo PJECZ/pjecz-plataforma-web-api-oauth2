@@ -17,7 +17,7 @@ def get_usuarios_roles(
     rol_id: int = None,
     usuario_id: int = None,
 ) -> Any:
-    """Consultar los usuarios_roles activos"""
+    """Consultar los usuarios roles"""
 
     # Consultar
     consulta = db.query(UsuarioRol)

@@ -29,7 +29,7 @@ def get_listas_de_acuerdos(
     fecha_desde: date = None,
     fecha_hasta: date = None,
 ) -> Any:
-    """Consultar las listas de acuerdos activas"""
+    """Consultar las listas de acuerdos"""
 
     # Huso horario
     servidor_huso_horario = pytz.utc

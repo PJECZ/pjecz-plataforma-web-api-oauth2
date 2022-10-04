@@ -35,7 +35,7 @@ def get_soportes_tickets(
     usuario_id: int = None,
     usuario_email: str = None,
 ) -> Any:
-    """Consultar los soportes_tickets activos"""
+    """Consultar los tickets"""
 
     # Huso horario
     servidor_huso_horario = pytz.utc
@@ -101,7 +101,7 @@ def get_soportes_tickets(
 
 
 def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:
-    """Consultar un soporte_ticket por su id"""
+    """Consultar un ticket por su id"""
     soporte_ticket = db.query(SoporteTicket).get(soporte_ticket_id)
     if soporte_ticket is None:
         raise PWNotExistsError("No existe ese ticket")
