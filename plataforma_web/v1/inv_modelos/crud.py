@@ -9,6 +9,7 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
 from .models import InvModelo
 from ..inv_marcas.crud import get_inv_marca
+from ..inv_marcas.models import InvMarca
 
 
 def get_inv_modelos(
@@ -19,7 +20,7 @@ def get_inv_modelos(
     """Consultar los modelos"""
 
     # Consultar
-    consulta = db.query(InvModelo)
+    consulta = db.query(InvModelo).join(InvMarca)
 
     # Filtrar por estatus
     if estatus is None:
@@ -33,7 +34,7 @@ def get_inv_modelos(
         consulta = consulta.filter(InvModelo.inv_marca == inv_marca)
 
     # Entregar
-    return consulta.order_by(InvModelo.descripcion)
+    return consulta.order_by(InvMarca.nombre, InvModelo.descripcion)
 
 
 def get_inv_modelo(db: Session, inv_modelo_id: int) -> InvModelo:
