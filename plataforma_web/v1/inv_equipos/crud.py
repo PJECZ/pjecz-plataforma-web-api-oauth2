@@ -47,11 +47,11 @@ def get_inv_equipos(
     consulta = db.query(InvEquipo)
 
     # Filtrar por oficina
-    if oficina_id:
+    if oficina_id is not None:
         oficina = get_oficina(db, oficina_id=oficina_id)
         consulta = consulta.join(InvCustodia, Usuario)
         consulta = consulta.filter(Usuario.oficina == oficina)
-    elif oficina_clave:
+    elif oficina_clave is not None:
         oficina = get_oficina_from_clave(db, oficina_clave=oficina_clave)
         consulta = consulta.join(InvCustodia, Usuario)
         consulta = consulta.filter(Usuario.oficina == oficina)
@@ -76,34 +76,34 @@ def get_inv_equipos(
         consulta = consulta.filter_by(estatus=estatus)
 
     # Filtrar por fecha de fabricacion
-    if fecha_fabricacion_desde:
+    if fecha_fabricacion_desde is not None:
         consulta = consulta.filter(InvEquipo.fecha_fabricacion >= fecha_fabricacion_desde)
-    if fecha_fabricacion_hasta:
+    if fecha_fabricacion_hasta is not None:
         consulta = consulta.filter(InvEquipo.fecha_fabricacion <= fecha_fabricacion_hasta)
 
     # Filtrar por custodia
-    if inv_custodia_id:
+    if inv_custodia_id is not None:
         inv_custodia = get_inv_custodia(db, inv_custodia_id=inv_custodia_id)
         consulta = consulta.filter(InvEquipo.inv_custodia == inv_custodia)
 
     # Filtrar por modelo
-    if inv_modelo_id:
+    if inv_modelo_id is not None:
         inv_modelo = get_inv_modelo(db, inv_modelo_id=inv_modelo_id)
         consulta = consulta.filter(InvEquipo.inv_modelo == inv_modelo)
 
     # Filtrar por red
-    if inv_red_id:
+    if inv_red_id is not None:
         inv_red = get_inv_red(db, inv_red_id=inv_red_id)
         consulta = consulta.filter(InvEquipo.inv_red == inv_red)
 
     # Filtrar por tipo
-    if tipo:
+    if tipo is not None:
         tipo = safe_string(tipo)
         if tipo in InvEquipo.TIPOS:
             consulta = consulta.filter(InvEquipo.tipo == tipo)
 
     # Entregar
-    return consulta.filter_by(estatus="A").order_by(InvEquipo.id.desc())
+    return consulta.order_by(InvEquipo.id.desc())
 
 
 def get_inv_equipo(db: Session, inv_equipo_id: int) -> InvEquipo:

@@ -14,11 +14,17 @@ def get_modulos(
     estatus: str = None,
 ) -> Any:
     """Consultar los modulos activos"""
+
+    # Consultar
     consulta = db.query(Modulo)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(Modulo.nombre)
 
 

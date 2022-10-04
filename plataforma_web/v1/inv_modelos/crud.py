@@ -25,7 +25,7 @@ def get_inv_modelos(
     if inv_marca_id:
         inv_marca = get_inv_marca(db, inv_marca_id=inv_marca_id)
         consulta = consulta.filter(InvModelo.inv_marca == inv_marca)
-    return consulta.filter_by(estatus="A").order_by(InvModelo.id)
+    return consulta.order_by(InvModelo.descripcion)
 
 
 def get_inv_modelo(db: Session, inv_modelo_id: int) -> InvModelo:

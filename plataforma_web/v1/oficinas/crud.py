@@ -16,24 +16,36 @@ def get_oficinas(
     db: Session,
     distrito_id: int = None,
     domicilio_id: int = None,
-    es_jurisdiccional: bool = False,
+    es_jurisdiccional: bool = None,
     estatus: str = None,
 ) -> Any:
-    """Consultar los oficina activos"""
+    """Consultar las oficinas"""
+
+    # Consultar
     consulta = db.query(Oficina)
-    if distrito_id:
+
+    # Filtrar por distrito
+    if distrito_id is not None:
         distrito = get_distrito(db, distrito_id)
         consulta = consulta.filter(Oficina.distrito == distrito)
-    if domicilio_id:
+
+    # Filtrar por domicilio
+    if domicilio_id is not None:
         domicilio = get_domicilio(db, domicilio_id)
         consulta = consulta.filter(Oficina.domicilio == domicilio)
-    if es_jurisdiccional is True:
-        consulta = consulta.filter_by(es_jurisdiccional=True)
+
+    # Filtrar por jurisdiccional
+    if es_jurisdiccional is not None:
+        consulta = consulta.filter_by(es_jurisdiccional=es_jurisdiccional)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    return consulta.filter_by(estatus="A").order_by(Oficina.clave.asc())
+
+    # Entregar
+    return consulta.order_by(Oficina.clave.asc())
 
 
 def get_oficina(

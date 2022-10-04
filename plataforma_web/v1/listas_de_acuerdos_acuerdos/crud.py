@@ -13,11 +13,28 @@ from plataforma_web.v1.listas_de_acuerdos_acuerdos.models import ListaDeAcuerdoA
 from plataforma_web.v1.listas_de_acuerdos_acuerdos.schemas import ListaDeAcuerdoAcuerdoIn
 
 
-def get_acuerdos(db: Session, lista_de_acuerdo_id: int) -> Any:
+def get_acuerdos(
+    db: Session,
+    lista_de_acuerdo_id: int,
+    estatus: str = None,
+) -> Any:
     """Consultar los acuerdos activos"""
+
+    # Consultar
+    consulta = db.query(ListaDeAcuerdoAcuerdo)
+
+    # Filtrar por lista de acuerdos
     lista_de_acuerdo = get_lista_de_acuerdo(db, lista_de_acuerdo_id)
-    consulta = db.query(ListaDeAcuerdoAcuerdo).filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
-    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdoAcuerdo.id.desc())
+    consulta = consulta.filter(ListaDeAcuerdoAcuerdo.lista_de_acuerdo == lista_de_acuerdo)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
+    return consulta.order_by(ListaDeAcuerdoAcuerdo.id.desc())
 
 
 def get_acuerdo(db: Session, lista_de_acuerdo_acuerdo_id: int) -> ListaDeAcuerdoAcuerdo:

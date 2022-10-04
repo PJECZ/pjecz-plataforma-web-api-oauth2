@@ -16,14 +16,22 @@ def get_materias_tipos_juicios(
     materia_id: int = None,
 ) -> Any:
     """Consultar los tipos de juicios activos de una materia"""
+
+    # Consultar
     consulta = db.query(MateriaTipoJuicio)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por materia
     if materia_id is not None:
         materia = get_materia(db, materia_id)
         consulta = consulta.filter(MateriaTipoJuicio.materia == materia)
+
+    # Entregar
     return consulta.order_by(MateriaTipoJuicio.descripcion)
 
 

@@ -13,17 +13,32 @@ from ..usuarios.crud import get_usuario
 
 def get_usuarios_roles(
     db: Session,
+    estatus: str = None,
     rol_id: int = None,
     usuario_id: int = None,
 ) -> Any:
     """Consultar los usuarios_roles activos"""
+
+    # Consultar
     consulta = db.query(UsuarioRol)
-    if rol_id:
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por rol
+    if rol_id is not None:
         rol = get_rol(db, rol_id)
         consulta = consulta.filter(UsuarioRol.rol == rol)
-    if usuario_id:
+
+    # Filtrar por usuario
+    if usuario_id is not None:
         usuario = get_usuario(db, usuario_id)
         consulta = consulta.filter_by(UsuarioRol.usuario == usuario)
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(UsuarioRol.id)
 
 

@@ -26,16 +26,17 @@ def get_inv_componentes(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    if inv_categoria_id:
+    if inv_categoria_id is not None:
         inv_categoria = get_inv_categoria(db, inv_categoria_id=inv_categoria_id)
         consulta = consulta.filter(InvComponente.inv_categoria == inv_categoria)
-    if inv_equipo_id:
+    if inv_equipo_id is not None:
         inv_equipo = get_inv_equipo(db, inv_equipo_id=inv_equipo_id)
         consulta = consulta.filter(InvComponente.inv_equipo == inv_equipo)
-    generacion = safe_string(generacion)
-    if generacion:
-        consulta = consulta.filter_by(generacion=generacion)
-    return consulta.filter_by(estatus="A").order_by(InvComponente.id.desc())
+    if generacion is not None:
+        generacion = safe_string(generacion)
+        if generacion != "":
+            consulta = consulta.filter_by(generacion=generacion)
+    return consulta.order_by(InvComponente.id.desc())
 
 
 def get_inv_componente(db: Session, inv_componente_id: int) -> InvComponente:

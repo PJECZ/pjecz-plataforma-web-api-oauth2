@@ -23,28 +23,40 @@ def get_usuarios(
     workspace: str = None,
 ) -> Any:
     """Consultar los usuarios activos"""
+
+    # Consultar
     consulta = db.query(Usuario)
-    if autoridad_id:
+
+    # Filtrar por autoridad
+    if autoridad_id is not None:
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(Usuario.autoridad == autoridad)
-    elif autoridad_clave:
+    elif autoridad_clave is not None:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(Usuario.autoridad == autoridad)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    if oficina_id:
+
+    # Filtrar por oficina
+    if oficina_id is not None:
         oficina = get_oficina(db, oficina_id)
         consulta = consulta.filter(Usuario.oficina == oficina)
-    elif oficina_clave:
+    elif oficina_clave is not None:
         oficina = get_oficina_from_clave(db, oficina_clave)
         consulta = consulta.filter(Usuario.oficina == oficina)
+
+    # Filtrar por workspace
     if workspace is not None:
         workspace = safe_string(workspace)
         if workspace in Usuario.WORKSPACES:
             consulta = consulta.filter_by(workspace=workspace)
-    return consulta.order_by(Usuario.email.asc())
+
+    # Entregar
+    return consulta.order_by(Usuario.email)
 
 
 def get_usuario(

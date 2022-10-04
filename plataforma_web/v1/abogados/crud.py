@@ -39,7 +39,7 @@ def get_abogados(
         nombre = safe_string(nombre)
         if nombre != "":
             consulta = consulta.filter(Abogado.nombre.contains(nombre))
-    return consulta.filter_by(estatus="A").order_by(Abogado.id.desc())
+    return consulta.order_by(Abogado.id.desc())
 
 
 def get_abogado(db: Session, abogado_id: int) -> Abogado:
