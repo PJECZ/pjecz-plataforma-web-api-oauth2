@@ -4,9 +4,9 @@ API de Plataforma Web para brindar informacion a otros sistemas.
 
 ## Mejores practicas
 
-Se va a mejorar con los consejos en [I've been abusing HTTP Status Codes in my APIs for years](https://blog.slimjim.xyz/posts/stop-using-http-codes/)
+Usa las recomendaciones de [I've been abusing HTTP Status Codes in my APIs for years](https://blog.slimjim.xyz/posts/stop-using-http-codes/)
 
-### Escenario exitoso
+### Respuesta exitosa
 
 Status code: **200**
 
@@ -16,14 +16,23 @@ Body que entrega un listado
         "success": true,
         "message": "Success",
         "result": {
-            "total": 914,
-            "items": [ { "id": 1 } ],
+            "total": 2812,
+            "items": [ { "id": 1, ... } ],
             "limit": 100,
             "offset": 0
         }
     }
 
-### Escenario fallido: registro no encontrado
+Body que entrega un item
+
+    {
+        "success": true,
+        "message": "Success",
+        "id": 123,
+        ...
+    }
+
+### Respuesta fallida: registro no encontrado
 
 Status code: **200**
 
@@ -34,7 +43,7 @@ Body
         "message": "No employee found for ID 100"
     }
 
-### Escenario fallido: ruta incorrecta
+### Respuesta fallida: ruta incorrecta
 
 Status code: **404**
 
@@ -51,29 +60,34 @@ Verifique que este en True
 
     poetry config virtualenvs.in-project
 
-## Configurar
-
-Genere el `SECRET_KEY`
-
-    openssl rand -hex 32
+## Configuracion
 
 Cree un archivo para las variables de entorno `.env`
 
     # Base de datos
     DB_HOST=127.0.0.1
-    DB_NAME=pjecz_citas_v2
-    DB_USER=adminpjeczcitasv2
+    DB_NAME=pjecz_plataforma_web
+    DB_USER=adminpjeczplataformaweb
     DB_PASS=****************
+
+    # CORS Origins separados por comas
+    ORIGINS=http://localhost:8006,http://localhost:3000,http://127.0.0.1:8006,http://127.0.0.1:3000
+
+    # Limite de citas pendientes por cliente
+    LIMITE_CITAS_PENDIENTES=30
 
     # Redis
     REDIS_URL=redis://127.0.0.1:6379
-    TASK_QUEUE=pjecz_citas_v2
+    TASK_QUEUE=pjecz_plataforma_web
+
+    # Salt sirve para cifrar el ID con HashID, debe ser igual que en la app Flask
+    SALT=************************
 
     # Timezone
     TZ=America/Mexico_City
 
-    # Salt sirve para cifrar el ID con HashID, debe ser igual que en la app Flask
-    SALT=************************
+    # Arrancar con gunicorn o uvicorn
+    ARRANCAR=uvicorn
 
 Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Konsole
 
@@ -86,7 +100,7 @@ Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Kons
         export $(grep -v '^#' .env | xargs)
     fi
 
-    figlet Citas V2 API OAuth2
+    figlet Plataforma Web API Key
     echo
 
     echo "== Variables de entorno"
@@ -104,8 +118,8 @@ Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Kons
     export PGUSER=$DB_USER
     export PGPASSWORD=$DB_PASS
 
-    alias arrancar="uvicorn --port 8002 --reload citas_admin.app:app"
-    echo "-- FastAPI"
+    alias arrancar="python3 ${PWD}/arrancar.py"
+    echo "== Arrancar FastAPI con arrancar.py"
     echo "   arrancar"
     echo
 
@@ -134,14 +148,6 @@ Instale el entorno virtual y los paquetes necesarios
 Ejecute el script `arrancar.py` que contiene el comando y parametros para arrancar el servicio
 
     ./arrancar.py
-
-O use el comando para arrancar con uvicorn
-
-    uvicorn --host=127.0.0.1 --port 8002 --reload plataforma_web.app:app
-
-O use el comando para arrancar con gunicorn
-
-    gunicorn --workers=2 --bind 127.0.0.1:8002 plataforma_web.app:app
 
 ## Google Cloud deployment
 
