@@ -34,15 +34,15 @@ def get_edictos(
     consulta = db.query(Edicto)
 
     # Filtrar por autoridad
-    if autoridad_id:
+    if autoridad_id is not None:
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(Edicto.autoridad == autoridad)
-    elif autoridad_clave:
+    elif autoridad_clave is not None:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(Edicto.autoridad == autoridad)
 
     # Filtrar por creado
-    if creado:
+    if creado is not None:
         desde_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=0, minute=0, second=0).astimezone(servidor_huso_horario)
         hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
         consulta = consulta.filter(Edicto.creado >= desde_dt).filter(Edicto.creado <= hasta_dt)
@@ -61,7 +61,7 @@ def get_edictos(
         consulta = consulta.filter_by(estatus=estatus)
 
     # Filtrar por fecha
-    if fecha:
+    if fecha is not None:
         consulta = consulta.filter_by(fecha=fecha)
     else:
         if fecha_desde:
@@ -70,7 +70,7 @@ def get_edictos(
             consulta = consulta.filter(Edicto.fecha <= fecha_hasta)
 
     # Entregar
-    return consulta.filter_by(estatus="A").order_by(Edicto.id)
+    return consulta.order_by(Edicto.id.desc())
 
 
 def get_edicto(db: Session, edicto_id: int) -> Edicto:

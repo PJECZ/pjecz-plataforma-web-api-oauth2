@@ -20,7 +20,7 @@ def get_inv_categorias(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    return consulta.order_by(InvCategoria.id)
+    return consulta.order_by(InvCategoria.nombre)
 
 
 def get_inv_categoria(

@@ -14,12 +14,18 @@ def get_roles(
     estatus: str = None,
 ) -> Any:
     """Consultar los roles activos"""
+
+    # Consultar
     consulta = db.query(Rol)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    return consulta.order_by(Rol.nombre.asc())
+
+    # Entregar
+    return consulta.order_by(Rol.nombre)
 
 
 def get_rol(

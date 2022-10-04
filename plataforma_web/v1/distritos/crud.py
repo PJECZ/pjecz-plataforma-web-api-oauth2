@@ -19,7 +19,7 @@ def get_distritos(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    return consulta.order_by(Distrito.nombre.asc())
+    return consulta.order_by(Distrito.nombre)
 
 
 def get_distrito(

@@ -27,7 +27,7 @@ def get_funcionarios(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    return consulta.filter_by(estatus="A").order_by(Funcionario.curp.asc())
+    return consulta.order_by(Funcionario.curp)
 
 
 def get_funcionario(db: Session, funcionario_id: int) -> Funcionario:

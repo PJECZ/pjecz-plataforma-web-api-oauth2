@@ -24,6 +24,7 @@ def get_listas_de_acuerdos(
     creado: date = None,
     creado_desde: date = None,
     creado_hasta: date = None,
+    estatus: str = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
@@ -37,10 +38,10 @@ def get_listas_de_acuerdos(
     consulta = db.query(ListaDeAcuerdo)
 
     # Filtrar por autoridad
-    if autoridad_id:
+    if autoridad_id is not None:
         autoridad = get_autoridad(db, autoridad_id)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
-    elif autoridad_clave:
+    elif autoridad_clave is not None:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(ListaDeAcuerdo.autoridad == autoridad)
 
@@ -57,17 +58,22 @@ def get_listas_de_acuerdos(
             hasta_dt = datetime(year=creado.year, month=creado.month, day=creado.day, hour=23, minute=59, second=59).astimezone(servidor_huso_horario)
             consulta = consulta.filter(ListaDeAcuerdo.creado <= hasta_dt)
 
-    # Filtrar por fecha
-    if fecha:
-        consulta = consulta.filter_by(fecha=fecha)
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
-        if fecha_desde:
-            consulta = consulta.filter(ListaDeAcuerdo.fecha >= fecha_desde)
-        if fecha_hasta:
-            consulta = consulta.filter(ListaDeAcuerdo.fecha <= fecha_hasta)
+        consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por fecha
+    if fecha is not None:
+        consulta = consulta.filter_by(fecha=fecha)
+    if fecha is None and fecha_desde is not None:
+        consulta = consulta.filter(ListaDeAcuerdo.fecha >= fecha_desde)
+    if fecha is None and fecha_hasta is not None:
+        consulta = consulta.filter(ListaDeAcuerdo.fecha <= fecha_hasta)
 
     # Entregar
-    return consulta.filter_by(estatus="A").order_by(ListaDeAcuerdo.id.desc())
+    return consulta.order_by(ListaDeAcuerdo.id.desc())
 
 
 def get_lista_de_acuerdo(

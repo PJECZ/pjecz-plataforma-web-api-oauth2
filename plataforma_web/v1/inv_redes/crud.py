@@ -20,7 +20,7 @@ def get_inv_redes(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    return consulta.order_by(InvRed.id)
+    return consulta.order_by(InvRed.nombre)
 
 
 def get_inv_red(

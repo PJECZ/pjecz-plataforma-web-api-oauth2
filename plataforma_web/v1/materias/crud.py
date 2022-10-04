@@ -19,7 +19,7 @@ def get_materias(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    return consulta.order_by(Materia.nombre.asc())
+    return consulta.order_by(Materia.nombre)
 
 
 def get_materia(

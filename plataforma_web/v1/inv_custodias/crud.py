@@ -26,14 +26,14 @@ def get_inv_custodias(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    if fecha_desde:
+    if fecha_desde is not None:
         consulta = consulta.filter(InvCustodia.fecha >= fecha_desde)
-    if fecha_hasta:
+    if fecha_hasta is not None:
         consulta = consulta.filter(InvCustodia.fecha <= fecha_hasta)
-    if usuario_id:
+    if usuario_id is not None:
         usuario = get_usuario(db, usuario_id=usuario_id)
         consulta = consulta.filter(InvCustodia.usuario == usuario)
-    elif usuario_email:
+    elif usuario_email is not None:
         usuario = get_usuario_from_email(db, email=usuario_email)
         consulta = consulta.filter(InvCustodia.usuario == usuario)
     return consulta.filter_by(estatus="A").order_by(InvCustodia.id.desc())

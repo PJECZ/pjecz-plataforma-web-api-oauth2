@@ -28,6 +28,7 @@ def get_soportes_tickets(
     creado_hasta: date = None,
     descripcion: str = None,
     estado: str = None,
+    estatus: str = None,
     oficina_id: int = None,
     oficina_clave: str = None,
     soporte_categoria_id: int = None,
@@ -41,11 +42,11 @@ def get_soportes_tickets(
 
     # Consultar
     oficina = None
-    if oficina_id:
+    if oficina_id is not None:
         oficina = get_oficina(db, oficina_id)
-    elif oficina_clave:
+    elif oficina_clave is not None:
         oficina = get_oficina_from_clave(db, oficina_clave)
-    if oficina:
+    if oficina is not None:
         consulta = db.query(SoporteTicket).join(Usuario).filter(Usuario.oficina_id == oficina.id)
     else:
         consulta = db.query(SoporteTicket)
@@ -64,30 +65,40 @@ def get_soportes_tickets(
             consulta = consulta.filter(SoporteTicket.creado <= hasta_dt)
 
     # Filtrar por categoria
-    if soporte_categoria_id:
+    if soporte_categoria_id is not None:
         soporte_categoria = get_soporte_categoria(db, soporte_categoria_id)
         consulta = consulta.filter(SoporteTicket.soporte_categoria == soporte_categoria)
-    if usuario_id:
+
+    # Filtrar por descripcion
+    if descripcion is not None:
+        descripcion = safe_string(descripcion)
+        if descripcion != "":
+            consulta = consulta.filter(SoporteTicket.descripcion.contains(descripcion))
+
+    # Filtrar por estado
+    if estado is not None:
+        estado = safe_string(estado)
+        if estado != "":
+            if estado not in SoporteTicket.ESTADOS:
+                raise PWNotValidParamError("Estado incorrecto")
+            consulta = consulta.filter(SoporteTicket.estado == estado)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por usuario
+    if usuario_id is not None:
         usuario = get_usuario(db, usuario_id)
         consulta = consulta.filter(SoporteTicket.usuario == usuario)
-    elif usuario_email:
+    elif usuario_email is not None:
         usuario = get_usuario_from_email(db, usuario_email)
         consulta = consulta.filter(SoporteTicket.usuario == usuario)
 
-    # Filtrar por estado
-    estado = safe_string(estado)
-    if estado:
-        if estado not in SoporteTicket.ESTADOS:
-            raise PWNotValidParamError("Estado incorrecto")
-        consulta = consulta.filter(SoporteTicket.estado == estado)
-
-    # Filtrar por descripcion
-    descripcion = safe_string(descripcion)
-    if descripcion:
-        consulta = consulta.filter(SoporteTicket.descripcion.contains(descripcion))
-
     # Entregar
-    return consulta.filter_by(estatus="A").order_by(SoporteTicket.id.desc())
+    return consulta.order_by(SoporteTicket.id.desc())
 
 
 def get_soporte_ticket(db: Session, soporte_ticket_id: int) -> SoporteTicket:

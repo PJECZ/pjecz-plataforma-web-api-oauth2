@@ -24,7 +24,7 @@ def get_autoridades(
 ) -> Any:
     """Consultar las autoridades jurisdiccionales activas"""
     consulta = db.query(Autoridad).filter_by(es_jurisdiccional=True)
-    if distrito_id:
+    if distrito_id is not None:
         distrito = get_distrito(db, distrito_id)
         consulta = consulta.filter(Autoridad.distrito == distrito)
     if es_jurisdiccional is not None:
@@ -35,14 +35,14 @@ def get_autoridades(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
-    if materia_id:
+    if materia_id is not None:
         materia = get_materia(db, materia_id)
         consulta = consulta.filter(Autoridad.materia == materia)
     if organo_jurisdiccional is not None:
         organo_jurisdiccional = safe_string(organo_jurisdiccional)
         if organo_jurisdiccional in Autoridad.ORGANOS_JURISDICCIONALES:
             consulta = consulta.filter_by(organo_jurisdiccional=organo_jurisdiccional)
-    return consulta.filter_by(estatus="A").order_by(Autoridad.clave.asc())
+    return consulta.order_by(Autoridad.clave)
 
 
 def get_autoridad(
@@ -58,7 +58,10 @@ def get_autoridad(
     return autoridad
 
 
-def get_autoridad_from_clave(db: Session, autoridad_clave: str,) -> Autoridad:
+def get_autoridad_from_clave(
+    db: Session,
+    autoridad_clave: str,
+) -> Autoridad:
     """Consultar una autoridad por su clave"""
     try:
         clave = safe_clave(autoridad_clave)
