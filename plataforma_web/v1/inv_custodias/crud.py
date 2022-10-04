@@ -21,22 +21,32 @@ def get_inv_custodias(
     usuario_email: str = None,
 ) -> Any:
     """Consultar los custodias activos"""
+
+    # Consultar
     consulta = db.query(InvCustodia)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por fecha
     if fecha_desde is not None:
         consulta = consulta.filter(InvCustodia.fecha >= fecha_desde)
     if fecha_hasta is not None:
         consulta = consulta.filter(InvCustodia.fecha <= fecha_hasta)
+
+    # Filtrar por usuario
     if usuario_id is not None:
         usuario = get_usuario(db, usuario_id=usuario_id)
         consulta = consulta.filter(InvCustodia.usuario == usuario)
     elif usuario_email is not None:
         usuario = get_usuario_from_email(db, email=usuario_email)
         consulta = consulta.filter(InvCustodia.usuario == usuario)
-    return consulta.filter_by(estatus="A").order_by(InvCustodia.id.desc())
+
+    # Entregar
+    return consulta.order_by(InvCustodia.id.desc())
 
 
 def get_inv_custodia(db: Session, inv_custodia_id: int) -> InvCustodia:
