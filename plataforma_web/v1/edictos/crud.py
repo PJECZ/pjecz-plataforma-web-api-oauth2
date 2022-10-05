@@ -25,7 +25,7 @@ def get_edictos(
     fecha_desde: date = None,
     fecha_hasta: date = None,
 ) -> Any:
-    """Consultar los edictos activos"""
+    """Consultar los edictos"""
 
     # Zona horaria
     servidor_huso_horario = pytz.utc

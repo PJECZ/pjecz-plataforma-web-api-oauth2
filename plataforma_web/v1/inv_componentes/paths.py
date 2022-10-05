@@ -20,9 +20,9 @@ inv_componentes = APIRouter(prefix="/v1/inv_componentes", tags=["inventarios"])
 
 @inv_componentes.get("", response_model=CustomPage[InvComponenteOut])
 async def listado_inv_componentes(
+    generacion: str = None,
     inv_categoria_id: int = None,
     inv_equipo_id: int = None,
-    generacion: str = False,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -32,9 +32,9 @@ async def listado_inv_componentes(
     try:
         consulta = get_inv_componentes(
             db=db,
+            generacion=generacion,
             inv_categoria_id=inv_categoria_id,
             inv_equipo_id=inv_equipo_id,
-            generacion=generacion,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)

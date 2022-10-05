@@ -17,16 +17,26 @@ def get_funcionarios(
     en_funciones: bool = False,
     en_soportes: bool = False,
 ) -> Any:
-    """Consultar los funcionarios activos"""
+    """Consultar los funcionarios"""
+
+    # Consultar
     consulta = db.query(Funcionario)
+
+    # Filtrar por en funciones
     if en_funciones is True:
         consulta = consulta.filetr_by(en_funciones=True)
+
+    # Filtrar por en soportes
     if en_soportes is True:
         consulta = consulta.filetr_by(en_soportes=True)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(Funcionario.curp)
 
 

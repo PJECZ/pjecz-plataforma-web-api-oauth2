@@ -14,12 +14,18 @@ def get_inv_marcas(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar las marcas activas"""
+    """Consultar las marcas"""
+
+    # Consultar
     consulta = db.query(InvMarca)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(InvMarca.nombre)
 
 

@@ -27,7 +27,7 @@ def get_sentencias(
     fecha_hasta: date = None,
     materia_tipo_juicio_id: int = None,
 ) -> Any:
-    """Consultar los sentencias activas"""
+    """Consultar los sentencias"""
 
     # Huso horario
     servidor_huso_horario = pytz.utc

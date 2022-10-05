@@ -13,12 +13,18 @@ def get_domicilios(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar los domicilios activos"""
+    """Consultar los domicilios"""
+
+    # Consultar
     consulta = db.query(Domicilio)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(Domicilio.id.desc())
 
 

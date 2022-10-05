@@ -13,7 +13,7 @@ def get_modulos(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar los modulos activos"""
+    """Consultar los modulos"""
 
     # Consultar
     consulta = db.query(Modulo)

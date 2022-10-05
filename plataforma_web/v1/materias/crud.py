@@ -13,12 +13,18 @@ def get_materias(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar las materias activas"""
+    """Consultar las materias"""
+
+    # Consultar
     consulta = db.query(Materia)
+
+    # Filtrar por estatus
     if estatus is None:
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.order_by(Materia.nombre)
 
 

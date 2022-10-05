@@ -13,8 +13,8 @@ def get_soportes_categorias(
     db: Session,
     estatus: str = None,
 ) -> Any:
-    """Consultar los soportes_categorias"""
-    
+    """Consultar las categorias"""
+
     # Consultar
     consulta = db.query(SoporteCategoria)
 
@@ -29,7 +29,7 @@ def get_soportes_categorias(
 
 
 def get_soporte_categoria(db: Session, soporte_categoria_id: int) -> SoporteCategoria:
-    """Consultar un soporte_categoria por su id"""
+    """Consultar una categoria por su id"""
     soporte_categoria = db.query(SoporteCategoria).get(soporte_categoria_id)
     if soporte_categoria is None:
         raise PWNotExistsError("No existe esa categoria")

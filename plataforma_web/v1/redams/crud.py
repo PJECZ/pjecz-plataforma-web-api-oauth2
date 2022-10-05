@@ -18,7 +18,7 @@ def get_redams(
     distrito_id: int = None,
     estatus: str = None,
 ) -> Any:
-    """Consultar los deudores activos"""
+    """Consultar los deudores"""
 
     # Consultar
     consulta = db.query(Redam)

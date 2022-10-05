@@ -18,7 +18,7 @@ def get_acuerdos(
     lista_de_acuerdo_id: int,
     estatus: str = None,
 ) -> Any:
-    """Consultar los acuerdos activos"""
+    """Consultar los acuerdos"""
 
     # Consultar
     consulta = db.query(ListaDeAcuerdoAcuerdo)

@@ -15,7 +15,7 @@ def get_materias_tipos_juicios(
     estatus: str = None,
     materia_id: int = None,
 ) -> Any:
-    """Consultar los tipos de juicios activos de una materia"""
+    """Consultar los tipos de juicios de una materia"""
 
     # Consultar
     consulta = db.query(MateriaTipoJuicio)

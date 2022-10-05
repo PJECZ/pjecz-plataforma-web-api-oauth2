@@ -38,7 +38,7 @@ def get_inv_equipos(
     oficina_clave: str = None,
     tipo: str = None,
 ) -> Any:
-    """Consultar los equipos activos"""
+    """Consultar los equipos"""
 
     # Huso horario
     servidor_huso_horario = pytz.utc
