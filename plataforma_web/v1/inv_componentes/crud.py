@@ -18,7 +18,7 @@ def get_inv_componentes(
     estatus: str = None,
     inv_categoria_id: int = None,
     inv_equipo_id: int = None,
-    generacion: str = False,
+    generacion: str = None,
 ) -> Any:
     """Consultar los componentes"""
 
