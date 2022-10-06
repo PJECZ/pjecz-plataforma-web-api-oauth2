@@ -56,7 +56,7 @@ async def listado_listas_de_acuerdos(
 
 @listas_de_acuerdos.get("/sintetizar_por_creado", response_model=CustomList[ListaDeAcuerdoOut])
 async def sintetizar_por_creado(
-    creado: date = None,
+    creado: date,
     distrito_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),

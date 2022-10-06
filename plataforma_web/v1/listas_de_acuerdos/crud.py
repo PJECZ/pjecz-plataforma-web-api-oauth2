@@ -138,9 +138,7 @@ def insert_lista_de_acuerdo(
 
 def get_listas_de_acuerdos_sintetizar_por_creado(
     db: Session,
-    creado: date = None,
-    creado_desde: date = None,
-    creado_hasta: date = None,
+    creado: date,
     distrito_id: int = None,
     size: int = 100,
 ) -> List:
@@ -161,8 +159,6 @@ def get_listas_de_acuerdos_sintetizar_por_creado(
             db=db,
             autoridad_id=autoridad.id,
             creado=creado,
-            creado_desde=creado_desde,
-            creado_hasta=creado_hasta,
         ).all()
         if existentes:
             # Si hay listas de acuerdos, se agregan a la lista
