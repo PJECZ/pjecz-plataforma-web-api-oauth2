@@ -11,6 +11,8 @@ class OficinaOut(BaseModel):
     """Esquema para entregar oficinas"""
 
     id: int | None
+    distrito_id: int | None
+    distrito_nombre_corto: str | None
     domicilio_id: int | None
     domicilio_completo: str | None
     clave: str | None

@@ -36,6 +36,11 @@ class Oficina(Base, UniversalMixin):
     usuarios = relationship("Usuario", back_populates="oficina")
 
     @property
+    def distrito_nombre_corto(self):
+        """Nombre corto del distrito"""
+        return self.distrito.nombre_corto
+
+    @property
     def domicilio_completo(self):
         """Domicilio completo de la oficina"""
         return self.domicilio.completo
