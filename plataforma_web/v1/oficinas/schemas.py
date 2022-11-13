@@ -15,6 +15,7 @@ class OficinaOut(BaseModel):
     distrito_nombre_corto: str | None
     domicilio_id: int | None
     domicilio_completo: str | None
+    domicilio_edificio: str | None
     clave: str | None
     descripcion: str | None
     descripcion_corta: str | None

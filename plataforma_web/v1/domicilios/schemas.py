@@ -10,6 +10,7 @@ class DomicilioOut(BaseModel):
     """Esquema para entregar domicilios"""
 
     id: int | None
+    edificio: str | None
     estado: str | None
     municipio: str | None
     calle: str | None

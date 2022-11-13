@@ -18,6 +18,7 @@ class Domicilio(Base, UniversalMixin):
     id = Column(Integer, primary_key=True)
 
     # Columnas
+    edificio = Column(String(64), nullable=True, unique=True)
     estado = Column(String(64), nullable=False)
     municipio = Column(String(64), nullable=False)
     calle = Column(String(256), nullable=False)
