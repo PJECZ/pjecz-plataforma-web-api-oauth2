@@ -45,6 +45,11 @@ class Oficina(Base, UniversalMixin):
         """Domicilio completo de la oficina"""
         return self.domicilio.completo
 
+    @property
+    def domicilio_edificio(self):
+        """Edificio de la oficina"""
+        return self.domicilio.edificio
+
     def __repr__(self):
         """Representación"""
         return f"<Oficina {self.descripcion}>"

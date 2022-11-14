@@ -4,7 +4,8 @@ Domicilios v1, CRUD (create, read, update, and delete)
 from typing import Any
 from sqlalchemy.orm import Session
 
-from lib.exceptions import PWIsDeletedError, PWNotExistsError
+from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
+from lib.safe_string import safe_string
 
 from .models import Domicilio
 
@@ -25,7 +26,7 @@ def get_domicilios(
         consulta = consulta.filter_by(estatus=estatus)
 
     # Entregar
-    return consulta.order_by(Domicilio.id.desc())
+    return consulta.order_by(Domicilio.edificio)
 
 
 def get_domicilio(
@@ -38,4 +39,21 @@ def get_domicilio(
         raise PWNotExistsError("No existe ese domicilio")
     if domicilio.estatus != "A":
         raise PWIsDeletedError("No es activo ese domicilio, está eliminado")
+    return domicilio
+
+
+def get_domicilio_from_edificio(
+    db: Session,
+    domicilio_edificio: str,
+) -> Domicilio:
+    """Consultar un domicilio por su edificio"""
+    try:
+        edificio = safe_string(domicilio_edificio, do_unidecode=False)
+    except ValueError as error:
+        raise PWNotValidParamError("No es válida el edificio") from error
+    domicilio = db.query(Domicilio).filter_by(edificio=edificio).first()
+    if domicilio is None:
+        raise PWNotExistsError("No existe ese domicilio")
+    if domicilio.estatus != "A":
+        raise PWIsDeletedError("No es activa ese domicilio, está eliminada")
     return domicilio
