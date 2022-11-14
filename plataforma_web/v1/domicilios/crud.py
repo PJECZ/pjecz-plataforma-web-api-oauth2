@@ -26,7 +26,7 @@ def get_domicilios(
         consulta = consulta.filter_by(estatus=estatus)
 
     # Entregar
-    return consulta.order_by(Domicilio.id.desc())
+    return consulta.order_by(Domicilio.edificio)
 
 
 def get_domicilio(

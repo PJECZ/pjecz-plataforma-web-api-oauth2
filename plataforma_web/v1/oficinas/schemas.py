@@ -20,9 +20,6 @@ class OficinaOut(BaseModel):
     descripcion: str | None
     descripcion_corta: str | None
     es_jurisdiccional: bool | None
-    apertura: time | None
-    cierre: time | None
-    limite_personas: int | None
 
     class Config:
         """SQLAlchemy config"""
