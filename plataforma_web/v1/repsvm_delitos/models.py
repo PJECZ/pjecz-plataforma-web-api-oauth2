@@ -8,8 +8,8 @@ from lib.database import Base
 from lib.universal_mixin import UniversalMixin
 
 
-class REPSVMDelitos(Base, UniversalMixin):
-    """REPSVMDelitos"""
+class REPSVMDelito(Base, UniversalMixin):
+    """REPSVMDelito"""
 
     # Nombre de la tabla
     __tablename__ = "repsvm_delitos"
@@ -25,4 +25,4 @@ class REPSVMDelitos(Base, UniversalMixin):
 
     def __repr__(self):
         """Representación"""
-        return f"<REPSVMDelitos {self.id}>"
+        return f"<REPSVMDelito {self.id}>"
