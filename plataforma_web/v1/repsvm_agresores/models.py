@@ -55,6 +55,16 @@ class REPSVMAgresor(Base, UniversalMixin):
     # Hijos
     repsvm_agresores_delitos = relationship("REPSVMAgresorDelito", back_populates="repsvm_agresor")
 
+    @property
+    def distrito_nombre(self):
+        """Nombre del distrito"""
+        return self.distrito.nombre
+
+    @property
+    def distrito_nombre_corto(self):
+        """Nombre corto del distrito"""
+        return self.distrito.nombre_corto
+
     def __repr__(self):
         """Representación"""
         return f"<REPSVMAgresor {self.id}>"

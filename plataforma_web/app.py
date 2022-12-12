@@ -29,6 +29,9 @@ from .v1.modulos.paths import modulos
 from .v1.oficinas.paths import oficinas
 from .v1.permisos.paths import permisos
 from .v1.redams.paths import redams
+from .v1.repsvm_agresores.paths import repsvm_agresores
+from .v1.repsvm_agresores_delitos.paths import repsvm_agresores_delitos
+from .v1.repsvm_delitos.paths import repsvm_delitos
 from .v1.roles.paths import roles
 from .v1.sentencias.paths import sentencias
 from .v1.soportes_categorias.paths import soportes_categorias
@@ -76,6 +79,9 @@ app.include_router(modulos)
 app.include_router(oficinas)
 app.include_router(permisos)
 app.include_router(redams)
+app.include_router(repsvm_agresores)
+app.include_router(repsvm_agresores_delitos)
+app.include_router(repsvm_delitos)
 app.include_router(roles)
 app.include_router(sentencias)
 app.include_router(soportes_categorias)

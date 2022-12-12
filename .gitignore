@@ -4,13 +4,9 @@
 .DS_Store
 .~lock.*
 *.py[cod]
-*.log
-
-*.egg-info/
+*.sqlite3
 __pycache__/
 .ipynb_checkpoints/
-
 /app.yaml
-/requirements.txt
 /venv/
 /.venv/
