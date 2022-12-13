@@ -18,11 +18,10 @@ __pycache__/
 /.git
 /.venv
 /.vscode
-/cli
-/notebooks
 /poetry.lock
 /pyproject.toml
 /rest-client
 /setup.py
 /tests
 /venv
+/.venv

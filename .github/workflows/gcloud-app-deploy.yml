@@ -1,7 +1,8 @@
 name: Google Cloud App Engine deploy
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches: [main]
 
 jobs:
@@ -21,4 +22,5 @@ jobs:
       - id: "deploy"
         uses: "google-github-actions/deploy-appengine@v1"
         with:
+          deliverables: "app.yaml"
           project_id: ${{ secrets.GCP_PROJECT_ID }}
