@@ -6,9 +6,6 @@ on:
 
 jobs:
   deploy:
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: "Authenticate with Google Cloud"
         uses: "google-github-actions/auth@v1"
