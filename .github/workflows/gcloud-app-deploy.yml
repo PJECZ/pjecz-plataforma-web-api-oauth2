@@ -13,6 +13,7 @@ jobs:
       id-token: "write"
 
     steps:
+      - uses: "actions/checkout@v3"
       - name: "authenticate"
         uses: "google-github-actions/auth@v1"
         with:
@@ -20,3 +21,9 @@ jobs:
           service_account: ${{ secrets.GCP_SA_KEY }}
       - name: "deploy"
         uses: "google-github-actions/deploy-appengine@v1"
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          credentials: ${{ secrets.GCP_SA_KEY }}
+          deliverables: "app.yaml"
+          working_directory: "."
+          promote: true
