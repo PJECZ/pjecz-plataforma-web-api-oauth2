@@ -5,17 +5,17 @@ on:
     branches: [main]
 
 jobs:
-  permissions:
-    contents: read
-    id-token: write
-
-  steps:
-    - name: "Authenticate with Google Cloud"
-      uses: "google-github-actions/auth@v1"
-      with:
-        service_account_key: ${{ secrets.GCP_SA_KEY }}
-        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-    - name: "Deploy to Google Cloud App Engine"
-      uses: "google-github-actions/deploy-appengine@v1"
-      with:
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
+  deploy:
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: "Authenticate with Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      - name: "Deploy to Google Cloud App Engine"
+        uses: "google-github-actions/deploy-appengine@v1"
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
