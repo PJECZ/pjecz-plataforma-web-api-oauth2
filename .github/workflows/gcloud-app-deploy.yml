@@ -20,6 +20,3 @@ jobs:
           service_account: ${{ secrets.GCP_SA_KEY }}
       - name: "deploy"
         uses: "google-github-actions/deploy-appengine@v1"
-        with:
-          deliverables: "app.yaml"
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
