@@ -6,7 +6,5 @@
 *.py[cod]
 *.sqlite3
 __pycache__/
-.ipynb_checkpoints/
-/app.yaml
 /venv/
 /.venv/
