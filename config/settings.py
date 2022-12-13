@@ -1,5 +1,5 @@
 """
-Obtain settings from google cloud secret manager or .env file
+Settings: first environment variables, then .env file, then google cloud secret manager
 """
 import os
 
@@ -14,7 +14,7 @@ def get_secret(secret_id: str) -> str:
     """Get secret from google cloud secret manager"""
 
     # If not in google cloud, return environment variable
-    if not PROJECT_ID:
+    if PROJECT_ID == "":
         return os.getenv(secret_id.upper(), "")
 
     # Create the secret manager client
@@ -31,7 +31,7 @@ def get_secret(secret_id: str) -> str:
 
 
 class Settings(BaseSettings):
-    """Obtain settings first environment variables, then .env file, then google cloud secret manager"""
+    """Settings"""
 
     db_host: str = get_secret("db_host")
     db_name: str = get_secret("db_name")
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     tz: str = "America/Mexico_City"
 
     class Config:
-        """Customise sources, first environment variables, then .env file, then google cloud secret manager"""
+        """Config"""
 
         @classmethod
         def customise_sources(cls, init_settings, env_settings, file_secret_settings):
