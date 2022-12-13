@@ -1,9 +1,8 @@
 name: Google Cloud App Engine deploy
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  push:
+    branches: ["main"]
 
 jobs:
   deploy:
@@ -14,13 +13,13 @@ jobs:
       id-token: "write"
 
     steps:
-      - id: "authenticate"
+      - name: "authenticate"
         uses: "google-github-actions/auth@v1"
         with:
-          service_account: ${{ secrets.GCP_SA_KEY }}
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-      - id: "deploy"
+          service_account: ${{ secrets.GCP_SA_KEY }}
+      - name: "deploy"
         uses: "google-github-actions/deploy-appengine@v1"
         with:
-          deliverables: "app.yaml"
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+          deliverables: "app.yaml"
