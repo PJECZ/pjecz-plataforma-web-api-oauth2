@@ -79,23 +79,23 @@ async def sintetizar_por_creado(
     return CustomList(result=result)
 
 
-@listas_de_acuerdos.post("", response_model=OneListaDeAcuerdoOut)
-async def nueva_lista_de_acuerdos(
-    lista_de_acuerdo: ListaDeAcuerdoIn,
-    current_user: UsuarioInDB = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    """Insertar una lista de acuerdos"""
-    if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.CREAR:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
-    try:
-        lista_de_acuerdo = insert_lista_de_acuerdo(
-            db=db,
-            lista_de_acuerdo=lista_de_acuerdo,
-        )
-    except PWAnyError as error:
-        return OneListaDeAcuerdoOut(success=False, message=str(error))
-    return OneListaDeAcuerdoOut.from_orm(lista_de_acuerdo)
+# @listas_de_acuerdos.post("", response_model=OneListaDeAcuerdoOut)
+# async def nueva_lista_de_acuerdos(
+#     lista_de_acuerdo: ListaDeAcuerdoIn,
+#     current_user: UsuarioInDB = Depends(get_current_active_user),
+#     db: Session = Depends(get_db),
+# ):
+#     """Insertar una lista de acuerdos"""
+#     if current_user.permissions.get("LISTAS DE ACUERDOS", 0) < Permiso.CREAR:
+#         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+#     try:
+#         lista_de_acuerdo = insert_lista_de_acuerdo(
+#             db=db,
+#             lista_de_acuerdo=lista_de_acuerdo,
+#         )
+#     except PWAnyError as error:
+#         return OneListaDeAcuerdoOut(success=False, message=str(error))
+#     return OneListaDeAcuerdoOut.from_orm(lista_de_acuerdo)
 
 
 @listas_de_acuerdos.get("/{lista_de_acuerdo_id}", response_model=OneListaDeAcuerdoOut)
