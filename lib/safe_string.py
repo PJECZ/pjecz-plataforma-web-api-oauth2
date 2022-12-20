@@ -1,6 +1,7 @@
 """
 Safe string
 """
+from datetime import date
 import re
 from unidecode import unidecode
 
@@ -51,6 +52,30 @@ def safe_email(input_str, search_fragment=False):
     if re.match(EMAIL_REGEXP, final) is None:
         return None
     return final
+
+
+def safe_expediente(input_str):
+    """Safe expediente"""
+    if not isinstance(input_str, str) or input_str.strip() == "":
+        return ""
+    elementos = re.sub(r"[^a-zA-Z0-9]+", "|", unidecode(input_str)).split("|")
+    try:
+        numero = int(elementos[0])
+        ano = int(elementos[1])
+    except (IndexError, ValueError) as error:
+        raise error
+    if ano < 1950 or ano > date.today().year:
+        raise ValueError
+    extra_1 = ""
+    if len(elementos) >= 3:
+        extra_1 = "-" + elementos[2].upper()
+    extra_2 = ""
+    if len(elementos) >= 4:
+        extra_2 = "-" + elementos[3].upper()
+    limpio = f"{str(numero)}/{str(ano)}{extra_1}{extra_2}"
+    if len(limpio) > 16:
+        raise ValueError
+    return limpio
 
 
 def safe_string(input_str, max_len=250, to_uppercase=True, do_unidecode=True):

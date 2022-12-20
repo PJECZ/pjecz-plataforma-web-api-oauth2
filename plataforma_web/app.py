@@ -36,6 +36,7 @@ from .v1.roles.paths import roles
 from .v1.sentencias.paths import sentencias
 from .v1.soportes_categorias.paths import soportes_categorias
 from .v1.soportes_tickets.paths import soportes_tickets
+from .v1.ubicaciones_expedientes.paths import ubicaciones_expedientes
 from .v1.usuarios.paths import usuarios
 from .v1.usuarios_roles.paths import usuarios_roles
 
@@ -86,6 +87,7 @@ app.include_router(roles)
 app.include_router(sentencias)
 app.include_router(soportes_categorias)
 app.include_router(soportes_tickets)
+app.include_router(ubicaciones_expedientes)
 app.include_router(usuarios)
 app.include_router(usuarios_roles)
 
