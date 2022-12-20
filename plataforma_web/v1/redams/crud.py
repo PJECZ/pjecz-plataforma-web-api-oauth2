@@ -5,6 +5,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
+from lib.safe_string import safe_string
 
 from .models import Redam
 from ..autoridades.crud import get_autoridad
@@ -16,7 +17,7 @@ def get_redams(
     db: Session,
     autoridad_id: int = None,
     distrito_id: int = None,
-    estatus: str = None,
+    nombre: str = None,
 ) -> Any:
     """Consultar los deudores"""
 
@@ -31,14 +32,14 @@ def get_redams(
         autoridad = get_autoridad(db, autoridad_id=autoridad_id)
         consulta = consulta.filter(Redam.autoridad == autoridad)
 
-    # Filtrar por estatus
-    if estatus is None:
-        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
-    else:
-        consulta = consulta.filter_by(estatus=estatus)
+    # Filtrar por nombre
+    if nombre is not None:
+        nombre = safe_string(nombre)
+        if nombre != "":
+            consulta = consulta.filter_by(nombre=nombre)
 
     # Entregar
-    return consulta.filter_by(estatus="A").order_by(Redam.id.desc())
+    return consulta.filter_by(estatus="A").order_by(Redam.nombre)
 
 
 def get_redam(db: Session, redam_id: int) -> Redam:

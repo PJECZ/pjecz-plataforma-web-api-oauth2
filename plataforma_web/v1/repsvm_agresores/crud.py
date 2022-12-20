@@ -17,15 +17,23 @@ def get_repsvm_agresores(
     nombre: str = None,
 ) -> Any:
     """Consultar los agresores activos"""
+
+    # Consultar
     consulta = db.query(REPSVMAgresor)
+
+    # Filtrar por distrito
     if distrito_id:
         distrito = get_distrito(db, distrito_id)
         consulta = consulta.filter(distrito=distrito)
+
+    # Filtrar por nombre
     if nombre is not None:
         nombre = safe_string(nombre)
         if nombre != "":
-            consulta = consulta.filter_by(filtro_descripcion=nombre)
-    return consulta.filter_by(estatus="A").order_by(REPSVMAgresor.id)
+            consulta = consulta.filter_by(nombre=nombre)
+
+    # Entregar
+    return consulta.filter_by(estatus="A").order_by(REPSVMAgresor.nombre)
 
 
 def get_repsvm_agresor(db: Session, repsvm_agresor_id: int) -> REPSVMAgresor:

@@ -22,6 +22,7 @@ redams = APIRouter(prefix="/v1/redams", tags=["redam"])
 async def listado_redams(
     autoridad_id: int = None,
     distrito_id: int = None,
+    nombre: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -33,6 +34,7 @@ async def listado_redams(
             db=db,
             autoridad_id=autoridad_id,
             distrito_id=distrito_id,
+            nombre=nombre,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)

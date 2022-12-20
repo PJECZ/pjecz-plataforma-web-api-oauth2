@@ -20,6 +20,8 @@ repsvm_agresores = APIRouter(prefix="/v1/repsvm_agresores", tags=["repsvm"])
 
 @repsvm_agresores.get("", response_model=CustomPage[REPSVMAgresorOut])
 async def listado_repsvm_agresores(
+    distrito_id: int = None,
+    nombre: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +29,11 @@ async def listado_repsvm_agresores(
     if current_user.permissions.get("REPSVM AGRESORES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_repsvm_agresores(db)
+        listado = get_repsvm_agresores(
+            db=db,
+            distrito_id=distrito_id,
+            nombre=nombre,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(listado)
