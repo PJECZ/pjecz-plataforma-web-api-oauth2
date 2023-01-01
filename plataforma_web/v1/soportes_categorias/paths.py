@@ -20,6 +20,7 @@ soportes_categorias = APIRouter(prefix="/v1/soportes_categorias", tags=["soporte
 
 @soportes_categorias.get("", response_model=CustomPage[SoporteCategoriaOut])
 async def listado_soportes_categorias(
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,10 @@ async def listado_soportes_categorias(
     if current_user.permissions.get("SOPORTES CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_soportes_categorias(db=db)
+        consulta = get_soportes_categorias(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(consulta)

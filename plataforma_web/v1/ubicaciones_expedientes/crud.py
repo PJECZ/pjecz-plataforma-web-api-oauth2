@@ -15,6 +15,7 @@ def get_ubicaciones_expedientes(
     db: Session,
     autoridad_id: int = None,
     autoridad_clave: str = None,
+    estatus: str = None,
     expediente: str = None,
 ) -> Any:
     """Consultar las ubicaciones de expedientes activos"""
@@ -29,6 +30,12 @@ def get_ubicaciones_expedientes(
     elif autoridad_clave is not None:
         autoridad = get_autoridad_from_clave(db, autoridad_clave)
         consulta = consulta.filter(UbicacionExpediente.autoridad == autoridad)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
 
     # Filtrar por expediente
     if expediente is not None:

@@ -22,6 +22,7 @@ ubicaciones_expedientes = APIRouter(prefix="/v1/ubicaciones_expedientes", tags=[
 async def listado_ubicaciones_expedientes(
     autoridad_id: int = None,
     autoridad_clave: str = None,
+    estatus: str = None,
     expediente: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -34,6 +35,7 @@ async def listado_ubicaciones_expedientes(
             db=db,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
+            estatus=estatus,
             expediente=expediente,
         )
     except PWAnyError as error:
