@@ -14,6 +14,7 @@ from .v1.distritos.paths import distritos
 from .v1.domicilios.paths import domicilios
 from .v1.edictos.paths import edictos
 from .v1.funcionarios.paths import funcionarios
+from .v1.glosas.paths import glosas
 from .v1.inv_categorias.paths import inv_categorias
 from .v1.inv_componentes.paths import inv_componentes
 from .v1.inv_custodias.paths import inv_custodias
@@ -65,6 +66,7 @@ app.include_router(distritos)
 app.include_router(domicilios)
 app.include_router(edictos)
 app.include_router(funcionarios)
+app.include_router(glosas)
 app.include_router(inv_categorias)
 app.include_router(inv_componentes)
 app.include_router(inv_custodias)
