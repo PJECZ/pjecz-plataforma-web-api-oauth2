@@ -20,6 +20,7 @@ inv_redes = APIRouter(prefix="/v1/inv_redes", tags=["inventarios"])
 
 @inv_redes.get("", response_model=CustomPage[InvRedOut])
 async def listado_inv_redes(
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,10 @@ async def listado_inv_redes(
     if current_user.permissions.get("INV REDES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_inv_redes(db=db)
+        consulta = get_inv_redes(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(consulta)

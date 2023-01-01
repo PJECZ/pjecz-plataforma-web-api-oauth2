@@ -20,6 +20,7 @@ inv_marcas = APIRouter(prefix="/v1/inv_marcas", tags=["inventarios"])
 
 @inv_marcas.get("", response_model=CustomPage[InvMarcaOut])
 async def listado_inv_marcas(
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,10 @@ async def listado_inv_marcas(
     if current_user.permissions.get("INV MARCAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_inv_marcas(db=db)
+        consulta = get_inv_marcas(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(consulta)

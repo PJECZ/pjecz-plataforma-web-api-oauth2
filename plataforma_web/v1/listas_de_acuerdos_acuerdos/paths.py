@@ -21,6 +21,7 @@ listas_de_acuerdos_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["
 @listas_de_acuerdos_acuerdos.get("/{lista_de_acuerdo_id}/acuerdos", response_model=CustomPage[ListaDeAcuerdoAcuerdoOut])
 async def listado_acuerdos(
     lista_de_acuerdo_id: int,
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -30,6 +31,7 @@ async def listado_acuerdos(
     try:
         consulta = get_acuerdos(
             db=db,
+            estatus=estatus,
             lista_de_acuerdo_id=lista_de_acuerdo_id,
         )
     except PWAnyError as error:

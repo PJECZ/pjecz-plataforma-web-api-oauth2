@@ -22,6 +22,7 @@ abogados = APIRouter(prefix="/v1/abogados", tags=["abogados"])
 async def listado_abogados(
     anio_desde: int = None,
     anio_hasta: int = None,
+    estatus: str = None,
     nombre: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -34,6 +35,7 @@ async def listado_abogados(
             db=db,
             anio_desde=anio_desde,
             anio_hasta=anio_hasta,
+            estatus=estatus,
             nombre=nombre,
         )
     except PWAnyError as error:

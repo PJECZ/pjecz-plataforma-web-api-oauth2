@@ -14,6 +14,7 @@ from ..distritos.crud import get_distrito
 def get_repsvm_agresores(
     db: Session,
     distrito_id: int = None,
+    estatus: str = None,
     nombre: str = None,
 ) -> Any:
     """Consultar los agresores activos"""
@@ -25,6 +26,12 @@ def get_repsvm_agresores(
     if distrito_id:
         distrito = get_distrito(db, distrito_id)
         consulta = consulta.filter(distrito=distrito)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
 
     # Filtrar por nombre
     if nombre is not None:

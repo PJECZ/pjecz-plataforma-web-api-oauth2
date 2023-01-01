@@ -17,6 +17,7 @@ def get_redams(
     db: Session,
     autoridad_id: int = None,
     distrito_id: int = None,
+    estatus: str = None,
     nombre: str = None,
 ) -> Any:
     """Consultar los deudores"""
@@ -31,6 +32,12 @@ def get_redams(
     elif autoridad_id is not None:
         autoridad = get_autoridad(db, autoridad_id=autoridad_id)
         consulta = consulta.filter(Redam.autoridad == autoridad)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
 
     # Filtrar por nombre
     if nombre is not None:

@@ -27,6 +27,7 @@ async def listado_glosas(
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -41,6 +42,7 @@ async def listado_glosas(
             fecha=fecha,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
+            estatus=estatus,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)

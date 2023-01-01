@@ -20,6 +20,7 @@ inv_categorias = APIRouter(prefix="/v1/inv_categorias", tags=["inventarios"])
 
 @inv_categorias.get("", response_model=CustomPage[InvCategoriaOut])
 async def listado_inv_categorias(
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,10 @@ async def listado_inv_categorias(
     if current_user.permissions.get("INV CATEGORIAS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_inv_categorias(db=db)
+        consulta = get_inv_categorias(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(consulta)

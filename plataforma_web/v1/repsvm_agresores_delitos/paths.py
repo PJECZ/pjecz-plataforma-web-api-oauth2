@@ -20,6 +20,7 @@ repsvm_agresores_delitos = APIRouter(prefix="/v1/repsvm_agresores_delitos", tags
 
 @repsvm_agresores_delitos.get("", response_model=CustomPage[REPSVMAgresorDelitoOut])
 async def listado_repsvm_agresores_delitos(
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -27,7 +28,10 @@ async def listado_repsvm_agresores_delitos(
     if current_user.permissions.get("REPSVM AGRESORES DELITOS", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        listado = get_repsvm_agresores_delitos(db)
+        listado = get_repsvm_agresores_delitos(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(listado)

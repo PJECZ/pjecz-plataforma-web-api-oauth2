@@ -21,6 +21,7 @@ repsvm_agresores = APIRouter(prefix="/v1/repsvm_agresores", tags=["repsvm"])
 @repsvm_agresores.get("", response_model=CustomPage[REPSVMAgresorOut])
 async def listado_repsvm_agresores(
     distrito_id: int = None,
+    estatus: str = None,
     nombre: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -32,6 +33,7 @@ async def listado_repsvm_agresores(
         listado = get_repsvm_agresores(
             db=db,
             distrito_id=distrito_id,
+            estatus=estatus,
             nombre=nombre,
         )
     except PWAnyError as error:

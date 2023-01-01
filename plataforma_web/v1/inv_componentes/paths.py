@@ -20,6 +20,7 @@ inv_componentes = APIRouter(prefix="/v1/inv_componentes", tags=["inventarios"])
 
 @inv_componentes.get("", response_model=CustomPage[InvComponenteOut])
 async def listado_inv_componentes(
+    estatus: str = None,
     generacion: str = None,
     inv_categoria_id: int = None,
     inv_equipo_id: int = None,
@@ -32,6 +33,7 @@ async def listado_inv_componentes(
     try:
         consulta = get_inv_componentes(
             db=db,
+            estatus=estatus,
             generacion=generacion,
             inv_categoria_id=inv_categoria_id,
             inv_equipo_id=inv_equipo_id,
