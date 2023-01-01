@@ -18,13 +18,27 @@ def get_repsvm_agresores_delitos(
     repsvm_delito_id: int = None,
 ) -> Any:
     """Consultar los agresores-delitos activos"""
+
+    # Consultar
     consulta = db.query(REPSVMAgresorDelito)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por agresor
     if repsvm_agresor_id is not None and repsvm_agresor_id != 0:
         repsvm_agresor = get_repsvm_agresor(db, repsvm_agresor_id=repsvm_agresor_id)
         consulta = consulta.filter(REPSVMAgresorDelito.repsvm_agresor == repsvm_agresor)
+
+    # Filtrar por delito
     if repsvm_delito_id is not None and repsvm_delito_id != 0:
         repsvm_delito = get_repsvm_delito(db, repsvm_delito_id=repsvm_delito_id)
         consulta = consulta.filter(REPSVMAgresorDelito.repsvm_delito == repsvm_delito)
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(REPSVMAgresorDelito.id)
 
 

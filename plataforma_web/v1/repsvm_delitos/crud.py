@@ -14,7 +14,17 @@ def get_repsvm_delitos(
     estatus: str = None,
 ) -> Any:
     """Consultar los delitos activos"""
+
+    # Consultar
     consulta = db.query(REPSVMDelito)
+
+    # Filtrar por estatus
+    if estatus is None:
+        consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
+    else:
+        consulta = consulta.filter_by(estatus=estatus)
+
+    # Entregar
     return consulta.filter_by(estatus="A").order_by(REPSVMDelito.id)
 
 
