@@ -24,6 +24,7 @@ edictos = APIRouter(prefix="/v1/edictos", tags=["edictos"])
 async def listado_edictos(
     autoridad_id: int = None,
     autoridad_clave: str = None,
+    estatus: str = None,
     fecha: date = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
@@ -38,6 +39,7 @@ async def listado_edictos(
             db=db,
             autoridad_id=autoridad_id,
             autoridad_clave=autoridad_clave,
+            estatus=estatus,
             fecha=fecha,
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,

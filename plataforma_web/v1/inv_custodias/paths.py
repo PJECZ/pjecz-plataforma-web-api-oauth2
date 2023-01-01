@@ -22,6 +22,7 @@ inv_custodias = APIRouter(prefix="/v1/inv_custodias", tags=["inventarios"])
 
 @inv_custodias.get("", response_model=CustomPage[InvCustodiaOut])
 async def listado_inv_custodias(
+    estatus: str = None,
     fecha_desde: date = None,
     fecha_hasta: date = None,
     usuario_id: int = None,
@@ -35,6 +36,7 @@ async def listado_inv_custodias(
     try:
         consulta = get_inv_custodias(
             db=db,
+            estatus=estatus,
             usuario_id=usuario_id,
             usuario_email=usuario_email,
             fecha_desde=fecha_desde,

@@ -22,6 +22,7 @@ funcionarios = APIRouter(prefix="/v1/funcionarios", tags=["funcionarios"])
 async def listado_funcionarios(
     en_funciones: bool = None,
     en_soportes: bool = None,
+    estatus: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -33,6 +34,7 @@ async def listado_funcionarios(
             db=db,
             en_funciones=en_funciones,
             en_soportes=en_soportes,
+            estatus=estatus,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)

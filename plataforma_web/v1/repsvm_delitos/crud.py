@@ -9,7 +9,10 @@ from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from .models import REPSVMDelito
 
 
-def get_repsvm_delitos(db: Session) -> Any:
+def get_repsvm_delitos(
+    db: Session,
+    estatus: str = None,
+) -> Any:
     """Consultar los delitos activos"""
     consulta = db.query(REPSVMDelito)
     return consulta.filter_by(estatus="A").order_by(REPSVMDelito.id)

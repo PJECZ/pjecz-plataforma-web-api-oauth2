@@ -20,6 +20,7 @@ inv_modelos = APIRouter(prefix="/v1/inv_modelos", tags=["inventarios"])
 
 @inv_modelos.get("", response_model=CustomPage[InvModeloOut])
 async def listado_inv_modelos(
+    estatus: str = None,
     inv_marca_id: int = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -30,6 +31,7 @@ async def listado_inv_modelos(
     try:
         consulta = get_inv_modelos(
             db=db,
+            estatus=estatus,
             inv_marca_id=inv_marca_id,
         )
     except PWAnyError as error:

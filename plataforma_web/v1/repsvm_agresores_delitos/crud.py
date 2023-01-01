@@ -13,6 +13,7 @@ from ..repsvm_delitos.crud import get_repsvm_delito
 
 def get_repsvm_agresores_delitos(
     db: Session,
+    estatus: str = None,
     repsvm_agresor_id: int = None,
     repsvm_delito_id: int = None,
 ) -> Any:
