@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Arrancar gunicorn para que se ejecute el servicio de la API
+Arrancar uvicorn/gunicorn para que se ejecute el servicio de la API
 """
 import argparse
 import os
