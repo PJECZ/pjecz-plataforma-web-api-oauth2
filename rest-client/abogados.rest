@@ -1,0 +1,21 @@
+@root = {{$dotenv HOST}}
+@baseUrl = {{root}}/v1
+@api_key = {{$dotenv API_KEY}}
+
+### Bienvenida
+GET {{root}}
+
+### Abogados
+GET {{baseUrl}}/abogados
+X-Api-Key: {{api_key}}
+
+### Abogados entre 2010 y 2012
+GET {{baseUrl}}/abogados
+    ?anio_desde=2010
+    &anio_hasta=2012
+X-Api-Key: {{api_key}}
+
+### Abogados con nombre GONZALEZ
+GET {{baseUrl}}/abogados
+    ?nombre=gonzalez
+X-Api-Key: {{api_key}}

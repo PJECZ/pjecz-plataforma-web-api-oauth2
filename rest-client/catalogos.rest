@@ -21,10 +21,6 @@ X-Api-Key: {{api_key}}
 GET {{baseUrl}}/materias
 X-Api-Key: {{api_key}}
 
-### Materias Tipos de Juicios
-GET {{baseUrl}}/materias_tipos_juicios
-X-Api-Key: {{api_key}}
-
 ### Oficinas
 GET {{baseUrl}}/oficinas
 X-Api-Key: {{api_key}}
