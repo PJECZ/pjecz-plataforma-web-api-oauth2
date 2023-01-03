@@ -1,5 +1,5 @@
 """
-Funcionarios v1, esquemas de pydantic
+Funcionarios v1, esquemas
 """
 from datetime import date
 from pydantic import BaseModel

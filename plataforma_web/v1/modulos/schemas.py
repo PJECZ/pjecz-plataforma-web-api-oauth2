@@ -1,5 +1,5 @@
 """
-Modulos v1, esquemas de pydantic
+Modulos v1, esquemas
 """
 from pydantic import BaseModel
 

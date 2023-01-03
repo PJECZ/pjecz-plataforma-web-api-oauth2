@@ -1,5 +1,5 @@
 """
-REDAM (Registro Estatal de Deudores Alimentarios) v1, esquemas de pydantic
+REDAM (Registro Estatal de Deudores Alimentarios) v1, esquemas
 """
 from datetime import date
 from pydantic import BaseModel

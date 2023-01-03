@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import safe_clave
 
-from .models import Oficina
+from ...core.oficinas.models import Oficina
 from ..distritos.crud import get_distrito
 from ..domicilios.crud import get_domicilio
 

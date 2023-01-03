@@ -11,11 +11,10 @@ import pytz
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
-from .models import InvEquipo
-from ..inv_custodias.models import InvCustodia
-from ..inv_equipos.models import InvEquipo
-from ..oficinas.models import Oficina
-from ..usuarios.models import Usuario
+from ...core.inv_equipos.models import InvEquipo
+from ...core.inv_custodias.models import InvCustodia
+from ...core.oficinas.models import Oficina
+from ...core.usuarios.models import Usuario
 
 from ..inv_custodias.crud import get_inv_custodia
 from ..inv_modelos.crud import get_inv_modelo

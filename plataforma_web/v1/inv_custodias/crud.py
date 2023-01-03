@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import InvCustodia
+from ...core.inv_custodias.models import InvCustodia
 from ..usuarios.crud import get_usuario, get_usuario_from_email
 
 

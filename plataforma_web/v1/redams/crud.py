@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
-from .models import Redam
+from ...core.autoridades.models import Autoridad
+from ...core.redams.models import Redam
 from ..autoridades.crud import get_autoridad
-from ..autoridades.models import Autoridad
 from ..distritos.crud import get_distrito
 
 

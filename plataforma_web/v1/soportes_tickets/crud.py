@@ -11,14 +11,14 @@ import pytz
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import safe_string
 
-from .models import SoporteTicket
-from ..funcionarios.models import Funcionario
+from ...core.funcionarios.models import Funcionario
+from ...core.oficinas.models import Oficina
+from ...core.soportes_categorias.models import SoporteCategoria
+from ...core.soportes_tickets.models import SoporteTicket
+from ...core.usuarios.models import Usuario
 from ..oficinas.crud import get_oficina, get_oficina_from_clave
-from ..oficinas.models import Oficina
 from ..soportes_categorias.crud import get_soporte_categoria
-from ..soportes_categorias.models import SoporteCategoria
 from ..usuarios.crud import get_usuario, get_usuario_from_email
-from ..usuarios.models import Usuario
 
 
 def get_soportes_tickets(

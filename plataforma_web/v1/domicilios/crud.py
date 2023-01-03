@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import safe_string
 
-from .models import Domicilio
+from ...core.distritos.models import Domicilio
 
 
 def get_domicilios(

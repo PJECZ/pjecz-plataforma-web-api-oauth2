@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import REPSVMDelito
+from ...core.repsvm_delitos.models import REPSVMDelito
 
 
 def get_repsvm_delitos(

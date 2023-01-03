@@ -9,11 +9,12 @@ from lib.database import get_db
 from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_autoridad, get_autoridades
-from .schemas import AutoridadOut, OneAutoridadOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import get_autoridad, get_autoridades
+from .schemas import AutoridadOut, OneAutoridadOut
 
 autoridades = APIRouter(prefix="/v1/autoridades", tags=["catalogos"])
 

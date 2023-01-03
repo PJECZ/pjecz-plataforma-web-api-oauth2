@@ -9,11 +9,12 @@ from lib.database import get_db
 from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
+from ...core.permisos.models import Permiso
+from ..usuarios.authentications import get_current_active_user
+from ..usuarios.schemas import UsuarioInDB
+
 from .crud import get_usuarios_roles, get_usuario_rol
 from .schemas import UsuarioRolOut, OneUsuarioRolOut
-from ..usuarios.authentications import get_current_active_user
-from ..permisos.models import Permiso
-from ..usuarios.schemas import UsuarioInDB
 
 usuarios_roles = APIRouter(prefix="/v1/usuarios_roles", tags=["usuarios"])
 
@@ -28,7 +29,10 @@ async def listado_usuarios_roles(
     if current_user.permissions.get("USUARIOS ROLES", 0) < Permiso.VER:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     try:
-        consulta = get_usuarios_roles(db=db)
+        consulta = get_usuarios_roles(
+            db=db,
+            estatus=estatus,
+        )
     except PWAnyError as error:
         return custom_page_success_false(error)
     return paginate(consulta)

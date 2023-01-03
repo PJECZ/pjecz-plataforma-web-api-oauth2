@@ -1,12 +1,12 @@
 """
-Roles v1.0, CRUD (create, read, update, and delete)
+Roles v1, CRUD (create, read, update, and delete)
 """
 from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import Rol
+from ...core.roles.models import Rol
 
 
 def get_roles(

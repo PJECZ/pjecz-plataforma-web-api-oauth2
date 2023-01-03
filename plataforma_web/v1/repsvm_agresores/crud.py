@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
-from .models import REPSVMAgresor
+from ...core.repsvm_agresores.models import REPSVMAgresor
 from ..distritos.crud import get_distrito
 
 

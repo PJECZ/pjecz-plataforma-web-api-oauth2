@@ -1,5 +1,5 @@
 """
-Usuarios Roles v1, esquemas de pydantic
+Usuarios Roles v1, esquemas
 """
 from pydantic import BaseModel
 

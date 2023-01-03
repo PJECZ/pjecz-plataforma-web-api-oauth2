@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_expediente
 
-from .models import UbicacionExpediente
+from ...core.ubicaciones_expedientes.models import UbicacionExpediente
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 
 

@@ -1,13 +1,14 @@
 """
 Glosas v1, CRUD (create, read, update, and delete)
 """
-from datetime import date, datetime
+from datetime import date
+
 from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWOutOfRangeParamError
 
-from .models import Glosa
+from ...core.glosas.models import Glosa
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 
 

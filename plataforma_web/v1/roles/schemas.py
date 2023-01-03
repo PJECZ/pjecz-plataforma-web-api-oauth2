@@ -1,5 +1,5 @@
 """
-Roles v1.0, esquemas
+Roles v1, esquemas
 """
 from pydantic import BaseModel
 

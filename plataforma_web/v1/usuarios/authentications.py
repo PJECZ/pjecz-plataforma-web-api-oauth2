@@ -15,7 +15,7 @@ from unidecode import unidecode
 from lib.database import get_db
 from lib.exceptions import PWAuthenticationError
 
-from .models import Usuario
+from ...core.usuarios.models import Usuario
 from .schemas import UsuarioInDB
 
 API_KEY_REGEXP = r"^\w+\.\w+\.\w+$"

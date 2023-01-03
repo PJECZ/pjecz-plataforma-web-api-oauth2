@@ -1,5 +1,5 @@
 """
-Domicilios v1, esquemas de pydantic
+Domicilios v1, esquemas
 """
 from pydantic import BaseModel
 

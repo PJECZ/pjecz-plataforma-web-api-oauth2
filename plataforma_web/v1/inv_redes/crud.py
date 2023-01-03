@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import InvRed
+from ...core.inv_redes.models import InvRed
 
 
 def get_inv_redes(

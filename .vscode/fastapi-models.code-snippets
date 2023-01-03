@@ -4,7 +4,7 @@
         "prefix": "fmodels",
         "body": [
             "\"\"\"",
-            "${1:Modulos} v1, modelos",
+            "${1:Modulos}, modelos",
             "\"\"\"",
             "from collections import OrderedDict",
             "from sqlalchemy import Boolean, Column, Date, Enum, ForeignKey, Integer, String",

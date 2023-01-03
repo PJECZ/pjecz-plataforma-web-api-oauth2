@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import MateriaTipoJuicio
+from ...core.materias_tipos_juicios.models import MateriaTipoJuicio
 from ..materias.crud import get_materia
 
 

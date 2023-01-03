@@ -14,7 +14,7 @@
             "from lib.exceptions import PWIsDeletedError, PWNotExistsError",
             "from lib.safe_string import safe_string",
             "",
-            "from .models import ${2:Clase}",
+            "from ...core.${3:plural}.models import ${2:Clase}",
             "from ..autoridades.crud import get_autoridad, get_autoridad_from_clave",
             "",
             "",

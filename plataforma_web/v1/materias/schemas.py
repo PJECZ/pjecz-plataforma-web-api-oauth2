@@ -1,5 +1,5 @@
 """
-Materias v1.0, esquemas
+Materias v1, esquemas
 """
 from pydantic import BaseModel
 

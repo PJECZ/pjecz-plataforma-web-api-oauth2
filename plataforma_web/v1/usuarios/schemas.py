@@ -1,5 +1,5 @@
 """
-Usuarios v1.0, esquemas
+Usuarios v1, esquemas
 """
 from datetime import datetime
 from pydantic import BaseModel

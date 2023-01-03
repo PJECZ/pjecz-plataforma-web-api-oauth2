@@ -1,5 +1,5 @@
 """
-Listas de Acuerdos v1, esquemas de pydantic
+Listas de Acuerdos v1, esquemas
 """
 from datetime import datetime, date
 from pydantic import BaseModel

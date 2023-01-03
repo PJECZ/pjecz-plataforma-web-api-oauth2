@@ -9,7 +9,7 @@ import pytz
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWOutOfRangeParamError
 
-from .models import Sentencia
+from ...core.sentencias.models import Sentencia
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 from ..materias_tipos_juicios.crud import get_materia_tipo_juicio
 

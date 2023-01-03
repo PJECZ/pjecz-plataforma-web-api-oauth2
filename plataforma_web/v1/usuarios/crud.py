@@ -1,5 +1,5 @@
 """
-Usuarios v1.0, CRUD (create, read, update, and delete)
+Usuarios v1, CRUD (create, read, update, and delete)
 """
 import re
 from typing import Any
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import EMAIL_REGEXP, safe_string
 
-from .models import Usuario
+from ...core.usuarios.models import Usuario
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 from ..oficinas.crud import get_oficina, get_oficina_from_clave
 

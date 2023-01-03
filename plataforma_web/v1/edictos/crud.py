@@ -9,7 +9,7 @@ import pytz
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import Edicto
+from ...core.edictos.models import Edicto
 from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 
 

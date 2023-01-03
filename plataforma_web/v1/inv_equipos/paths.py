@@ -12,11 +12,22 @@ from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_list import CustomList, ListResult, custom_list_success_false
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_inv_equipos, get_inv_equipo, get_inv_equipos_cantidades_por_oficina_por_tipo, get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion
-from .schemas import InvEquipoOut, OneInvEquipoOut, CantidadesOficinaTipoOut, CantidadesOficinaAnioFabricacionOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import (
+    get_inv_equipos,
+    get_inv_equipo,
+    get_inv_equipos_cantidades_por_oficina_por_tipo,
+    get_inv_equipos_cantidades_por_oficina_por_anio_fabricacion,
+)
+from .schemas import (
+    InvEquipoOut,
+    OneInvEquipoOut,
+    CantidadesOficinaTipoOut,
+    CantidadesOficinaAnioFabricacionOut,
+)
 
 inv_equipos = APIRouter(prefix="/v1/inv_equipos", tags=["inventarios"])
 

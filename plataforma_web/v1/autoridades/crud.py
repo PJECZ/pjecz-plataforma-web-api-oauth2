@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import safe_clave, safe_string
 
-from .models import Autoridad
+from ...core.autoridades.models import Autoridad
 from ..distritos.crud import get_distrito
 from ..materias.crud import get_materia
 

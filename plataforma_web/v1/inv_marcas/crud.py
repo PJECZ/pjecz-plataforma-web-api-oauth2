@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import InvMarca
+from ...core.inv_marcas.models import InvMarca
 
 
 def get_inv_marcas(

@@ -1,5 +1,5 @@
 """
-Soportes Tickets v1, esquemas de pydantic
+Soportes Tickets v1, esquemas
 """
 from datetime import datetime
 from pydantic import BaseModel
