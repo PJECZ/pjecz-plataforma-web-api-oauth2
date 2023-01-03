@@ -9,7 +9,7 @@ from lib.safe_string import safe_string
 
 from ...core.listas_de_acuerdos.models import ListaDeAcuerdo
 from ...core.listas_de_acuerdos_acuerdos.models import ListaDeAcuerdoAcuerdo
-from .crud import get_lista_de_acuerdo
+from ..listas_de_acuerdos.crud import get_lista_de_acuerdo
 from .schemas import ListaDeAcuerdoAcuerdoIn
 
 

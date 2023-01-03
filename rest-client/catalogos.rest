@@ -1,34 +1,30 @@
-@root = http://{{$dotenv HOST}}:{{$dotenv PORT}}
+@root = {{$dotenv HOST}}
 @baseUrl = {{root}}/v1
-@username = {{$dotenv USERNAME}}
-@password = {{$dotenv PASSWORD}}
+@api_key = {{$dotenv API_KEY}}
 
 ### Bienvenida
 GET {{root}}
 
-### Autorizacion
-# @name auth
-POST {{root}}/token
-Content-Type: application/x-www-form-urlencoded
-
-username={{username}}&password={{password}}
-
-### Materias
-GET {{baseUrl}}/materias
-Authorization: Bearer {{auth.response.body.access_token}}
+### Autoridades
+GET {{baseUrl}}/autoridades
+X-Api-Key: {{api_key}}
 
 ### Distritos
 GET {{baseUrl}}/distritos
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Autoridades
-GET {{baseUrl}}/autoridades
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}
 
 ### Domicilios
 GET {{baseUrl}}/domicilios
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}
+
+### Materias
+GET {{baseUrl}}/materias
+X-Api-Key: {{api_key}}
+
+### Materias Tipos de Juicios
+GET {{baseUrl}}/materias_tipos_juicios
+X-Api-Key: {{api_key}}
 
 ### Oficinas
 GET {{baseUrl}}/oficinas
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}

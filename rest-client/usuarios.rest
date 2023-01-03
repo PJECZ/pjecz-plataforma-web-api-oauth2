@@ -1,58 +1,34 @@
-@root = http://{{$dotenv HOST}}:{{$dotenv PORT}}
+@root = {{$dotenv HOST}}
 @baseUrl = {{root}}/v1
-@username = {{$dotenv USERNAME}}
-@password = {{$dotenv PASSWORD}}
+@api_key = {{$dotenv API_KEY}}
 
 ### Bienvenida
 GET {{root}}
 
-### Autorizacion
-# @name auth
-POST {{root}}/token
-Content-Type: application/x-www-form-urlencoded
-
-username={{username}}&password={{password}}
-
 ### Modulos
 GET {{baseUrl}}/modulos
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Roles
-GET {{baseUrl}}/roles
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Rol 1 ADMINISTRADOR
-GET {{baseUrl}}/roles/1
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Permisos del rol 1 ADMINISTRADOR
-GET {{baseUrl}}/roles/1/permisos
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Usuarios del rol 1 ADMINISTRADOR
-GET {{baseUrl}}/roles/1/usuarios
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Rol 4 JUZGADO PRIMERA INSTANCIA
-GET {{baseUrl}}/roles/4
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Permisos del rol 4 JUZGADO PRIMERA INSTANCIA
-GET {{baseUrl}}/roles/4/permisos
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Usuarios del rol 4 JUZGADO PRIMERA INSTANCIA
-GET {{baseUrl}}/roles/4/usuarios
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}
 
 ### Permisos
 GET {{baseUrl}}/permisos
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}
+
+### Roles
+GET {{baseUrl}}/roles
+X-Api-Key: {{api_key}}
+
+### Rol 1 ADMINISTRADOR
+GET {{baseUrl}}/roles/1
+X-Api-Key: {{api_key}}
+
+### Rol 4 JUZGADO PRIMERA INSTANCIA
+GET {{baseUrl}}/roles/4
+X-Api-Key: {{api_key}}
 
 ### Usuarios
 GET {{baseUrl}}/usuarios
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}
 
 ### Usuarios-Roles
 GET {{baseUrl}}/usuarios_roles
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}

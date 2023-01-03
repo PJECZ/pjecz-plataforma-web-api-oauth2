@@ -6,7 +6,5 @@ Instale la extension REST Client
 
 Cree un archivo `.env` en este directorio con las variables de entorno...
 
-    HOST=127.0.0.1
-    PORT=8002
-    USERNAME=nombre.apellido@pjecz.gob.mx
-    PASSWORD=EscribaAquiSuContrasena
+    API_KEY=XXXXXXXX.XXXXXXXX.XXXXXXXXXXXXXXXXXXXXXXXX
+    HOST=http://127.0.0.1:8006

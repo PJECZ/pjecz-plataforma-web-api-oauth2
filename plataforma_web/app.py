@@ -100,4 +100,4 @@ add_pagination(app)
 @app.get("/")
 async def root():
     """Mensaje de Bienvenida"""
-    return {"message": "Bienvenido a Plataforma Web API OAuth2 del Poder Judicial del Estado de Coahuila de Zaragoza."}
+    return {"message": "Bienvenido a la Plataforma Web del Poder Judicial del Estado de Coahuila de Zaragoza."}

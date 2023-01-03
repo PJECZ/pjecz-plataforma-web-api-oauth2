@@ -1,38 +1,34 @@
-@root = http://{{$dotenv HOST}}:{{$dotenv PORT}}
+@root = {{$dotenv HOST}}
 @baseUrl = {{root}}/v1
-@username = {{$dotenv USERNAME}}
-@password = {{$dotenv PASSWORD}}
+@api_key = {{$dotenv API_KEY}}
 
 ### Bienvenida
 GET {{root}}
 
-### Autorizacion
-# @name auth
-POST {{root}}/token
-Content-Type: application/x-www-form-urlencoded
-
-username={{username}}&password={{password}}
-
-### Marcas
-GET {{baseUrl}}/inv_marcas
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Modelos
-GET {{baseUrl}}/inv_modelos
-Authorization: Bearer {{auth.response.body.access_token}}
-
 ### Categorias
 GET {{baseUrl}}/inv_categorias
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}
 
-### Redes
-GET {{baseUrl}}/inv_redes
-Authorization: Bearer {{auth.response.body.access_token}}
-
-### Equipos
-GET {{baseUrl}}/inv_equipos
-Authorization: Bearer {{auth.response.body.access_token}}
+### Componentes
+GET {{baseUrl}}/inv_componentes
+X-Api-Key: {{api_key}}
 
 ### Custodias
 GET {{baseUrl}}/inv_custodias
-Authorization: Bearer {{auth.response.body.access_token}}
+X-Api-Key: {{api_key}}
+
+### Equipos
+GET {{baseUrl}}/inv_equipos
+X-Api-Key: {{api_key}}
+
+### Marcas
+GET {{baseUrl}}/inv_marcas
+X-Api-Key: {{api_key}}
+
+### Modelos
+GET {{baseUrl}}/inv_modelos
+X-Api-Key: {{api_key}}
+
+### Redes
+GET {{baseUrl}}/inv_redes
+X-Api-Key: {{api_key}}
