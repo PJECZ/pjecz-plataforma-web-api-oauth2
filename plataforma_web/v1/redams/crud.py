@@ -9,13 +9,14 @@ from lib.safe_string import safe_string
 
 from ...core.autoridades.models import Autoridad
 from ...core.redams.models import Redam
-from ..autoridades.crud import get_autoridad
+from ..autoridades.crud import get_autoridad, get_autoridad_from_clave
 from ..distritos.crud import get_distrito
 
 
 def get_redams(
     db: Session,
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     distrito_id: int = None,
     estatus: str = None,
     nombre: str = None,
@@ -32,6 +33,9 @@ def get_redams(
     elif autoridad_id is not None:
         autoridad = get_autoridad(db, autoridad_id=autoridad_id)
         consulta = consulta.filter(Redam.autoridad == autoridad)
+    elif autoridad_clave is not None:
+        autoridad = get_autoridad_from_clave(db, autoridad_clave)
+        consulta = consulta.filter(Redam.autoridad == autoridad)
 
     # Filtrar por estatus
     if estatus is None:
@@ -43,7 +47,7 @@ def get_redams(
     if nombre is not None:
         nombre = safe_string(nombre)
         if nombre != "":
-            consulta = consulta.filter_by(nombre=nombre)
+            consulta = consulta.filter(Redam.nombre.contains(nombre))
 
     # Entregar
     return consulta.filter_by(estatus="A").order_by(Redam.nombre)

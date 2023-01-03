@@ -22,6 +22,7 @@ repsvm_delitos = APIRouter(prefix="/v1/repsvm_delitos", tags=["repsvm"])
 @repsvm_delitos.get("", response_model=CustomPage[REPSVMDelitoOut])
 async def listado_repsvm_delitos(
     estatus: str = None,
+    nombre: str = None,
     current_user: UsuarioInDB = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -32,6 +33,7 @@ async def listado_repsvm_delitos(
         listado = get_repsvm_delitos(
             db=db,
             estatus=estatus,
+            nombre=nombre,
         )
     except PWAnyError as error:
         return custom_page_success_false(error)

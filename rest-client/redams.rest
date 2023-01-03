@@ -1,0 +1,30 @@
+@root = {{$dotenv HOST}}
+@baseUrl = {{root}}/v1
+@api_key = {{$dotenv API_KEY}}
+
+### Bienvenida
+GET {{root}}
+
+### REDAM (Registro Estatal de Deudores Alimentarios)
+GET {{baseUrl}}/redams
+X-Api-Key: {{api_key}}
+
+### Deudores Alimentarios del distrito judicial 6 SALTILLO
+GET {{baseUrl}}/redams
+    ?distrito_id=6
+X-Api-Key: {{api_key}}
+
+### Deudores Alimentarios del distrito judicial 8 TORREON
+GET {{baseUrl}}/redams
+    ?distrito_id=8
+X-Api-Key: {{api_key}}
+
+### Deudores Alimentarios de la autoridad TRC-J1-FAM
+GET {{baseUrl}}/redams
+    ?autoridad_clave=TRC-J1-FAM
+X-Api-Key: {{api_key}}
+
+### Deudores Alimentarios con nombre que contenga "LOPEZ"
+GET {{baseUrl}}/redams
+    ?nombre=LOPEZ
+X-Api-Key: {{api_key}}

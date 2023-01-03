@@ -25,7 +25,7 @@ def get_repsvm_agresores(
     # Filtrar por distrito
     if distrito_id:
         distrito = get_distrito(db, distrito_id)
-        consulta = consulta.filter(distrito=distrito)
+        consulta = consulta.filter(REPSVMAgresor.distrito == distrito)
 
     # Filtrar por estatus
     if estatus is None:
@@ -37,7 +37,7 @@ def get_repsvm_agresores(
     if nombre is not None:
         nombre = safe_string(nombre)
         if nombre != "":
-            consulta = consulta.filter_by(nombre=nombre)
+            consulta = consulta.filter(REPSVMAgresor.nombre.contains(nombre))
 
     # Entregar
     return consulta.filter_by(estatus="A").order_by(REPSVMAgresor.nombre)

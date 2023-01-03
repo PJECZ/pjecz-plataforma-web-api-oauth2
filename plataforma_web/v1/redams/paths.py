@@ -22,6 +22,7 @@ redams = APIRouter(prefix="/v1/redams", tags=["redam"])
 @redams.get("", response_model=CustomPage[RedamOut])
 async def listado_redams(
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     distrito_id: int = None,
     estatus: str = None,
     nombre: str = None,
@@ -35,6 +36,7 @@ async def listado_redams(
         consulta = get_redams(
             db=db,
             autoridad_id=autoridad_id,
+            autoridad_clave=autoridad_clave,
             distrito_id=distrito_id,
             estatus=estatus,
             nombre=nombre,
