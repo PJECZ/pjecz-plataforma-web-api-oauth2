@@ -1,5 +1,5 @@
 """
-Inventarios Custodias v1, esquemas de pydantic
+Inventarios Custodias v1, esquemas
 """
 from datetime import date, datetime
 from pydantic import BaseModel

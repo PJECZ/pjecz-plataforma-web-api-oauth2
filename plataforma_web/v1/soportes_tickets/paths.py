@@ -12,11 +12,12 @@ from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_list import CustomList, ListResult, custom_list_success_false
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_soportes_tickets, get_soporte_ticket, get_cantidades_por_distrito_por_categoria, get_cantidades_por_funcionario_por_estado
-from .schemas import SoporteTicketOut, OneSoporteTicketOut, SoporteTicketTotalOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import get_soportes_tickets, get_soporte_ticket, get_cantidades_por_distrito_por_categoria, get_cantidades_por_funcionario_por_estado
+from .schemas import SoporteTicketOut, OneSoporteTicketOut, SoporteTicketTotalOut
 
 soportes_tickets = APIRouter(prefix="/v1/soportes_tickets", tags=["soportes"])
 

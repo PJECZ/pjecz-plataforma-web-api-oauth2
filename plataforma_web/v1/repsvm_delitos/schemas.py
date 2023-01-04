@@ -1,5 +1,5 @@
 """
-REPSVM Delitos v1, esquemas de pydantic
+REPSVM Delitos v1, esquemas
 """
 from pydantic import BaseModel
 

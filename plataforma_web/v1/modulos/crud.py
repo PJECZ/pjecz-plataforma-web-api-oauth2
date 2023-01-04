@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import Modulo
+from ...core.modulos.models import Modulo
 
 
 def get_modulos(

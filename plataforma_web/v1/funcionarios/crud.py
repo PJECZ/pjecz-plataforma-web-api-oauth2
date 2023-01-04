@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError, PWNotValidParamError
 from lib.safe_string import CURP_REGEXP
 
-from .models import Funcionario
+from ...core.funcionarios.models import Funcionario
 
 
 def get_funcionarios(

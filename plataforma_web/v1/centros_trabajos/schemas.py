@@ -1,5 +1,5 @@
 """
-Centros de Trabajo v1, esquemas de pydantic
+Centros de Trabajo v1, esquemas
 """
 from pydantic import BaseModel
 

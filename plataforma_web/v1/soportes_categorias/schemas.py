@@ -1,5 +1,5 @@
 """
-Soportes Categorias v1, esquemas de pydantic
+Soportes Categorias v1, esquemas
 """
 from pydantic import BaseModel
 

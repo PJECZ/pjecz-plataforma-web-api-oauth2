@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import REPSVMAgresorDelito
+from ...core.repsvm_agresores_delitos.models import REPSVMAgresorDelito
 from ..repsvm_agresores.crud import get_repsvm_agresor
 from ..repsvm_delitos.crud import get_repsvm_delito
 

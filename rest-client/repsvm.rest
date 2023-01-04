@@ -1,0 +1,25 @@
+@root = {{$dotenv HOST}}
+@baseUrl = {{root}}/v1
+@api_key = {{$dotenv API_KEY}}
+
+### Bienvenida
+GET {{root}}
+
+### REPSVM (Registro Estatal de Personas Sancionadas por Violencia de Género)
+GET {{baseUrl}}/repsvm_agresores
+X-Api-Key: {{api_key}}
+
+### Agresores del distrito judicial 6 SALTILLO
+GET {{baseUrl}}/repsvm_agresores
+    ?distrito_id=6
+X-Api-Key: {{api_key}}
+
+### Agresores del distrito judicial 8 TORREON
+GET {{baseUrl}}/repsvm_agresores
+    ?distrito_id=8
+X-Api-Key: {{api_key}}
+
+### Agresores con nombre que contenga "LOPEZ"
+GET {{baseUrl}}/repsvm_agresores
+    ?nombre=LOPEZ
+X-Api-Key: {{api_key}}

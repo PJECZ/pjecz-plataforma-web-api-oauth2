@@ -1,12 +1,12 @@
 """
-Distritos v1.0, CRUD (create, read, update, and delete)
+Distritos v1, CRUD (create, read, update, and delete)
 """
 from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import Distrito
+from ...core.distritos.models import Distrito
 
 
 def get_distritos(

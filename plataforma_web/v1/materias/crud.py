@@ -1,12 +1,12 @@
 """
-Materias v1.0, CRUD (create, read, update, and delete)
+Materias v1, CRUD (create, read, update, and delete)
 """
 from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import Materia
+from ...core.materias.models import Materia
 
 
 def get_materias(

@@ -1,5 +1,5 @@
 """
-Inventarios Marcas v1, esquemas de pydantic
+Inventarios Marcas v1, esquemas
 """
 from pydantic import BaseModel
 

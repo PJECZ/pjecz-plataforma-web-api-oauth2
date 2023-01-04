@@ -1,5 +1,5 @@
 """
-Sentencias v1, esquemas de pydantic
+Sentencias v1, esquemas
 """
 from datetime import date, datetime
 from pydantic import BaseModel

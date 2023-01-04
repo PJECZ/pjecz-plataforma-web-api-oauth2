@@ -1,5 +1,5 @@
 """
-Permisos v1, esquemas de pydantic
+Permisos v1, esquemas
 """
 from datetime import date
 from pydantic import BaseModel

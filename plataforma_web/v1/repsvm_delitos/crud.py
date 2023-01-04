@@ -5,13 +5,15 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
+from lib.safe_string import safe_string
 
-from .models import REPSVMDelito
+from ...core.repsvm_delitos.models import REPSVMDelito
 
 
 def get_repsvm_delitos(
     db: Session,
     estatus: str = None,
+    nombre: str = None,
 ) -> Any:
     """Consultar los delitos activos"""
 
@@ -23,6 +25,12 @@ def get_repsvm_delitos(
         consulta = consulta.filter_by(estatus="A")  # Si no se da el estatus, solo activos
     else:
         consulta = consulta.filter_by(estatus=estatus)
+
+    # Filtrar por nombre
+    if nombre is not None:
+        nombre = safe_string(nombre)
+        if nombre != "":
+            consulta = consulta.filter(REPSVMDelito.nombre.contains(nombre))
 
     # Entregar
     return consulta.filter_by(estatus="A").order_by(REPSVMDelito.id)

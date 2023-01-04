@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import Permiso
+from ...core.permisos.models import Permiso
 from ..modulos.crud import get_modulo
 from ..roles.crud import get_rol
 

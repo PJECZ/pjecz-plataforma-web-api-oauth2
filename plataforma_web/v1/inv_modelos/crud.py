@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import InvModelo
+from ...core.inv_marcas.models import InvMarca
+from ...core.inv_modelos.models import InvModelo
 from ..inv_marcas.crud import get_inv_marca
-from ..inv_marcas.models import InvMarca
 
 
 def get_inv_modelos(

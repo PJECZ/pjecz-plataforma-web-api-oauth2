@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
-from .models import InvComponente
+from ...core.inv_componentes.models import InvComponente
 from ..inv_categorias.crud import get_inv_categoria
 from ..inv_equipos.crud import get_inv_equipo
 

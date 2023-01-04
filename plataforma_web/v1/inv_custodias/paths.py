@@ -11,11 +11,12 @@ from lib.database import get_db
 from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_inv_custodia, get_inv_custodias
-from .schemas import InvCustodiaOut, OneInvCustodiaOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import get_inv_custodia, get_inv_custodias
+from .schemas import InvCustodiaOut, OneInvCustodiaOut
 
 inv_custodias = APIRouter(prefix="/v1/inv_custodias", tags=["inventarios"])
 

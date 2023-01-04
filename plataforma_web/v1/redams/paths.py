@@ -9,11 +9,12 @@ from lib.database import get_db
 from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_redams, get_redam
-from .schemas import RedamOut, OneRedamOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import get_redams, get_redam
+from .schemas import RedamOut, OneRedamOut
 
 redams = APIRouter(prefix="/v1/redams", tags=["redam"])
 
@@ -21,6 +22,7 @@ redams = APIRouter(prefix="/v1/redams", tags=["redam"])
 @redams.get("", response_model=CustomPage[RedamOut])
 async def listado_redams(
     autoridad_id: int = None,
+    autoridad_clave: str = None,
     distrito_id: int = None,
     estatus: str = None,
     nombre: str = None,
@@ -34,6 +36,7 @@ async def listado_redams(
         consulta = get_redams(
             db=db,
             autoridad_id=autoridad_id,
+            autoridad_clave=autoridad_clave,
             distrito_id=distrito_id,
             estatus=estatus,
             nombre=nombre,

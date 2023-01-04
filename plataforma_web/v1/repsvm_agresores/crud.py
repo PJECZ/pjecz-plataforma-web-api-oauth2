@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 from lib.safe_string import safe_string
 
-from .models import REPSVMAgresor
+from ...core.repsvm_agresores.models import REPSVMAgresor
 from ..distritos.crud import get_distrito
 
 
@@ -25,7 +25,7 @@ def get_repsvm_agresores(
     # Filtrar por distrito
     if distrito_id:
         distrito = get_distrito(db, distrito_id)
-        consulta = consulta.filter(distrito=distrito)
+        consulta = consulta.filter(REPSVMAgresor.distrito == distrito)
 
     # Filtrar por estatus
     if estatus is None:
@@ -37,7 +37,7 @@ def get_repsvm_agresores(
     if nombre is not None:
         nombre = safe_string(nombre)
         if nombre != "":
-            consulta = consulta.filter_by(nombre=nombre)
+            consulta = consulta.filter(REPSVMAgresor.nombre.contains(nombre))
 
     # Entregar
     return consulta.filter_by(estatus="A").order_by(REPSVMAgresor.nombre)

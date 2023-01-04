@@ -1,5 +1,5 @@
 """
-Distritos v1.0, esquemas
+Distritos v1, esquemas
 """
 from pydantic import BaseModel
 

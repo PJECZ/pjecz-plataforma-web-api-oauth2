@@ -1,5 +1,5 @@
 """
-REPSVM Agresores v2, esquemas de pydantic
+REPSVM Agresores v2, esquemas
 """
 from pydantic import BaseModel
 

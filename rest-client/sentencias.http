@@ -1,0 +1,35 @@
+@root = {{$dotenv HOST}}
+@baseUrl = {{root}}/v1
+@api_key = {{$dotenv API_KEY}}
+
+### Bienvenida
+GET {{root}}
+
+### Sentencias del SLT-J2-MER entre el 15 y 30 de junio de 2022
+GET {{baseUrl}}/sentencias
+    ?autoridad_clave=SLT-J2-MER
+    &fecha_desde=2022-06-15
+    &fecha_hasta=2022-06-30
+X-Api-Key: {{api_key}}
+
+### Materia 4 MERCANTIL
+GET {{baseUrl}}/materias/4
+X-Api-Key: {{api_key}}
+
+### Tipos de Juicios de la materia 4 MERCANTIL
+GET {{baseUrl}}/materias_tipos_juicios
+    ?materia_id=4
+    &limit=20
+X-Api-Key: {{api_key}}
+
+### Tipo de Juicio 269 JUICIO ORDINARIO MERCANTIL
+GET {{baseUrl}}/materias_tipos_juicios/269
+X-Api-Key: {{api_key}}
+
+### Sentencias de tipo de juicio 269 JUICIO ORDINARIO MERCANTIL
+GET {{baseUrl}}/sentencias
+    ?materia_tipo_juicio_id=269
+    &fecha_desde=2022-01-01
+    &fecha_hasta=2022-12-31
+    &limit=100
+X-Api-Key: {{api_key}}

@@ -10,9 +10,9 @@ import pytz
 from lib.exceptions import PWAlreadyExistsError, PWIsDeletedError, PWNotExistsError, PWNotValidParamError, PWOutOfRangeParamError
 from lib.safe_string import safe_string
 
-from .models import ListaDeAcuerdo
-from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
+from ...core.listas_de_acuerdos.models import ListaDeAcuerdo
 from ..autoridades.crud import get_autoridad, get_autoridades, get_autoridad_from_clave
+from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut
 
 LIMITE_DIAS = 7
 

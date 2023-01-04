@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import InvCategoria
+from ...core.inv_categorias.models import InvCategoria
 
 
 def get_inv_categorias(

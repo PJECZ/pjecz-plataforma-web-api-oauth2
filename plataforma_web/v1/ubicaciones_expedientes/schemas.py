@@ -1,5 +1,5 @@
 """
-Ubicaciones Expedientes v1, esquemas de pydantic
+Ubicaciones Expedientes v1, esquemas
 """
 from pydantic import BaseModel
 

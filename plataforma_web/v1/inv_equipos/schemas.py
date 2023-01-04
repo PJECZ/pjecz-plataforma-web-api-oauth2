@@ -1,5 +1,5 @@
 """
-Inventario Equipos v1, esquemas de pydantic
+Inventario Equipos v1, esquemas
 """
 from datetime import date, datetime
 from pydantic import BaseModel

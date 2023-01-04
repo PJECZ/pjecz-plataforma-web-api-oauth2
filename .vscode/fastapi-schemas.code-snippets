@@ -4,7 +4,7 @@
         "prefix": "fschemas",
         "body": [
             "\"\"\"",
-            "${1:Modulos} v1, esquemas de pydantic",
+            "${1:Modulos} v1, esquemas",
             "\"\"\"",
             "from datetime import date",
             "from pydantic import BaseModel",

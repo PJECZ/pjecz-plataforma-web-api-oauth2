@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import SoporteCategoria
+from ...core.soportes_categorias.models import SoporteCategoria
 
 
 def get_soportes_categorias(

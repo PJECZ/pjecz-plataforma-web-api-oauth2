@@ -1,5 +1,5 @@
 """
-Oficinas v1, esquemas de pydantic
+Oficinas v1, esquemas
 """
 from datetime import time
 from pydantic import BaseModel

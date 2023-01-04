@@ -9,11 +9,12 @@ from lib.database import get_db
 from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_oficinas, get_oficina
-from .schemas import OficinaOut, OneOficinaOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import get_oficinas, get_oficina
+from .schemas import OficinaOut, OneOficinaOut
 
 oficinas = APIRouter(prefix="/v1/oficinas", tags=["catalogos"])
 

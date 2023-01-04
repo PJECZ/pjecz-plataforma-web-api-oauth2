@@ -1,5 +1,5 @@
 """
-Inventarios Redes v1, esquemas de pydantic
+Inventarios Redes v1, esquemas
 """
 from pydantic import BaseModel
 

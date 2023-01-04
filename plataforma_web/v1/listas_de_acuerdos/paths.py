@@ -12,11 +12,12 @@ from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_list import CustomList, ListResult, custom_list_success_false
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_sintetizar_por_creado, get_lista_de_acuerdo, insert_lista_de_acuerdo
-from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut, OneListaDeAcuerdoOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import get_listas_de_acuerdos, get_listas_de_acuerdos_sintetizar_por_creado, get_lista_de_acuerdo, insert_lista_de_acuerdo
+from .schemas import ListaDeAcuerdoIn, ListaDeAcuerdoOut, OneListaDeAcuerdoOut
 
 listas_de_acuerdos = APIRouter(prefix="/v1/listas_de_acuerdos", tags=["listas de acuerdos"])
 

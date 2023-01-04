@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from lib.exceptions import PWIsDeletedError, PWNotExistsError
 
-from .models import UsuarioRol
+from ...core.usuarios_roles.models import UsuarioRol
 from ..roles.crud import get_rol
 from ..usuarios.crud import get_usuario
 

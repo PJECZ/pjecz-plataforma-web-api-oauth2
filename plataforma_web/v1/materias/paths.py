@@ -1,5 +1,5 @@
 """
-Materias v1.0, rutas (paths)
+Materias v1, rutas (paths)
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -9,11 +9,12 @@ from lib.database import get_db
 from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_materias, get_materia
-from .schemas import MateriaOut, OneMateriaOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
+
+from .crud import get_materias, get_materia
+from .schemas import MateriaOut, OneMateriaOut
 
 materias = APIRouter(prefix="/v1/materias", tags=["catalogos"])
 

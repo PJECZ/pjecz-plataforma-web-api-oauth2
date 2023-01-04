@@ -9,13 +9,14 @@ from lib.database import get_db
 from lib.exceptions import PWAnyError
 from lib.fastapi_pagination_custom_page import CustomPage, custom_page_success_false
 
-from .crud import get_materias_tipos_juicios, get_materia_tipo_juicio
-from .schemas import MateriaTipoJuicioOut, OneMateriaTipoJuicioOut
-from ..permisos.models import Permiso
+from ...core.permisos.models import Permiso
 from ..usuarios.authentications import get_current_active_user
 from ..usuarios.schemas import UsuarioInDB
 
-materias_tipos_juicios = APIRouter(prefix="/v1/materias_tipos_juicios", tags=["catalogos"])
+from .crud import get_materias_tipos_juicios, get_materia_tipo_juicio
+from .schemas import MateriaTipoJuicioOut, OneMateriaTipoJuicioOut
+
+materias_tipos_juicios = APIRouter(prefix="/v1/materias_tipos_juicios", tags=["sentencias"])
 
 
 @materias_tipos_juicios.get("", response_model=CustomPage[MateriaTipoJuicioOut])
