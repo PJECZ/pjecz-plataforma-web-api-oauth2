@@ -153,10 +153,14 @@ Ejecute el script `arrancar.py` que contiene el comando y parametros para arranc
 
 ## Google Cloud deployment
 
-Crear el archivo `requirements.txt`
+**Ya contiene un GitHub Action para implementar en produccion cada vez que hay aportaciones a la rama principal.**
+
+Por lo que estos pasos ya no son necesarios...
+
+1) Crear el archivo `requirements.txt`
 
     poetry export -f requirements.txt --output requirements.txt --without-hashes
 
-Y subir a Google Cloud
+2) Y subir a Google Cloud
 
     gcloud app deploy
