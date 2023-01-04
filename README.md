@@ -49,7 +49,7 @@ Status code: **404**
 
 ## Configure Poetry
 
-Por defecto, el entorno se guarda en un directorio unico en `~/.cache/pypoetry/virtualenvs`
+Por defecto, con **poetry** el entorno se guarda en un directorio en `~/.cache/pypoetry/virtualenvs`
 
 Modifique para que el entorno se guarde en el mismo directorio que el proyecto
 
@@ -62,13 +62,15 @@ Verifique que este en True
 
 ## Configuracion
 
-Cree un archivo para las variables de entorno `.env`
+**Para produccion** se toman los secretos desde **Google Cloud** con _secret manager_
+
+**Para desarrollo** hay que crear un archivo para las variables de entorno `.env`
 
     # Base de datos
     DB_HOST=127.0.0.1
     DB_NAME=pjecz_plataforma_web
     DB_USER=adminpjeczplataformaweb
-    DB_PASS=****************
+    DB_PASS=XXXXXXXXXXXXXXXX
 
     # CORS Origins separados por comas
     ORIGINS=http://localhost:8006,http://localhost:3000,http://127.0.0.1:8006,http://127.0.0.1:3000
@@ -81,7 +83,7 @@ Cree un archivo para las variables de entorno `.env`
     TASK_QUEUE=pjecz_plataforma_web
 
     # Salt sirve para cifrar el ID con HashID, debe ser igual que en la app Flask
-    SALT=************************
+    SALT=XXXXXXXXXXXXXXXXXXXXXXXX
 
     # Timezone
     TZ=America/Mexico_City
@@ -89,7 +91,7 @@ Cree un archivo para las variables de entorno `.env`
     # Arrancar con gunicorn o uvicorn
     ARRANCAR=uvicorn
 
-Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Konsole
+Cree un archivo `.bashrc` que se puede usar en el perfil de **Konsole**
 
     if [ -f ~/.bashrc ]; then
         source ~/.bashrc
@@ -103,7 +105,7 @@ Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Kons
     figlet Plataforma Web API Key
     echo
 
-    echo "== Variables de entorno"
+    echo "-- Variables de entorno"
     export $(grep -v '^#' .env | xargs)
     echo "   DB_HOST: ${DB_HOST}"
     echo "   DB_NAME: ${DB_NAME}"
@@ -119,7 +121,7 @@ Para Bash Shell cree un archivo `.bashrc` que se puede usar en el perfil de Kons
     export PGPASSWORD=$DB_PASS
 
     alias arrancar="python3 ${PWD}/arrancar.py"
-    echo "== Arrancar FastAPI con arrancar.py"
+    echo "-- Arrancar FastAPI con arrancar.py"
     echo "   arrancar"
     echo
 
@@ -139,7 +141,7 @@ Clone el repositorio `pjecz-plataforma-web-api-oauth2`
     git clone https://github.com/PJECZ/pjecz-plataforma-web-api-oauth2.git
     cd pjecz-plataforma-web-api-oauth2
 
-Instale el entorno virtual y los paquetes necesarios
+Instale el entorno virtual con **Python 3.10** y los paquetes necesarios
 
     poetry install
 
